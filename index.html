@@ -254,7 +254,8 @@ const GEN_COLORS = {
     gen7:  { light:'#fff7ed', mid:'#fed7aa', mid2:'#fdba74', dark:'#fb923c' },
     gen8:  { light:'#f0fdfa', mid:'#99f6e4', mid2:'#5eead4', dark:'#2dd4bf' },
     gen9:  { light:'#faf5ff', mid:'#e9d5ff', mid2:'#d8b4fe', dark:'#c084fc' },
-    gen10: { light:'#fff1f2', mid:'#fecdd3', mid2:'#fda4af', dark:'#fb7185' }
+    gen10: { light:'#fff1f2', mid:'#fecdd3', mid2:'#fda4af', dark:'#fb7185' },
+    ancestor: { light:'#fefce8', mid:'#fef08a', mid2:'#fde047', dark:'#eab308' }
 };
 
 function flattenChain(node, list) {
@@ -526,6 +527,7 @@ const descChildren = [
     {
         name: "SYEKH MAULANA ISHAQ", type: "gen7", combined: true,
         spouseName: "DEWI SEKARDADU / SAYU ATIKAH / DEWI KASIHAN",
+        markId: "node-maulana-ishaq",
         children: [
             {
                 name: SUNAN_GIRI_NAME, type: "gen8",
@@ -698,6 +700,7 @@ function renderSiblingGroup(nodes, hostDiv) {
         }));
         const childG = el('g', { class:'node-shape desc-node', transform:`translate(${childX}, ${cy})` });
         if (d.combined) drawCombinedShape(childG, d); else drawLeafShape(childG, d);
+        if (d.markId) childG.id = d.markId;
         g.appendChild(childG);
 
         const hasKids = d.children && d.children.length;
@@ -814,6 +817,127 @@ function toggleDescTree() {
 }
 
 // =====================================================================
+// LELUHUR DEWI SEKARDADU (isteri Syekh Maulana Ishaq) — garis Majapahit.
+// Berbeda dari cabang keturunan (yang perlu diklik/buka), rantai leluhur
+// ini SELALU TAMPIL begitu file dibuka, lalu disambungkan dengan garis
+// lengkung ke shape SYEKH MAULANA ISHAQ & DEWI SEKARDADU (bagian isteri).
+// =====================================================================
+const ancestorChainData = [
+    { name: "RAJA MAJAPAHIT BRAWIJAYA I" },
+    { name: "HAYAM WURUK" },
+    { name: "BRHE WIRABHUMI" },
+    { name: "MINAK SEMBUYU / MINAK DEDALI PUTIH" }
+];
+const ancestorGap = 14;
+const ancestorWidth = 236;
+
+function buildAncestorChain(targetEl) {
+    if (!targetEl) return;
+
+    const wrap = document.createElement('div');
+    wrap.id = 'ancestor-chain';
+    wrap.style.position = 'absolute';
+    wrap.style.display = 'flex';
+    wrap.style.flexDirection = 'column';
+    wrap.style.alignItems = 'center';
+    wrap.style.zIndex = 3;
+    container.appendChild(wrap);
+
+    const label = document.createElement('div');
+    label.textContent = 'LELUHUR DEWI SEKARDADU (GARIS MAJAPAHIT)';
+    label.style.cssText = 'font-size:9.5px;font-weight:800;color:#92672f;text-align:center;' +
+        'margin-bottom:6px;letter-spacing:.3px;max-width:' + ancestorWidth + 'px;';
+    wrap.appendChild(label);
+
+    const dims = ancestorChainData.map(n => {
+        const fit = fitNameToBox(n.name, ancestorWidth - 24, 13, 700);
+        return { w: ancestorWidth, h: STANDARD_H, lines: fit.lines, fontSize: fit.fontSize };
+    });
+
+    dims.forEach((d, i) => {
+        const block = document.createElement('div');
+        block.style.display = 'flex';
+        block.style.flexDirection = 'column';
+        block.style.alignItems = 'center';
+        if (i > 0) {
+            const line = document.createElement('div');
+            line.className = 'connector';
+            line.style.height = ancestorGap + 'px';
+            block.appendChild(line);
+        }
+        const svg = el('svg', { width: d.w + 26, height: d.h + 6, viewBox: `0 0 ${d.w+26} ${d.h+6}` });
+        buildDefs(svg);
+        const g = el('g', { class:'node-shape', transform:`translate(0, ${d.h/2+2})` });
+        drawBatteryShape(g, d.w, d.h, 'ancestor');
+        const textEl = el('text', { x: d.w/2, y:0, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:'#0f172a', 'font-weight':700, 'font-size':d.fontSize });
+        const startY = -((d.lines.length - 1) * NAME_LINE_HEIGHT) / 2;
+        d.lines.forEach((ln, li) => {
+            const tspan = el('tspan', { x: d.w/2, y: startY + li*NAME_LINE_HEIGHT });
+            tspan.textContent = ln;
+            textEl.appendChild(tspan);
+        });
+        g.appendChild(textEl);
+        svg.appendChild(g);
+        block.appendChild(svg);
+        wrap.appendChild(block);
+    });
+
+    // ===== posisikan wrap di kiri-atas shape target, lalu gambar kurva penghubung =====
+    function positionAndConnect() {
+        const containerRect = container.getBoundingClientRect();
+        const targetRect = targetEl.getBoundingClientRect();
+        const scale = (tState && tState.k) || 1;
+
+        const targetLocalX = (targetRect.left - containerRect.left) / scale;
+        const targetLocalY = (targetRect.top + targetRect.height / 2 - containerRect.top) / scale;
+        const wrapW = wrap.offsetWidth;
+        const wrapH = wrap.offsetHeight;
+
+        const gapX = 70; // jarak horizontal antara rantai leluhur dgn shape Maulana Ishaq
+        const leftPx = targetLocalX - gapX - wrapW;
+        const topPx = targetLocalY - wrapH + 26; // ujung bawah rantai ada sedikit di atas titik sambung
+
+        wrap.style.left = leftPx + 'px';
+        wrap.style.top = topPx + 'px';
+
+        let overlay = document.getElementById('ancestor-link-overlay');
+        if (overlay) overlay.remove();
+
+        const startX = leftPx + wrapW / 2;
+        const startY = topPx + wrapH - 6;
+        const endX = targetLocalX;
+        const endY = targetLocalY;
+        const ovLeft = Math.min(startX, endX) - 10;
+        const ovTop = Math.min(startY, endY) - 10;
+        const ovW = Math.abs(endX - startX) + 20;
+        const ovH = Math.abs(endY - startY) + 20;
+
+        overlay = el('svg', { id: 'ancestor-link-overlay', width: ovW, height: ovH, viewBox: `0 0 ${ovW} ${ovH}` });
+        overlay.style.position = 'absolute';
+        overlay.style.left = ovLeft + 'px';
+        overlay.style.top = ovTop + 'px';
+        overlay.style.pointerEvents = 'none';
+        overlay.style.zIndex = 3;
+
+        const sx = startX - ovLeft, sy = startY - ovTop, ex = endX - ovLeft, ey = endY - ovTop;
+        const midY = (sy + ey) / 2;
+        overlay.appendChild(el('path', {
+            d: `M ${sx} ${sy} C ${sx} ${midY}, ${ex} ${midY}, ${ex} ${ey}`,
+            fill: 'none', stroke: 'rgba(0,0,0,0.55)', 'stroke-width': 1
+        }));
+        overlay.appendChild(el('path', {
+            d: `M ${ex-6} ${ey-5} L ${ex} ${ey} L ${ex-6} ${ey+5}`,
+            fill: 'none', stroke: 'rgba(0,0,0,0.55)', 'stroke-width': 1.4
+        }));
+        container.appendChild(overlay);
+    }
+
+    // tunggu transisi buka anchor (0.25s) selesai supaya ukuran/posisi terukur akurat
+    setTimeout(positionAndConnect, 350);
+    window.addEventListener('resize', () => setTimeout(positionAndConnect, 60));
+}
+
+// =====================================================================
 // GESER (drag) & ZOOM (scroll mouse / pinch) — rule SAMA dengan silsilah
 // Bani Isbadar: skala 0.2x s/d 2x, drag untuk geser, scroll/pinch untuk
 // zoom in-out. Ditulis native JS (tanpa library luar) supaya selalu jalan.
@@ -915,6 +1039,14 @@ wrapEl.addEventListener('wheel', (e) => {
 
 centerChart(false);
 window.addEventListener('resize', () => centerChart(false));
+
+// ===== Tampilkan otomatis begitu file dibuka: cabang Jumadil Qubro -> Maulana Ishaq,
+// supaya leluhur Maulana Ishaq (rantai utama) & leluhur Dewi Sekardadu (rantai Majapahit)
+// SAMA-SAMA langsung terlihat tanpa perlu mengklik tombol apapun. =====
+toggleDescTree();
+setTimeout(() => {
+    buildAncestorChain(document.getElementById('node-maulana-ishaq'));
+}, 50);
 
 // ===== Panel Rincian Keturunan =====
 function fillRincian() {
