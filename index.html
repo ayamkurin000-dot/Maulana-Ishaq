@@ -129,7 +129,7 @@
     .node-block text, .node-shape text, tspan { text-transform: uppercase !important; }
     .node-shape .real-body { filter: drop-shadow(0 3px 6px rgba(0,0,0,0.18)); }
 
-    /* ===== SEARCH BOX ===== */
+    /* ===== SEARCH BOX - 1 BARIS NAMA SAJA ===== */
     #search-wrap {
         display: flex;
         align-items: center;
@@ -139,6 +139,7 @@
         border-radius: 20px;
         padding: 4px 12px;
         box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        position: relative;
     }
     #search-wrap input {
         border: none;
@@ -162,6 +163,35 @@
         justify-content: center;
     }
     #search-wrap button:hover { background: #e2e8f0; }
+    #search-dropdown {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        max-height: 260px;
+        overflow-y: auto;
+        z-index: 100;
+        display: none;
+    }
+    #search-dropdown.show { display: block; }
+    .search-suggest-item {
+        padding: 9px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        border-bottom: 1px solid #f1f5f9;
+        text-transform: uppercase;
+        color: #1e293b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .search-suggest-item:last-child { border-bottom: none; }
+    .search-suggest-item:hover { background: #f8fafc; color: #0ea5e9; }
     .node-block.highlight { outline: 3px solid #facc15; outline-offset: 3px; border-radius: 14px; background: rgba(254,249,195,0.6); }
     .node-block.highlight svg .real-body { filter: drop-shadow(0 0 10px #facc15) drop-shadow(0 0 20px #eab308); }
     @keyframes pulse-highlight { 0%{transform:scale(1)} 50%{transform:scale(1.03)} 100%{transform:scale(1)} }
@@ -203,8 +233,9 @@
     <div class="controls">
         <div id="search-wrap">
             <span style="font-size:13px;">🔍</span>
-            <input id="search-input" type="text" placeholder="Cari nama..." oninput="searchNames(this.value)" />
+            <input id="search-input" type="text" placeholder="Cari nama..." oninput="searchNames(this.value)" autocomplete="off" />
             <button onclick="clearSearch()" title="Hapus">✕</button>
+            <div id="search-dropdown"></div>
         </div>
         <button class="btn" onclick="resetView()">RESET</button>
         <button class="btn" onclick="showToast('Semua shape pada silsilah ini selalu tampil, tidak ada yang disembunyikan.')">BUKA SEMUA</button>
@@ -1292,24 +1323,94 @@ function toggleLock() {
 }
 
 
-// ===== FITUR PENCARIAN NAMA (UPPERCASE) =====
+// ===== FITUR PENCARIAN NAMA - 1 BARIS SAJA, HANYA NAMA =====
+let allNamesCache = null;
+function collectAllNames() {
+    if (allNamesCache) return allNamesCache;
+    const set = new Map();
+    function walk(nodes) {
+        nodes.forEach(n => {
+            if (n.name) {
+                const key = n.name.toUpperCase().trim();
+                if (!set.has(key)) set.set(key, {name: n.name.toUpperCase()});
+            }
+            if (n.spouseName) {
+                n.spouseName.split('/').forEach(s => {
+                    const sTrim = s.trim().toUpperCase();
+                    if (sTrim && !set.has(sTrim)) set.set(sTrim, {name: sTrim});
+                });
+            }
+            if (n.children) walk(n.children);
+        });
+    }
+    try {
+        if (typeof descChildren !== 'undefined') walk(descChildren);
+        if (typeof ancestorChainData !== 'undefined') walk(ancestorChainData);
+        if (typeof chain !== 'undefined') walk(chain);
+    } catch(e) {}
+    allNamesCache = Array.from(set.values());
+    return allNamesCache;
+}
+
 function clearSearch() {
     const inp = document.getElementById('search-input');
-    if (inp) { inp.value = ''; searchNames(''); }
-}
-function searchNames(q) {
-    const query = (q || '').trim().toUpperCase();
-    // hapus highlight lama
+    const dd = document.getElementById('search-dropdown');
+    if (inp) inp.value = '';
+    if (dd) { dd.classList.remove('show'); dd.innerHTML = ''; }
     document.querySelectorAll('.node-block.highlight').forEach(el => el.classList.remove('highlight'));
-    document.querySelectorAll('.highlight-search').forEach(el => el.classList.remove('highlight-search'));
+    showToast('PENCARIAN DIBERSIHKAN');
+}
+
+function hideDropdown() {
+    const dd = document.getElementById('search-dropdown');
+    if (dd) dd.classList.remove('show');
+}
+
+function selectSuggestion(name) {
+    const inp = document.getElementById('search-input');
+    if (inp) inp.value = name;
+    hideDropdown();
+    searchNames(name, true);
+}
+
+function updateDropdown(query, filtered) {
+    const dd = document.getElementById('search-dropdown');
+    if (!dd) return;
+    if (!query || query.length < 3 || filtered.length === 0) {
+        dd.classList.remove('show');
+        dd.innerHTML = '';
+        return;
+    }
+    const limited = filtered.slice(0, 10);
+    dd.innerHTML = limited.map(item => 
+        `<div class="search-suggest-item" onclick="selectSuggestion('${item.name.replace(/'/g, "\\'")}')">${item.name}</div>`
+    ).join('');
+    dd.classList.add('show');
+}
+
+function searchNames(q, fromSuggestion=false) {
+    const query = (q || '').trim().toUpperCase();
+    const dd = document.getElementById('search-dropdown');
+    document.querySelectorAll('.node-block.highlight').forEach(el => el.classList.remove('highlight'));
     
     if (!query) {
-        if (q === '') showToast('Pencarian dibersihkan');
+        if (dd) { dd.classList.remove('show'); dd.innerHTML = ''; }
+        if (q === '') showToast('PENCARIAN DIBERSIHKAN');
         return;
     }
     
+    const allNames = collectAllNames();
+    const filtered = allNames.filter(item => item.name.includes(query));
+    
+    if (!fromSuggestion) {
+        updateDropdown(query, filtered);
+    } else {
+        hideDropdown();
+    }
+    
+    if (query.length < 3 && !fromSuggestion) return;
+    
     let matches = [];
-    // Cari di semua node-block yang sudah dirender
     document.querySelectorAll('.node-block').forEach(block => {
         const tspans = block.querySelectorAll('tspan');
         let text = Array.from(tspans).map(t => t.textContent).join(' ').toUpperCase();
@@ -1319,33 +1420,23 @@ function searchNames(q) {
         }
     });
     
-    // Juga cari di data lengkap (termasuk yang belum dibuka) untuk kasih info
-    let hiddenMatches = [];
-    function searchData(nodes, path=[]) {
-        nodes.forEach(n => {
-            const nameUp = (n.name || '').toUpperCase();
-            const spouseUp = (n.spouseName || '').toUpperCase();
-            if (nameUp.includes(query) || spouseUp.includes(query)) {
-                hiddenMatches.push({name: n.name, path: [...path, n.name].join(' → ')});
-            }
-            if (n.children) searchData(n.children, [...path, n.name]);
-        });
-    }
-    try {
-        if (typeof descChildren !== 'undefined') searchData(descChildren);
-        if (typeof ancestorChainData !== 'undefined') searchData(ancestorChainData);
-    } catch(e) {}
-    
     if (matches.length > 0) {
         matches[0].scrollIntoView({behavior:'smooth', block:'center', inline:'center'});
-        showToast(`Ditemukan ${matches.length} shape terlihat + ${hiddenMatches.length} total di data untuk "${q}"`);
-    } else if (hiddenMatches.length > 0) {
-        showToast(`"${q}" ada di ${hiddenMatches.length} data tapi cabangnya belum dibuka. Contoh: ${hiddenMatches[0].path}`);
-        console.log('Hidden matches:', hiddenMatches);
+        showToast(`DITEMUKAN ${matches.length} UNTUK "${q}"`);
+    } else if (filtered.length > 0) {
+        showToast(`"${q}" ADA DI ${filtered.length} DATA TAPI CABANGNYA BELUM DIBUKA`);
     } else {
-        showToast(`Tidak ditemukan "${q}"`);
+        if (query.length >= 3) showToast(`TIDAK DITEMUKAN "${q}"`);
     }
 }
+
+document.addEventListener('click', function(e) {
+    const wrap = document.getElementById('search-wrap');
+    const dd = document.getElementById('search-dropdown');
+    if (wrap && dd && !wrap.contains(e.target)) {
+        dd.classList.remove('show');
+    }
+});
 
 // ===== Toast notifikasi kecil =====
 let toastTimer = null;
