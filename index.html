@@ -192,10 +192,30 @@
     }
     .search-suggest-item:last-child { border-bottom: none; }
     .search-suggest-item:hover { background: #f8fafc; color: #0ea5e9; }
-    .node-block.highlight { outline: 3px solid #facc15; outline-offset: 3px; border-radius: 14px; background: rgba(254,249,195,0.6); }
-    .node-block.highlight svg .real-body { filter: drop-shadow(0 0 10px #facc15) drop-shadow(0 0 20px #eab308); }
-    @keyframes pulse-highlight { 0%{transform:scale(1)} 50%{transform:scale(1.03)} 100%{transform:scale(1)} }
-    .node-block.highlight { animation: pulse-highlight 0.6s ease 2; }
+    /* ===== Reaksi "ditemukan & dipilih" - PERSIS model Bani Isbadar:
+       shape berkedip cahaya kuning-amber (glow) + garis tepi amber tebal,
+       lalu otomatis hilang sendiri setelah beberapa detik. ===== */
+    .node-shape.search-highlight .real-body {
+        stroke: #f59e0b !important;
+        stroke-width: 4.5px !important;
+        stroke-opacity: 1 !important;
+    }
+    .node-shape.search-highlight {
+        animation: search-pulse 1.3s ease-in-out 2;
+    }
+    @keyframes search-pulse {
+        0%   { filter: drop-shadow(0 0 0px rgba(245, 158, 11, 0.95)); }
+        50%  { filter: drop-shadow(0 0 22px rgba(245, 158, 11, 0.95)) drop-shadow(0 0 8px rgba(245, 158, 11, 0.85)) brightness(1.08); }
+        100% { filter: drop-shadow(0 0 0px rgba(245, 158, 11, 0.95)); }
+    }
+    .search-highlight-overlay {
+        fill: none;
+        stroke: #f59e0b;
+        stroke-width: 4.5px;
+        stroke-linejoin: round;
+        pointer-events: none;
+        filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.9));
+    }
 
 
     /* ===== Badge (+/-) untuk membuka cabang keturunan Jumadil Qubro ke kanan ===== */
@@ -941,6 +961,7 @@ function renderSiblingGroup(nodes, hostDiv, onResize, parentController) {
             anchorEls.push(subAnchor);
 
             const toggle = setupExpandable(d, i, badge, subAnchor, openExtra, relayout, siblingGroupState, parentController);
+            nodeToggleRegistry.set(nodes[i], toggle);
             childG.style.cursor = 'pointer';
             childG.addEventListener('click', () => toggle());
         } else {
@@ -1023,8 +1044,15 @@ function setupExpandable(d, index, badge, subAnchor, openExtra, relayoutParent, 
         showToast(`Menampilkan keturunan ${d.name} di sebelah kanan.`);
     }
     badge.addEventListener('click', (e) => { e.stopPropagation(); toggle(); });
+    toggle.isOpen = controller.isOpen;
     return toggle;
 }
+
+// Registry: petakan objek data asli (nd) -> fungsi toggle cabangnya, dipakai
+// oleh fitur pencarian untuk otomatis MEMBUKA seluruh cabang leluhur dari
+// sebuah nama yang ditemukan (persis reaksi "reveal" di silsilah Bani Isbadar),
+// sebelum kamera berpindah & shape-nya berkedip disorot.
+const nodeToggleRegistry = new Map();
 
 let descBuilt = false;
 let descChildrenState = null;
@@ -1357,7 +1385,7 @@ function clearSearch() {
     const dd = document.getElementById('search-dropdown');
     if (inp) inp.value = '';
     if (dd) { dd.classList.remove('show'); dd.innerHTML = ''; }
-    document.querySelectorAll('.node-block.highlight').forEach(el => el.classList.remove('highlight'));
+    clearFoundHighlight();
     showToast('PENCARIAN DIBERSIHKAN');
 }
 
@@ -1382,51 +1410,153 @@ function updateDropdown(query, filtered) {
         return;
     }
     const limited = filtered.slice(0, 10);
-    dd.innerHTML = limited.map(item => 
+    dd.innerHTML = limited.map(item =>
         `<div class="search-suggest-item" onclick="selectSuggestion('${item.name.replace(/'/g, "\\'")}')">${item.name}</div>`
     ).join('');
     dd.classList.add('show');
 }
 
+// ketik di kotak pencarian HANYA menampilkan daftar saran (dropdown), TIDAK
+// menyentuh shape di chart sama sekali — persis model Bani Isbadar. Reaksi
+// pada chart (buka cabang, kamera pindah, shape berkedip) baru terjadi saat
+// SATU nama benar-benar dipilih (klik saran / lewat selectSuggestion).
 function searchNames(q, fromSuggestion=false) {
-    const query = (q || '').trim().toUpperCase();
-    const dd = document.getElementById('search-dropdown');
-    document.querySelectorAll('.node-block.highlight').forEach(el => el.classList.remove('highlight'));
-    
-    if (!query) {
-        if (dd) { dd.classList.remove('show'); dd.innerHTML = ''; }
-        if (q === '') showToast('PENCARIAN DIBERSIHKAN');
+    const query = (q || '').trim();
+    if (fromSuggestion) {
+        hideDropdown();
+        selectFoundName(query);
         return;
     }
-    
-    const allNames = collectAllNames();
-    const filtered = allNames.filter(item => item.name.includes(query));
-    
-    if (!fromSuggestion) {
-        updateDropdown(query, filtered);
-    } else {
-        hideDropdown();
+    const dd = document.getElementById('search-dropdown');
+    if (!query) {
+        if (dd) { dd.classList.remove('show'); dd.innerHTML = ''; }
+        return;
     }
-    
-    if (query.length < 3 && !fromSuggestion) return;
-    
-    let matches = [];
-    document.querySelectorAll('.node-block').forEach(block => {
-        const tspans = block.querySelectorAll('tspan');
-        let text = Array.from(tspans).map(t => t.textContent).join(' ').toUpperCase();
-        if (text.includes(query)) {
-            block.classList.add('highlight');
-            matches.push(block);
+    if (query.length < 3) {
+        if (dd) { dd.classList.remove('show'); dd.innerHTML = ''; }
+        return;
+    }
+    const queryUpper = query.toUpperCase();
+    const allNames = collectAllNames();
+    const filtered = allNames.filter(item => item.name.includes(queryUpper));
+    updateDropdown(query, filtered);
+}
+
+// ===== Cari path (rantai leluhur) menuju sebuah nama di dalam data ASLI
+// descChildren (bukan hasil render), lalu buka satu-per-satu cabang di
+// sepanjang path itu — persis fungsi revealNode() di silsilah Bani Isbadar. =====
+function findDescPath(nodes, targetUpper, path) {
+    for (const nd of nodes) {
+        const curPath = path.concat([nd]);
+        const nameU = (nd.name || '').toUpperCase().trim();
+        const spouseMatch = nd.spouseName && nd.spouseName.toUpperCase().includes(targetUpper);
+        if (nameU === targetUpper || spouseMatch) return curPath;
+        if (nd.children && nd.children.length) {
+            const sub = findDescPath(nd.children, targetUpper, curPath);
+            if (sub) return sub;
         }
+    }
+    return null;
+}
+
+function revealName(targetUpper) {
+    if (typeof descChildren === 'undefined') return false;
+    const path = findDescPath(descChildren, targetUpper, []);
+    if (!path) return false;
+    let openedSomething = false;
+    for (let i = 0; i < path.length - 1; i++) {
+        const toggleFn = nodeToggleRegistry.get(path[i]);
+        if (toggleFn && !toggleFn.isOpen()) {
+            toggleFn();
+            openedSomething = true;
+        }
+    }
+    return openedSomething;
+}
+
+// ===== Pindahkan "kamera" (geser & tetap di skala saat ini) supaya shape
+// yang ditemukan tepat di tengah layar, dengan transisi halus — versi native
+// (translate/scale CSS) dari centerOnNode() milik silsilah Bani Isbadar. =====
+function centerOnElement(el, duration) {
+    duration = duration === undefined ? 700 : duration;
+    const wrapRect = wrapEl.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    const headerOffset = 70;
+    const curCenterX = elRect.left + elRect.width / 2;
+    const curCenterY = elRect.top + elRect.height / 2;
+    const desiredX = wrapRect.left + wrapRect.width / 2;
+    const desiredY = wrapRect.top + headerOffset + (wrapRect.height - headerOffset) / 2;
+    tState.x += (desiredX - curCenterX);
+    tState.y += (desiredY - curCenterY);
+    contEl.style.transition = `transform ${duration}ms ease`;
+    applyTransform();
+    setTimeout(() => { contEl.style.transition = ''; }, duration + 30);
+}
+
+function clearFoundHighlight() {
+    document.querySelectorAll('.node-shape.search-highlight').forEach(elm => {
+        elm.classList.remove('search-highlight');
+        elm.querySelectorAll('.search-highlight-overlay').forEach(o => o.remove());
     });
-    
-    if (matches.length > 0) {
-        matches[0].scrollIntoView({behavior:'smooth', block:'center', inline:'center'});
-        showToast(`DITEMUKAN ${matches.length} UNTUK "${q}"`);
-    } else if (filtered.length > 0) {
-        showToast(`"${q}" ADA DI ${filtered.length} DATA TAPI CABANGNYA BELUM DIBUKA`);
+}
+
+// ===== Reaksi shape saat nama ditemukan: garis tepi + cahaya amber berkedip
+// 2x lalu hilang sendiri — PERSIS highlightFoundNode() di Bani Isbadar. =====
+function highlightFoundElements(elements) {
+    elements.forEach(elm => {
+        elm.classList.add('search-highlight');
+        try {
+            const bbox = elm.getBBox();
+            const pad = 6;
+            const r = Math.min(22, Math.round(bbox.height * 0.42)) + 3;
+            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            rect.setAttribute('class', 'search-highlight-overlay');
+            rect.setAttribute('x', bbox.x - pad);
+            rect.setAttribute('y', bbox.y - pad);
+            rect.setAttribute('width', bbox.width + pad * 2);
+            rect.setAttribute('height', bbox.height + pad * 2);
+            rect.setAttribute('rx', r);
+            rect.setAttribute('ry', r);
+            elm.appendChild(rect);
+        } catch (e) { /* elemen belum terukur, lewati overlay saja */ }
+        setTimeout(() => {
+            elm.classList.remove('search-highlight');
+            elm.querySelectorAll('.search-highlight-overlay').forEach(o => o.remove());
+        }, 2700);
+    });
+}
+
+// ===== Alur lengkap: nama dipilih -> buka cabang leluhurnya kalau perlu ->
+// kamera geser halus ke shape-nya -> shape berkedip disorot amber.
+// Persis alur selectSearchResult() di silsilah Bani Isbadar. =====
+function selectFoundName(name) {
+    const target = (name || '').trim();
+    if (!target) return;
+    clearFoundHighlight();
+    const targetUpper = target.toUpperCase();
+
+    function doFind() {
+        const matches = [];
+        document.querySelectorAll('.node-shape').forEach(shape => {
+            const tspans = shape.querySelectorAll('tspan');
+            const text = Array.from(tspans).map(t => t.textContent).join(' ').toUpperCase();
+            if (text.includes(targetUpper)) matches.push(shape);
+        });
+        if (matches.length === 0) {
+            showToast(`TIDAK DITEMUKAN "${target}"`);
+            return;
+        }
+        const primary = matches[0];
+        centerOnElement(primary, 700);
+        setTimeout(() => highlightFoundElements([primary]), 60);
+        showToast(`DITEMUKAN: ${target.toUpperCase()}`);
+    }
+
+    const revealed = revealName(targetUpper);
+    if (revealed) {
+        setTimeout(doFind, 320);
     } else {
-        if (query.length >= 3) showToast(`TIDAK DITEMUKAN "${q}"`);
+        doFind();
     }
 }
 
@@ -1435,6 +1565,17 @@ document.addEventListener('click', function(e) {
     const dd = document.getElementById('search-dropdown');
     if (wrap && dd && !wrap.contains(e.target)) {
         dd.classList.remove('show');
+    }
+});
+
+document.getElementById('search-input').addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter') return;
+    const dd = document.getElementById('search-dropdown');
+    const first = dd ? dd.querySelector('.search-suggest-item') : null;
+    if (first) {
+        selectSuggestion(first.textContent);
+    } else {
+        selectFoundName(this.value);
     }
 });
 
