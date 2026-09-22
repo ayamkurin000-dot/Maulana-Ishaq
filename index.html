@@ -538,9 +538,34 @@ const descChildren = [
                         spouseName: "DEWI MURTOSIYAH BINTI SUNAN AMPEL",
                         children: [
                             { name: "NYAI GEDE KUKUSAN", type: "gen10" },
-                            { name: "SUNAN DALEM WETAN", type: "gen10" },
-                            { name: "SUNAN TEGAL WANGI", type: "gen10" },
-                            { name: "NYAI GEDE SELO LUHUR", type: "gen10" },
+                            {
+                                name: "SUNAN DALEM WETAN", type: "gen10",
+                                children: [
+                                    { name: "RADEN FATECHAL / SUNAN PRAPEN", type: "gen11" },
+                                    { name: "SUNAN SEDO MARGI", type: "gen11" },
+                                    { name: "NYAI AGENG NGULUKAN", type: "gen11" },
+                                    { name: "NYAI AGENG DARUKAN", type: "gen11" },
+                                    {
+                                        name: "PANGERAN SEDO LAUT", type: "gen11", combined: true,
+                                        spouseName: "WALIYAH ZAINAB BAWEAN BINTI PANGERAN NDUWUR BIN NUR RAHMAT / SUNAN SENDANG DUWUR"
+                                    },
+                                    { name: "PANGERAN DEKET LAMONGAN", type: "gen11" },
+                                    { name: "PANGERAN BUNGKUL SURABAYA", type: "gen11" }
+                                ]
+                            },
+                            {
+                                name: "SUNAN TEGAL WANGI", type: "gen10",
+                                children: [
+                                    { name: "NYAI AGENG MERAH DELIMA", type: "gen11" },
+                                    { name: "NYAI AGENG TUMPANG", type: "gen11" }
+                                ]
+                            },
+                            {
+                                name: "NYAI GEDE SELO LUHUR", type: "gen10",
+                                children: [
+                                    { name: "GUSTI PANGERAN WARU", type: "gen11" }
+                                ]
+                            },
                             { name: "SUNAN KULON", type: "gen10" },
                             { name: "SUNAN KIDUL", type: "gen10" },
                             { name: "NYAI AGENG SAWO", type: "gen10" },
@@ -673,44 +698,94 @@ function diagonalCurve(sx, sy, tx, ty) {
 // supaya keturunan bisa terus dibuka berjenjang ke kanan: anak -> cucu -> cicit, dst.
 // Setiap node yang punya `children` otomatis diberi badge (+/-) sendiri.
 // =====================================================================
-function renderSiblingGroup(nodes, hostDiv) {
-    const siblingGroupState = []; // kumpulan controller anak2 di LEVEL INI, dipakai utk auto-collapse
+// onResize (opsional): dipanggil setiap kali TINGGI TOTAL kelompok ini berubah
+// (ada cabang di dalamnya dibuka/ditutup), supaya induknya bisa relayout juga.
+// Mengembalikan { state, getHeight } — state = controller anak2 di LEVEL INI (utk auto-collapse),
+// getHeight = fungsi ambil tinggi total kelompok saat ini (termasuk cabang yg sedang terbuka).
+function renderSiblingGroup(nodes, hostDiv, onResize) {
+    const siblingGroupState = [];
     const dims = nodes.map(computeChildDims);
-    const totalH = dims.reduce((s, d) => s + d.h, 0) + (dims.length - 1) * descGapY;
-    const maxW = Math.max(...dims.map(d => d.w));
-    const svgW = descStemX + descStubLen + maxW + 30; // +30: ruang utk nub baterai (24px) + margin aman
-    const svgH = totalH + 12;
-    const svg = el('svg', { width: svgW, height: svgH, viewBox: `0 0 ${svgW} ${svgH}` });
+    // tinggi tambahan per-anak saat cabangnya terbuka (0 = tertutup/belum dibuka)
+    const openExtra = dims.map(() => 0);
+
+    const svg = el('svg', {});
     buildDefs(svg);
     const g = el('g', { transform: 'translate(0,6)' });
+    svg.appendChild(g);
+    hostDiv.appendChild(svg);
 
-    const centerY = totalH / 2;
-    let cursorY = 0;
-    const childCenters = dims.map(d => { const c = cursorY + d.h/2; cursorY += d.h + descGapY; return c; });
-
-    // titik pangkal (tepi kanan shape induk)
     const childX = descStemX + descStubLen; // titik kiri tempat shape anak mulai digambar
+    const linkEls = [], childGs = [], badgeEls = [], anchorEls = [];
 
-    // garis kurva penghubung + shape tiap anak
+    // tinggi "efektif" node ke-i: makin besar dari tinggi shape-nya sendiri ATAU
+    // tinggi cabang anaknya yang sedang terbuka (supaya saudara di atas/bawahnya digeser menjauh)
+    function effH(i) { return Math.max(dims[i].h, openExtra[i]); }
+    function totalHeight() {
+        return dims.reduce((s, d, i) => s + effH(i), 0) + (dims.length - 1) * descGapY;
+    }
+
+    // ===== AUTO GESER: hitung ulang posisi semua node & garis penghubung setiap kali
+    // ada cabang yang buka/tutup, supaya shape tidak pernah tumpang tindih lagi. =====
+    function relayout() {
+        const totalH = totalHeight();
+        const maxW = Math.max(...dims.map(d => d.w));
+        const svgW = childX + maxW + 30; // +30: ruang utk nub baterai (24px) + margin aman
+        const svgH = totalH + 12;
+        svg.setAttribute('width', svgW);
+        svg.setAttribute('height', svgH);
+        svg.setAttribute('viewBox', `0 0 ${svgW} ${svgH}`);
+
+        const centerY = totalH / 2;
+        let cursorY = 0;
+        dims.forEach((d, i) => {
+            const cy = cursorY + effH(i) / 2;
+            cursorY += effH(i) + descGapY;
+
+            linkEls[i].setAttribute('d', diagonalCurve(0, centerY, childX, cy));
+            childGs[i].setAttribute('transform', `translate(${childX}, ${cy})`);
+
+            if (badgeEls[i]) {
+                const nubCenterXinSvg = childX + d.w + 16;
+                const nubCenterYinSvg = cy + 6; // +6 mengikuti translate(0,6) pada g
+                badgeEls[i].style.left = (nubCenterXinSvg - 13) + 'px';
+                badgeEls[i].style.top = (nubCenterYinSvg - 13) + 'px';
+                anchorEls[i].style.left = (nubCenterXinSvg + 2) + 'px';
+                anchorEls[i].style.top = nubCenterYinSvg + 'px';
+            }
+        });
+        if (onResize) onResize();
+    }
+
     dims.forEach((d, i) => {
-        const cy = childCenters[i];
-        g.appendChild(el('path', {
-            d: diagonalCurve(0, centerY, childX, cy),
-            class: 'desc-link', fill: 'none', stroke: 'rgba(0,0,0,0.55)', 'stroke-width': 1
-        }));
-        const childG = el('g', { class:'node-shape desc-node', transform:`translate(${childX}, ${cy})` });
+        const link = el('path', { class: 'desc-link', fill: 'none', stroke: 'rgba(0,0,0,0.55)', 'stroke-width': 1 });
+        g.appendChild(link);
+        linkEls.push(link);
+
+        const childG = el('g', { class: 'node-shape desc-node' });
         if (d.combined) drawCombinedShape(childG, d); else drawLeafShape(childG, d);
         if (d.markId) childG.id = d.markId;
         g.appendChild(childG);
+        childGs.push(childG);
 
         const hasKids = d.children && d.children.length;
         if (hasKids) {
-            // titik tengah nub baterai node ini, dalam koordinat svg kelompok ini
-            // (sama persis rumusnya dgn nub di drawBatteryShape/drawCombinedShape: w + 16)
-            const nubCenterXinSvg = childX + d.w + 16;
-            const nubCenterYinSvg = cy + 6; // +6 mengikuti translate(0,6) pada g
-            setupExpandable(d, childG, hostDiv, nubCenterXinSvg, nubCenterYinSvg, siblingGroupState);
+            const badge = document.createElement('div');
+            badge.className = 'expand-badge';
+            badge.innerHTML = plusIconSVG();
+            badge.title = `Tampilkan keturunan ${d.name}`;
+            hostDiv.appendChild(badge);
+            badgeEls.push(badge);
+
+            const subAnchor = document.createElement('div');
+            subAnchor.className = 'desc-anchor';
+            hostDiv.appendChild(subAnchor);
+            anchorEls.push(subAnchor);
+
+            const toggle = setupExpandable(d, i, badge, subAnchor, openExtra, relayout, siblingGroupState);
+            childG.style.cursor = 'pointer';
+            childG.addEventListener('click', () => toggle());
         } else {
+            badgeEls.push(null); anchorEls.push(null);
             childG.addEventListener('click', () => {
                 showToast(d.combined
                     ? `Data keturunan ${d.name} & ${d.spouseName} akan menyusul.`
@@ -719,36 +794,21 @@ function renderSiblingGroup(nodes, hostDiv) {
         }
     });
 
-    svg.appendChild(g);
-    hostDiv.appendChild(svg);
-    return siblingGroupState;
+    relayout();
+    return { state: siblingGroupState, getHeight: totalHeight };
 }
 
-// Pasang badge (+/-) & anchor cabang berikutnya pada sebuah node yang punya children,
-// lalu urus buka/tutup (lazy-build: kelompok anaknya baru dirender saat pertama diklik).
+// Urus buka/tutup satu node yang punya children (lazy-build: kelompok anaknya baru
+// dirender saat pertama diklik). Setiap kali buka/tutup, relayoutParent() dipanggil
+// supaya seluruh kelompok saudara di level ini otomatis geser mengikuti tinggi cabang
+// yang sedang terbuka (auto geser, berlaku sama baik KUNCI ON maupun OFF).
 // siblingGroupState: daftar controller SEMUA saudara di level yang sama, dipakai utk auto-collapse.
-function setupExpandable(dims, childG, hostDiv, nubCenterX, nubCenterY, siblingGroupState) {
-    childG.style.cursor = 'pointer';
-
-    const badge = document.createElement('div');
-    badge.className = 'expand-badge';
-    badge.innerHTML = plusIconSVG();
-    badge.title = `Tampilkan keturunan ${dims.name}`;
-    badge.style.left = (nubCenterX - 13) + 'px';
-    badge.style.top = (nubCenterY - 13) + 'px';
-    hostDiv.appendChild(badge);
-
-    const subAnchor = document.createElement('div');
-    subAnchor.className = 'desc-anchor';
-    subAnchor.style.left = (nubCenterX + 2) + 'px';
-    subAnchor.style.top = nubCenterY + 'px';
-    hostDiv.appendChild(subAnchor);
-
-    let built = false, open = false, childGroupState = null;
+function setupExpandable(d, index, badge, subAnchor, openExtra, relayoutParent, siblingGroupState) {
+    let built = false, open = false, childCtrl = null;
 
     function setIcon() {
         badge.innerHTML = open ? minusIconSVG() : plusIconSVG();
-        badge.title = open ? `Tutup keturunan ${dims.name}` : `Tampilkan keturunan ${dims.name}`;
+        badge.title = open ? `Tutup keturunan ${d.name}` : `Tampilkan keturunan ${d.name}`;
     }
 
     // menutup cabang ini; kalau collapseInside true, cabang2 DI DALAMNYA yang masih
@@ -758,8 +818,10 @@ function setupExpandable(dims, childG, hostDiv, nubCenterX, nubCenterY, siblingG
         open = false;
         subAnchor.classList.remove('open');
         setIcon();
-        if (collapseInside && childGroupState) {
-            childGroupState.forEach(c => c.close(true));
+        openExtra[index] = 0;
+        relayoutParent();
+        if (collapseInside && childCtrl) {
+            childCtrl.state.forEach(c => c.close(true));
         }
     }
 
@@ -772,7 +834,15 @@ function setupExpandable(dims, childG, hostDiv, nubCenterX, nubCenterY, siblingG
             showToast('Cabang keturunan ditutup.');
             return;
         }
-        if (!built) { childGroupState = renderSiblingGroup(dims.children, subAnchor); built = true; }
+        if (!built) {
+            // relayout otomatis tiap kali tinggi cabang anak ini berubah (mis. ada cucu yg dibuka di dalamnya)
+            childCtrl = renderSiblingGroup(d.children, subAnchor, () => {
+                if (!childCtrl) return; // hindari error saat build awal (childCtrl belum ke-assign)
+                openExtra[index] = childCtrl.getHeight();
+                relayoutParent();
+            });
+            built = true;
+        }
         // ===== AUTO-COLLAPSE: kalau KUNCI OFF, saudara lain di level yang sama
         // yang sedang terbuka otomatis ditutup (beserta cabang di dalamnya). =====
         if (!lockOn) {
@@ -781,10 +851,12 @@ function setupExpandable(dims, childG, hostDiv, nubCenterX, nubCenterY, siblingG
         open = true;
         subAnchor.classList.add('open');
         setIcon();
-        showToast(`Menampilkan keturunan ${dims.name} di sebelah kanan.`);
+        openExtra[index] = childCtrl.getHeight();
+        relayoutParent(); // <-- auto geser: dorong saudara lain menjauh sesuai tinggi cabang yg baru dibuka
+        showToast(`Menampilkan keturunan ${d.name} di sebelah kanan.`);
     }
     badge.addEventListener('click', (e) => { e.stopPropagation(); toggle(); });
-    childG.addEventListener('click', () => toggle());
+    return toggle;
 }
 
 let descBuilt = false;
@@ -793,7 +865,7 @@ function buildDescTree() {
     const anchor = document.getElementById('desc-anchor');
     if (!anchor || descBuilt) return;
     descBuilt = true;
-    descChildrenState = renderSiblingGroup(descChildren, anchor);
+    descChildrenState = renderSiblingGroup(descChildren, anchor).state;
 }
 
 let descOpen = false;
