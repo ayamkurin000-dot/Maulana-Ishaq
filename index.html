@@ -264,6 +264,7 @@ const GEN_COLORS = {
     gen9:  { light:'#faf5ff', mid:'#e9d5ff', mid2:'#d8b4fe', dark:'#c084fc' },
     gen10: { light:'#fff1f2', mid:'#fecdd3', mid2:'#fda4af', dark:'#fb7185' },
     gen11: { light:'#fef9c3', mid:'#fde047', mid2:'#facc15', dark:'#eab308' },
+    gen12: { light:'#e0f2fe', mid:'#7dd3fc', mid2:'#38bdf8', dark:'#0ea5e9' },
     ancestor: MAJAPAHIT_RED_WHITE
 };
 
@@ -575,10 +576,48 @@ const descChildren = [
                                     { name: "GUSTI PANGERAN WARU", type: "gen11" }
                                 ]
                             },
-                            { name: "SUNAN KULON", type: "gen10" },
-                            { name: "SUNAN KIDUL", type: "gen10" },
-                            { name: "NYAI AGENG SAWO", type: "gen10" },
-                            { name: "SUNAN WERUJU", type: "gen10" }
+                            { name: "SUNAN KULON", type: "gen10", children: [
+                                    { name: "RATU AGENG PERMAISURI", type: "gen11" },
+                                    { name: "SUNAN PRAPEN", type: "gen11" },
+                                    { name: "PANGERAN JELADININGSIH", type: "gen11" },
+                                    { name: "PANGERAN BRANGSIH LAMONGAN", type: "gen11" },
+                                    { name: "NYAI AGENG KETEQ GIRI", type: "gen11" },
+                                    { name: "PANGERAN WIROSOBO", type: "gen11" },
+                                    { name: "PANGERAN KEPIK GRESIK", type: "gen11" },
+                                    { name: "PANGERAN WELUH GIRI", type: "gen11" },
+                                    { name: "PANGERAN PEKAMPUHAN SUMENEP", type: "gen11", children: [
+                                        { name: "NYAI AGENG KUNTUL SUMENEP", type: "gen12" },
+                                        { name: "PANGERAN JUTANG KERADENAN", type: "gen12" },
+                                        { name: "NYAI AGENG KERATON SUMENEP", type: "gen12" }
+                                    ] },
+                                    { name: "NYAI AGENG BARANG LAMONGAN", type: "gen11" },
+                                    { name: "NYAI AGENG KABONAN", type: "gen11" },
+                                    { name: "PANGERAN WURYADI GIRI", type: "gen11" },
+                                    { name: "NYAI AGENG SUNTA BAYAN TUBAN", type: "gen11" },
+                                    { name: "PANEMBAHAN DEKAH", type: "gen11" },
+                                    { name: "NYAI AGENG MODO", type: "gen11" }
+                                ] },
+                            { name: "SUNAN KIDUL", type: "gen10", children: [
+                                    { name: "PANGERAN NGURUKAN", type: "gen11" },
+                                    { name: "PANGERAN KETEQ GIRI", type: "gen11" },
+                                    { name: "NYAI AGENG WIROJO GIRI", type: "gen11" },
+                                    { name: "PANGERAN MERAH DELIMA", type: "gen11" },
+                                    { name: "PANGERAN KERTOSONO", type: "gen11" },
+                                    { name: "PANGERAN BETOYO", type: "gen11" },
+                                    { name: "PANGERAN WIROSOBO", type: "gen11" },
+                                    { name: "NYAI AGENG KAWISTO", type: "gen11" },
+                                    { name: "PANGERAN SENOPATI", type: "gen11" },
+                                    { name: "PANGERAN KHOTIB PAJANG KLANGONAN", type: "gen11" }
+                                ] },
+                            { name: "NYAI AGENG SAWO", type: "gen10", children: [
+                                    { name: "PANGERAN JALADENANSIH", type: "gen11" },
+                                    { name: "PANGERAN SAWO GIRI", type: "gen11" },
+                                    { name: "PANGERAN INTAL", type: "gen11" },
+                                    { name: "PANGERAN MAS PEPANDAN RINGIN PITU", type: "gen11" }
+                                ] },
+                            { name: "SUNAN WERUJU", type: "gen10", children: [
+                                    { name: "NYAI AGENG PAMENGKANG SUMUR SONGO", type: "gen11" }
+                                ] }
                         ]
                     },
                     {
@@ -738,8 +777,9 @@ function renderSiblingGroup(nodes, hostDiv, onResize, parentController) {
     const childX = descStemX + descStubLen; // titik kiri tempat shape anak mulai digambar
     const linkEls = [], childGs = [], badgeEls = [], anchorEls = [];
 
+    // FIX: tinggi efektif FIX = tinggi shape itu sendiri, TIDAK ikut cabang yang terbuka.
+    // Jadi shape di atas/bawah TIDAK digeser. Ruang diberi dari kanan-kiri (descStemX/descStubLen).
         // FIX: KUNCI ON = auto-geser HANYA di kolom yang sama, kiri tetap
-    // effH = max(shape, cabang terbuka) untuk geser saudara di kolom ini saja
     function effH(i) {
         if (typeof lockOn !== 'undefined' && lockOn) {
             return Math.max(dims[i].h, openExtra[i] || 0);
@@ -867,7 +907,7 @@ function setupExpandable(d, index, badge, subAnchor, openExtra, relayoutParent, 
             childCtrl = renderSiblingGroup(d.children, subAnchor, () => {
                 if (!childCtrl) return; // hindari error saat build awal (childCtrl belum ke-assign)
                 openExtra[index] = childCtrl.getHeight();
-                relayoutParent(false); // kiri tetap, hanya kolom ini yang geser
+                relayoutParent(false); // kiri tetap, hanya kolom ini
             }, controller);
             built = true;
         }
@@ -886,7 +926,7 @@ function setupExpandable(d, index, badge, subAnchor, openExtra, relayoutParent, 
         subAnchor.classList.add('open');
         setIcon();
         openExtra[index] = childCtrl.getHeight();
-                relayoutParent(false); // kiri tetap, hanya kolom ini yang geser // <-- auto geser: dorong saudara lain menjauh sesuai tinggi cabang yg baru dibuka
+                relayoutParent(false); // kiri tetap, hanya kolom ini // <-- auto geser: dorong saudara lain menjauh sesuai tinggi cabang yg baru dibuka
         showToast(`Menampilkan keturunan ${d.name} di sebelah kanan.`);
     }
     badge.addEventListener('click', (e) => { e.stopPropagation(); toggle(); });
@@ -1189,6 +1229,7 @@ function toggleLock() {
         showToast('KUNCI OFF: kembali rapat.');
     }
 }
+
 
 // ===== Toast notifikasi kecil =====
 let toastTimer = null;
