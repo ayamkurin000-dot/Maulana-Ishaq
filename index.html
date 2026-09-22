@@ -351,7 +351,7 @@ const NAME_LINE_HEIGHT = 16;
 // Dihitung dengan rumus & data yang SAMA dengan shape gabungan Maulana Ishaq di bawah
 // (nama + pasangan), supaya semua shape lain (kecuali shape Nabi) berukuran sama persis.
 const _refNameFit = fitNameToBox("SYEKH MAULANA ISHAQ", cardWidth - 24, 15.5, 800);
-const _refSpouseFit = fitNameToBox("DEWI SEKARDADU / SAYU ATIKAH / DEWI KASIHAN", cardWidth - 24, 14, 800);
+const _refSpouseFit = fitNameToBox("DEWI SEKARDADU / DEWI SEKARDALU / SAYU ATIKAH / DEWI KASIHAN", cardWidth - 24, 14, 800);
 const _refTopH = _refNameFit.lines.length * NAME_LINE_HEIGHT + 4;
 const _refBottomH = _refSpouseFit.lines.length * NAME_LINE_HEIGHT + 4;
 // tinggi shape Nabi Muhammad SAW TETAP seperti semula (dikecualikan dari penyeragaman)
@@ -526,7 +526,7 @@ const descChildren = [
     { name: "SYEKH MAULANA SYARIF MAKKAH", type: "gen7" },
     {
         name: "SYEKH MAULANA ISHAQ", type: "gen7", combined: true,
-        spouseName: "DEWI SEKARDADU / SAYU ATIKAH / DEWI KASIHAN",
+        spouseName: "DEWI SEKARDADU / DEWI SEKARDALU / SAYU ATIKAH / DEWI KASIHAN",
         markId: "node-maulana-ishaq",
         children: [
             {
@@ -893,8 +893,13 @@ function buildAncestorChain(targetEl) {
         const wrapW = wrap.offsetWidth;
         const wrapH = wrap.offsetHeight;
 
-        const gapX = 70; // jarak horizontal antara rantai leluhur dgn shape Maulana Ishaq
-        const leftPx = targetLocalX - gapX - wrapW;
+        // Jarak horizontal rantai leluhur dipastikan SELALU di sebelah kiri rantai utama
+        // (bukan hanya di sebelah kiri shape Maulana Ishaq). Rantai utama (Nabi Muhammad SAW
+        // s/d Syekh Jumadil Qubro) selalu mulai dari x=0, jadi kotak rantai leluhur cukup
+        // dijaga tepi kanannya berjarak aman di kiri x=0 (mainGapX), supaya tidak pernah
+        // menimpa shape2 pada rantai utama walau shape Maulana Ishaq letaknya berdekatan.
+        const mainGapX = 40; // jarak aman antara rantai leluhur dgn rantai utama
+        const leftPx = Math.min(targetLocalX - 70 - wrapW, -mainGapX - wrapW);
         const topPx = targetLocalY - wrapH + 26; // ujung bawah rantai ada sedikit di atas titik sambung
 
         wrap.style.left = leftPx + 'px';
@@ -1040,14 +1045,6 @@ wrapEl.addEventListener('wheel', (e) => {
 centerChart(false);
 window.addEventListener('resize', () => centerChart(false));
 
-// ===== Tampilkan otomatis begitu file dibuka: cabang Jumadil Qubro -> Maulana Ishaq,
-// supaya leluhur Maulana Ishaq (rantai utama) & leluhur Dewi Sekardadu (rantai Majapahit)
-// SAMA-SAMA langsung terlihat tanpa perlu mengklik tombol apapun. =====
-toggleDescTree();
-setTimeout(() => {
-    buildAncestorChain(document.getElementById('node-maulana-ishaq'));
-}, 50);
-
 // ===== Panel Rincian Keturunan =====
 function fillRincian() {
     const tbody = document.getElementById('rincian-body');
@@ -1095,6 +1092,16 @@ function showToast(msg) {
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
 }
+
+// ===== Tampilkan otomatis begitu file dibuka: cabang Jumadil Qubro -> Maulana Ishaq,
+// supaya leluhur Maulana Ishaq (rantai utama) & leluhur Dewi Sekardadu (rantai Majapahit)
+// SAMA-SAMA langsung terlihat tanpa perlu mengklik tombol apapun.
+// Ditaruh di AKHIR skrip (bukan di tengah) supaya semua fungsi & variabel yang
+// dipakainya (showToast, toastTimer, dst.) sudah pasti siap terlebih dahulu. =====
+toggleDescTree();
+setTimeout(() => {
+    buildAncestorChain(document.getElementById('node-maulana-ishaq'));
+}, 50);
 </script>
 </body>
 </html>
