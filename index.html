@@ -243,19 +243,28 @@ const gapBetween = 18; // jarak pendek antar shape (panjang garis penghubung), d
 // supaya nub tidak lagi ikut membesar/mengecil sesuai tinggi masing-masing shape.
 const NUB_BASE_W = 8, NUB_BASE_H = 56 * 0.68, NUB_W = 16, NUB_H = 56 * 0.46;
 
+// ===== Rantai utama SITI FATIMAH s/d SYEKH JUMADIL QUBRO (gen1-gen6):
+// disatukan jadi SATU warna saja, gradasi hijau gelap ala lambang NU
+// (Nahdlatul Ulama). =====
+const NU_GREEN = { light:'#ffffff', mid:'#bbf7d0', mid2:'#86efac', dark:'#ffffff' };
+// ===== Rantai leluhur Dewi Sekardadu / garis Majapahit (RAJA MAJAPAHIT
+// BRAWIJAYA I s/d MINAK SEMBUYU): gradasi merah putih. =====
+const MAJAPAHIT_RED_WHITE = { light:'#b91c1c', mid:'#dc2626', mid2:'#fca5a5', dark:'#ffffff' };
+
 const GEN_COLORS = {
     root:  { light:'#fef3c7', mid:'#fde68a', mid2:'#fbbf24', dark:'#f59e0b' },
-    gen1:  { light:'#eff6ff', mid:'#bfdbfe', mid2:'#93c5fd', dark:'#60a5fa' },
-    gen2:  { light:'#f0fdf4', mid:'#bbf7d0', mid2:'#86efac', dark:'#4ade80' },
-    gen3:  { light:'#fdf2f8', mid:'#fbcfe8', mid2:'#f9a8d4', dark:'#f472b6' },
-    gen4:  { light:'#f5f3ff', mid:'#ddd6fe', mid2:'#c4b5fd', dark:'#a78bfa' },
-    gen5:  { light:'#fefce8', mid:'#fde68a', mid2:'#fcd34d', dark:'#f59e0b' },
-    gen6:  { light:'#ecfeff', mid:'#a5f3fc', mid2:'#67e8f9', dark:'#22d3ee' },
+    gen1:  NU_GREEN,
+    gen2:  NU_GREEN,
+    gen3:  NU_GREEN,
+    gen4:  NU_GREEN,
+    gen5:  NU_GREEN,
+    gen6:  NU_GREEN,
     gen7:  { light:'#fff7ed', mid:'#fed7aa', mid2:'#fdba74', dark:'#fb923c' },
     gen8:  { light:'#f0fdfa', mid:'#99f6e4', mid2:'#5eead4', dark:'#2dd4bf' },
     gen9:  { light:'#faf5ff', mid:'#e9d5ff', mid2:'#d8b4fe', dark:'#c084fc' },
     gen10: { light:'#fff1f2', mid:'#fecdd3', mid2:'#fda4af', dark:'#fb7185' },
-    ancestor: { light:'#fefce8', mid:'#fef08a', mid2:'#fde047', dark:'#eab308' }
+    gen11: { light:'#fef9c3', mid:'#fde047', mid2:'#facc15', dark:'#eab308' },
+    ancestor: MAJAPAHIT_RED_WHITE
 };
 
 function flattenChain(node, list) {
@@ -591,11 +600,23 @@ const descChildren = [
         ]
     }
 ];
-const descGapY = 12;
+// FIXED BEHAVIOR: jarak antar shape dibuat FIX secara vertikal, dan LEBAR secara horizontal.
+// Saat cabang dibuka ke kanan, shape di atas/bawah TIDAK digeser — hanya jarak kanan-kiri
+// (stem + stub) yang diperlebar supaya anak punya ruang sendiri.
+// FIXED: klik shape berketurunan TIDAK merenggangkan shape atas/bawah.
+// Jarak vertikal dibuat FIX (descGapY), jarak horizontal kanan-kiri diperlebar (descStemX + descStubLen)
+// supaya cabang punya ruang ke kanan tanpa dorong saudara.
+const descGapY = 18;
 const descChildWidth = 260;
 const descCombinedWidth = 260;
-const descStemX = 22;
-const descStubLen = 18;
+const descStemX = 38;
+const descStubLen = 32;
+
+// ===== Registry GLOBAL semua controller cabang (di SELURUH pohon, lintas level) =====
+// dipakai supaya saat KUNCI: OFF, membuka cabang baru di mana pun akan menutup
+// SEMUA cabang lain yang sedang terbuka, bukan cuma saudara di level yang sama.
+const globalOpenControllers = [];
+const allSiblingGroups = [];
 
 function plusIconSVG() {
     return `<svg viewBox="0 0 10 10"><line x1="1" y1="5" x2="9" y2="5"/><line x1="5" y1="1" x2="5" y2="9"/></svg>`;
@@ -702,7 +723,7 @@ function diagonalCurve(sx, sy, tx, ty) {
 // (ada cabang di dalamnya dibuka/ditutup), supaya induknya bisa relayout juga.
 // Mengembalikan { state, getHeight } — state = controller anak2 di LEVEL INI (utk auto-collapse),
 // getHeight = fungsi ambil tinggi total kelompok saat ini (termasuk cabang yg sedang terbuka).
-function renderSiblingGroup(nodes, hostDiv, onResize) {
+function renderSiblingGroup(nodes, hostDiv, onResize, parentController) {
     const siblingGroupState = [];
     const dims = nodes.map(computeChildDims);
     // tinggi tambahan per-anak saat cabangnya terbuka (0 = tertutup/belum dibuka)
@@ -717,16 +738,21 @@ function renderSiblingGroup(nodes, hostDiv, onResize) {
     const childX = descStemX + descStubLen; // titik kiri tempat shape anak mulai digambar
     const linkEls = [], childGs = [], badgeEls = [], anchorEls = [];
 
-    // tinggi "efektif" node ke-i: makin besar dari tinggi shape-nya sendiri ATAU
-    // tinggi cabang anaknya yang sedang terbuka (supaya saudara di atas/bawahnya digeser menjauh)
-    function effH(i) { return Math.max(dims[i].h, openExtra[i]); }
+        // FIX: KUNCI ON = auto-geser HANYA di kolom yang sama, kiri tetap
+    // effH = max(shape, cabang terbuka) untuk geser saudara di kolom ini saja
+    function effH(i) {
+        if (typeof lockOn !== 'undefined' && lockOn) {
+            return Math.max(dims[i].h, openExtra[i] || 0);
+        }
+        return dims[i].h;
+    }
     function totalHeight() {
         return dims.reduce((s, d, i) => s + effH(i), 0) + (dims.length - 1) * descGapY;
     }
 
     // ===== AUTO GESER: hitung ulang posisi semua node & garis penghubung setiap kali
     // ada cabang yang buka/tutup, supaya shape tidak pernah tumpang tindih lagi. =====
-    function relayout() {
+    function relayout(shouldPropagate = true) {
         const totalH = totalHeight();
         const maxW = Math.max(...dims.map(d => d.w));
         const svgW = childX + maxW + 30; // +30: ruang utk nub baterai (24px) + margin aman
@@ -753,7 +779,7 @@ function renderSiblingGroup(nodes, hostDiv, onResize) {
                 anchorEls[i].style.top = nubCenterYinSvg + 'px';
             }
         });
-        if (onResize) onResize();
+        if (shouldPropagate && onResize) onResize();
     }
 
     dims.forEach((d, i) => {
@@ -781,7 +807,7 @@ function renderSiblingGroup(nodes, hostDiv, onResize) {
             hostDiv.appendChild(subAnchor);
             anchorEls.push(subAnchor);
 
-            const toggle = setupExpandable(d, i, badge, subAnchor, openExtra, relayout, siblingGroupState);
+            const toggle = setupExpandable(d, i, badge, subAnchor, openExtra, relayout, siblingGroupState, parentController);
             childG.style.cursor = 'pointer';
             childG.addEventListener('click', () => toggle());
         } else {
@@ -795,6 +821,7 @@ function renderSiblingGroup(nodes, hostDiv, onResize) {
     });
 
     relayout();
+    allSiblingGroups.push({ relayout, getHeight: totalHeight });
     return { state: siblingGroupState, getHeight: totalHeight };
 }
 
@@ -803,7 +830,7 @@ function renderSiblingGroup(nodes, hostDiv, onResize) {
 // supaya seluruh kelompok saudara di level ini otomatis geser mengikuti tinggi cabang
 // yang sedang terbuka (auto geser, berlaku sama baik KUNCI ON maupun OFF).
 // siblingGroupState: daftar controller SEMUA saudara di level yang sama, dipakai utk auto-collapse.
-function setupExpandable(d, index, badge, subAnchor, openExtra, relayoutParent, siblingGroupState) {
+function setupExpandable(d, index, badge, subAnchor, openExtra, relayoutParent, siblingGroupState, parentController) {
     let built = false, open = false, childCtrl = null;
 
     function setIcon() {
@@ -819,14 +846,15 @@ function setupExpandable(d, index, badge, subAnchor, openExtra, relayoutParent, 
         subAnchor.classList.remove('open');
         setIcon();
         openExtra[index] = 0;
-        relayoutParent();
+        relayoutParent(false); // kiri tetap
         if (collapseInside && childCtrl) {
             childCtrl.state.forEach(c => c.close(true));
         }
     }
 
-    const controller = { close: closeBranch, isOpen: () => open };
+    const controller = { close: closeBranch, isOpen: () => open, parent: parentController };
     siblingGroupState.push(controller);
+    globalOpenControllers.push(controller);
 
     function toggle() {
         if (open) {
@@ -839,20 +867,26 @@ function setupExpandable(d, index, badge, subAnchor, openExtra, relayoutParent, 
             childCtrl = renderSiblingGroup(d.children, subAnchor, () => {
                 if (!childCtrl) return; // hindari error saat build awal (childCtrl belum ke-assign)
                 openExtra[index] = childCtrl.getHeight();
-                relayoutParent();
-            });
+                relayoutParent(false); // kiri tetap, hanya kolom ini yang geser
+            }, controller);
             built = true;
         }
-        // ===== AUTO-COLLAPSE: kalau KUNCI OFF, saudara lain di level yang sama
-        // yang sedang terbuka otomatis ditutup (beserta cabang di dalamnya). =====
+        // ===== AUTO-COLLAPSE: kalau KUNCI OFF, SEMUA cabang lain yang sedang
+        // terbuka di SELURUH pohon (bukan cuma saudara di level yang sama)
+        // otomatis ditutup (beserta cabang di dalamnya) — KECUALI leluhur
+        // (ancestor) dari cabang yang baru diklik, supaya cabang ini sendiri
+        // tidak ikut hilang gara-gara wadah induknya ditutup. =====
         if (!lockOn) {
-            siblingGroupState.forEach(c => { if (c !== controller) c.close(true); });
+            const keepOpen = new Set();
+            let p = controller;
+            while (p) { keepOpen.add(p); p = p.parent; }
+            globalOpenControllers.forEach(c => { if (!keepOpen.has(c) && c.isOpen()) c.close(true); });
         }
         open = true;
         subAnchor.classList.add('open');
         setIcon();
         openExtra[index] = childCtrl.getHeight();
-        relayoutParent(); // <-- auto geser: dorong saudara lain menjauh sesuai tinggi cabang yg baru dibuka
+                relayoutParent(false); // kiri tetap, hanya kolom ini yang geser // <-- auto geser: dorong saudara lain menjauh sesuai tinggi cabang yg baru dibuka
         showToast(`Menampilkan keturunan ${d.name} di sebelah kanan.`);
     }
     badge.addEventListener('click', (e) => { e.stopPropagation(); toggle(); });
@@ -1148,10 +1182,11 @@ function toggleLock() {
     if (lockOn) {
         btn.textContent = '🔒 KUNCI: ON';
         btn.style.background = '#16a34a';
-        showToast('Mode kunci aktif: cabang lain tidak akan tertutup otomatis (berlaku saat silsilah sudah bercabang).');
+        showToast('KUNCI ON: boleh buka banyak cabang, auto-geser hanya di kolom yang dibuka, kiri tetap.');
     } else {
         btn.textContent = '🔓 KUNCI: OFF';
         btn.style.background = '#64748b';
+        showToast('KUNCI OFF: kembali rapat.');
     }
 }
 
