@@ -124,7 +124,10 @@
 
     .node-block { display: flex; flex-direction: column; align-items: center; position: relative; }
     .connector { width: 1px; background: rgba(0,0,0,0.55); border-radius: 2px; }
-    .node text { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    .node text { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-transform: uppercase; }
+    /* UPPERCASE semua teks dalam shape silsilah */
+    .node-block text, .node-shape text, tspan { text-transform: uppercase !important; }
+    .desc-item, .real-body text { text-transform: uppercase !important; }
     .node-shape .real-body { filter: drop-shadow(0 3px 6px rgba(0,0,0,0.18)); }
 
     /* ===== Badge (+/-) untuk membuka cabang keturunan Jumadil Qubro ke kanan ===== */
@@ -325,11 +328,12 @@ function bestTwoLineSplit(words, fontSize, weight) {
 }
 function fitNameToBox(name, maxWidth, baseFontSize, weight) {
     const minFontSize = 9;
-    const words = name.trim().split(/\s+/);
+    const upperName = name.toUpperCase();
+    const words = upperName.trim().split(/\s+/);
 
     // 1) coba 1 baris di ukuran huruf standar (kondisi saat ini)
-    if (textWidth(name, baseFontSize, weight) <= maxWidth) {
-        return { lines: [name], fontSize: baseFontSize };
+    if (textWidth(upperName, baseFontSize, weight) <= maxWidth) {
+        return { lines: [upperName], fontSize: baseFontSize };
     }
     // 2) coba 2 baris, ukuran huruf tetap standar
     if (words.length > 1) {
@@ -341,14 +345,14 @@ function fitNameToBox(name, maxWidth, baseFontSize, weight) {
     while (size > minFontSize) {
         size -= 0.5;
         if (words.length === 1) {
-            if (textWidth(name, size, weight) <= maxWidth) return { lines: [name], fontSize: size };
+            if (textWidth(upperName, size, weight) <= maxWidth) return { lines: [upperName], fontSize: size };
         } else {
             const split = bestTwoLineSplit(words, size, weight);
             if (split.maxW <= maxWidth) return { lines: split.lines, fontSize: size };
         }
     }
     // 4) fallback di ukuran huruf minimum, tetap dipaksa 2 baris
-    if (words.length === 1) return { lines: [name], fontSize: minFontSize };
+    if (words.length === 1) return { lines: [upperName], fontSize: minFontSize };
     const split = bestTwoLineSplit(words, minFontSize, weight);
     return { lines: split.lines, fontSize: minFontSize };
 }
@@ -1237,12 +1241,14 @@ function toggleLock() {
     if (lockOn) {
         btn.textContent = '🔒 KUNCI: ON';
         btn.style.background = '#16a34a';
-        showToast('Mode kunci aktif: cabang lain tidak akan tertutup otomatis (berlaku saat silsilah sudah bercabang).');
+        showToast('KUNCI ON: boleh buka banyak cabang, auto-geser hanya di kolom yang dibuka, kiri tetap.');
     } else {
         btn.textContent = '🔓 KUNCI: OFF';
         btn.style.background = '#64748b';
+        showToast('KUNCI OFF: kembali rapat.');
     }
 }
+
 
 // ===== Toast notifikasi kecil =====
 let toastTimer = null;
