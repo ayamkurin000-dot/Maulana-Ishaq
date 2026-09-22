@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Silsilah Interaktif - MAULANA ISHAQ</title>
+<meta property="og:title" content="Silsilah Interaktif - Maulana Ishaq" />
+<meta property="og:description" content="Garis keturunan Maulana Ishaq dari Nabi Muhammad SAW" />
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        color: #1e293b;
+        background-color: #f8eeda;
+        position: relative;
+    }
+    body::before {
+        content: "";
+        position: fixed; top: 50%; left: 50%;
+        width: 200vw; height: 200vh;
+        transform: translate(-50%, -50%) rotate(45deg);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg stroke='%23a08760' stroke-width='1.5' stroke-linejoin='round'%3E%3Crect x='4' y='2' width='13' height='36' fill='%23f3e2c8'/%3E%3Crect x='23' y='2' width='13' height='36' fill='%23ead0ac'/%3E%3Crect x='44' y='4' width='34' height='13' fill='%23f3e2c8'/%3E%3Crect x='44' y='23' width='34' height='13' fill='%23ead0ac'/%3E%3Crect x='2' y='44' width='34' height='13' fill='%23ead0ac'/%3E%3Crect x='2' y='63' width='34' height='13' fill='%23f3e2c8'/%3E%3Crect x='44' y='42' width='13' height='36' fill='%23ead0ac'/%3E%3Crect x='63' y='42' width='13' height='36' fill='%23f3e2c8'/%3E%3C/g%3E%3C/svg%3E");
+        background-size: 80px 80px;
+        z-index: -1;
+    }
+    #header {
+        position: fixed; top: 0; left: 0; right: 0;
+        background: #ffffff; padding: 14px 24px;
+        box-shadow: 0 2px 12px rgba(148,163,184,0.12);
+        display: flex; justify-content: space-between; align-items: center;
+        z-index: 100; flex-wrap: wrap; gap: 8px;
+    }
+    #header h1 { font-size: 1.15rem; color: #0f172a; font-weight: 700; }
+    #header p { font-size: 0.78rem; color: #64748b; }
+    .controls { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn {
+        background: linear-gradient(135deg, #0ea5e9, #2563eb);
+        color: white; border: none; padding: 6px 14px; border-radius: 6px;
+        font-size: 0.72rem; cursor: pointer; font-weight: 700;
+        transition: 0.2s ease; box-shadow: 0 3px 10px rgba(37, 99, 235, 0.35);
+    }
+    .btn:hover { background: linear-gradient(135deg, #38bdf8, #1d4ed8); transform: translateY(-1px); }
+    @media (max-width: 640px) {
+        #header { padding: 10px 12px; }
+        #header h1 { font-size: 0.95rem; }
+        #header p { font-size: 0.6rem; }
+        .controls .btn { font-size: 0.62rem; padding: 5px 9px; }
+    }
+
+    #credit-tag {
+        position: fixed; bottom: 10px; right: 14px; font-size: 0.6rem; color: #475569;
+        background: #ffffff; padding: 5px 10px; border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.12); border: 1px solid #e2e8f0;
+        z-index: 10000; pointer-events: none; user-select: none;
+        letter-spacing: 0.2px; font-weight: 600;
+    }
+
+    #panel-switcher {
+        position: fixed; bottom: 10px; left: 14px; z-index: 9999;
+        display: flex; border-radius: 8px; overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15); border: 1px solid #e2e8f0;
+    }
+    #panel-switcher button {
+        border: none; background: #ffffff; color: #475569; font-weight: 700;
+        font-size: 0.62rem; padding: 8px 12px; cursor: pointer; letter-spacing: 0.3px;
+    }
+    #panel-switcher button.active { background: #2563eb; color: #fff; }
+    #panel-switcher button:hover:not(.active) { background: #f1f5f9; }
+
+    #gen-legend {
+        position: fixed; bottom: 46px; left: 14px; z-index: 9998;
+        background: #ffffffee; border: 1px solid #e2e8f0; border-radius: 10px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.12); padding: 10px 14px;
+        font-size: 0.65rem; max-width: 220px; display: none;
+    }
+    #gen-legend.open { display: block; }
+    #gen-legend .gen-legend-title { font-weight: 800; color: #0f172a; display: block; margin-bottom: 6px; }
+    #gen-legend ol { padding-left: 18px; color: #334155; }
+    #gen-legend li { margin-bottom: 2px; }
+
+    .toast {
+        position: fixed; top: 90px; left: 50%; transform: translateX(-50%) translateY(-10px);
+        background: #0f172aee; color: #fff; padding: 8px 16px; border-radius: 8px;
+        font-size: 0.72rem; z-index: 20000; opacity: 0; pointer-events: none;
+        transition: opacity 0.25s ease, transform 0.25s ease; text-align: center; max-width: 90vw;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    #rincian-panel {
+        position: fixed; top: 0; right: -340px; width: 320px; height: 100%;
+        background: #ffffff; box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+        z-index: 15000; transition: right 0.3s ease; padding: 70px 16px 16px;
+        overflow-y: auto;
+    }
+    #rincian-panel.open { right: 0; }
+    #rincian-panel h4 { color: #0f172a; font-size: 0.95rem; margin-bottom: 4px; }
+    #rincian-panel small { color: #64748b; }
+    #rincian-panel table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.72rem; }
+    #rincian-panel th, #rincian-panel td { border-bottom: 1px solid #f1f5f9; padding: 6px 4px; text-align: left; }
+    #rincian-panel th { color: #64748b; font-size: 0.62rem; text-transform: uppercase; }
+    #rincian-close {
+        position: absolute; top: 16px; right: 16px; background: #fff; border: 1px solid #e2e8f0;
+        border-radius: 8px; width: 26px; height: 26px; cursor: pointer; font-weight: 800; color: #2563eb;
+    }
+    #rincian-fab {
+        position: fixed; bottom: 90px; right: 14px; z-index: 9999;
+        background: linear-gradient(135deg, #f59e0b, #ea580c); color: #fff; border: none;
+        padding: 10px 16px; border-radius: 24px; font-size: 0.7rem; font-weight: 800;
+        box-shadow: 0 4px 14px rgba(234,88,12,0.4); cursor: pointer;
+    }
+
+    #chart-wrap {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        overflow: hidden; touch-action: none; cursor: grab;
+    }
+    #chart-wrap.grabbing { cursor: grabbing; }
+    #chart-container {
+        position: absolute; top: 0; left: 0;
+        display: flex; flex-direction: column; align-items: center;
+        transform-origin: 0 0;
+        will-change: transform;
+    }
+
+    .node-block { display: flex; flex-direction: column; align-items: center; position: relative; }
+    .connector { width: 1px; background: rgba(0,0,0,0.55); border-radius: 2px; }
+    .node text { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    .node-shape .real-body { filter: drop-shadow(0 3px 6px rgba(0,0,0,0.18)); }
+
+    /* ===== Badge (+/-) untuk membuka cabang keturunan Jumadil Qubro ke kanan ===== */
+    /* posisi left/top diatur presisi lewat JS supaya tepat di tengah nub baterai */
+    .expand-badge {
+        position: absolute;
+        width: 26px; height: 26px; border-radius: 50%;
+        background: linear-gradient(135deg, #0ea5e9, #2563eb);
+        border: 2px solid #fff; box-shadow: 0 2px 6px rgba(37,99,235,0.45);
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; z-index: 6; transition: transform 0.2s ease;
+    }
+    .expand-badge:hover { transform: scale(1.12); }
+    .expand-badge svg { width: 11px; height: 11px; overflow: visible; }
+    .expand-badge line { stroke: #fff; stroke-width: 2; stroke-linecap: round; }
+
+    /* ===== Kotak cabang keturunan yang muncul di sebelah kanan node ===== */
+    .desc-anchor {
+        position: absolute; left: 100%; top: 50%; transform: translateY(-50%) scale(0.92);
+        margin-left: 2px; display: none; opacity: 0; transition: opacity 0.25s ease, transform 0.25s ease;
+        z-index: 4;
+    }
+    .desc-anchor.open { display: block; opacity: 1; transform: translateY(-50%) scale(1); }
+    .desc-node .real-body { filter: drop-shadow(0 3px 6px rgba(0,0,0,0.18)); }
+    .desc-node:hover .real-body { filter: drop-shadow(0 4px 9px rgba(0,0,0,0.28)); }
+</style>
+</head>
+<body>
+
+<div id="header">
+    <div>
+        <h1>SILSILAH MAULANA ISHAQ</h1>
+        <p>GARIS KETURUNAN DARI NABI MUHAMMAD SAW</p>
+    </div>
+    <div class="controls">
+        <button class="btn" onclick="resetView()">RESET</button>
+        <button class="btn" onclick="showToast('Semua shape pada silsilah ini selalu tampil, tidak ada yang disembunyikan.')">BUKA SEMUA</button>
+        <button class="btn" onclick="showToast('Semua shape pada silsilah ini selalu tampil, tidak ada yang disembunyikan.')">TUTUP SEMUA</button>
+        <button class="btn" id="lock-btn" onclick="toggleLock()" style="background:#64748b;">🔓 KUNCI: OFF</button>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<div id="chart-wrap">
+    <div id="chart-container"></div>
+</div>
+
+<button id="rincian-fab" onclick="openRincian()">📜 RINCIAN KETURUNAN</button>
+<div id="rincian-panel">
+    <button id="rincian-close" onclick="closeRincian()">✕</button>
+    <h4>RINCIAN KETURUNAN</h4>
+    <small>Garis lurus Maulana Ishaq dari Nabi Muhammad SAW</small>
+    <table>
+        <thead><tr><th>Gen</th><th>Nama</th></tr></thead>
+        <tbody id="rincian-body"></tbody>
+    </table>
+</div>
+
+<div id="panel-switcher">
+    <button id="tab-generasi" class="active" onclick="toggleLegend()">GENERASI</button>
+    <button id="tab-chat" onclick="showToast('Fitur Chat Bani akan tersedia menyusul pada versi lengkap silsilah ini.')">CHAT BANI</button>
+</div>
+
+<div id="gen-legend" class="open">
+    <span class="gen-legend-title">GENERASI KE BAWAH</span>
+    <ol>
+        <li>ANAK</li>
+        <li>PUTU/CUCU</li>
+        <li>BUYUT</li>
+        <li>CANGGAH</li>
+        <li>WARENG</li>
+        <li>UDHEG-UDHEG</li>
+        <li>GANTUNG SIWUR</li>
+    </ol>
+</div>
+
+<div id="credit-tag">DIBUAT OLEH: MANNIXS-21</div>
+
+<script>
+// =====================================================================
+// DATA SILSILAH - garis lurus (linear), tanpa autocollapse:
+// selalu tampil penuh saat halaman dibuka, tidak butuh buka/tutup shape.
+// =====================================================================
+const treeData = {
+    "name": "NABI MUHAMMAD SAW",
+    "type": "root",
+    "children": [
+        { "name": "SITI FATIMAH", "type": "gen1", "children": [
+            { "name": "SAYYIDINA HUSAIN", "type": "gen2", "children": [
+                { "name": "ZAINAL ALIM", "type": "gen3", "children": [
+                    { "name": "ZAINAL QUBRO", "type": "gen4", "children": [
+                        { "name": "ZAINAL HUSAIN", "type": "gen5", "children": [
+                            { "name": "SYEKH JUMADIL QUBRO", "type": "gen6", "children": [] }
+                        ] }
+                    ] }
+                ] }
+            ] }
+        ] }
+    ]
+};
+
+// ===== ATURAN SHAPE (dipertahankan dari model Bani Isbadar) =====
+// - cardWidth tetap, cardHeight FLEKSIBEL mengikuti jumlah baris teks (1/2/3 baris dst).
+// - Setiap shape selalu digambar dengan titik sambung di TENGAH ATAS dan TENGAH BAWAH,
+//   sehingga garis penghubung antar shape selalu rata meskipun tinggi shape berbeda.
+// - Jarak antar shape (panjang garis penghubung) dibuat pendek & rapat.
+const cardWidth = 260;
+const founderWidth = 260;
+const lineHeight = 26;
+const padY = 18;
+const gapBetween = 18; // jarak pendek antar shape (panjang garis penghubung), dibuat lebih rapat
+
+// ===== Ukuran NUB BATERAI dibuat SERAGAM untuk semua shape =====
+// Dipatok mengikuti ukuran nub pada shape standar (SITI FATIMAH, tinggi=56),
+// supaya nub tidak lagi ikut membesar/mengecil sesuai tinggi masing-masing shape.
+const NUB_BASE_W = 8, NUB_BASE_H = 56 * 0.68, NUB_W = 16, NUB_H = 56 * 0.46;
+
+const GEN_COLORS = {
+    root:  { light:'#fef3c7', mid:'#fde68a', mid2:'#fbbf24', dark:'#f59e0b' },
+    gen1:  { light:'#eff6ff', mid:'#bfdbfe', mid2:'#93c5fd', dark:'#60a5fa' },
+    gen2:  { light:'#f0fdf4', mid:'#bbf7d0', mid2:'#86efac', dark:'#4ade80' },
+    gen3:  { light:'#fdf2f8', mid:'#fbcfe8', mid2:'#f9a8d4', dark:'#f472b6' },
+    gen4:  { light:'#f5f3ff', mid:'#ddd6fe', mid2:'#c4b5fd', dark:'#a78bfa' },
+    gen5:  { light:'#fefce8', mid:'#fde68a', mid2:'#fcd34d', dark:'#f59e0b' },
+    gen6:  { light:'#ecfeff', mid:'#a5f3fc', mid2:'#67e8f9', dark:'#22d3ee' },
+    gen7:  { light:'#fff7ed', mid:'#fed7aa', mid2:'#fdba74', dark:'#fb923c' },
+    gen8:  { light:'#f0fdfa', mid:'#99f6e4', mid2:'#5eead4', dark:'#2dd4bf' },
+    gen9:  { light:'#faf5ff', mid:'#e9d5ff', mid2:'#d8b4fe', dark:'#c084fc' },
+    gen10: { light:'#fff1f2', mid:'#fecdd3', mid2:'#fda4af', dark:'#fb7185' }
+};
+
+function flattenChain(node, list) {
+    list.push(node);
+    if (node.children && node.children.length) flattenChain(node.children[0], list);
+    return list;
+}
+const chain = flattenChain(treeData, []);
+
+// bungkus teks nama jadi beberapa baris pendek supaya shape tetap rapi
+function wrapName(name, maxCharsPerLine) {
+    const words = name.split(' ');
+    const lines = [];
+    let cur = '';
+    words.forEach(w => {
+        const test = cur ? cur + ' ' + w : w;
+        if (test.length > maxCharsPerLine && cur) {
+            lines.push(cur);
+            cur = w;
+        } else {
+            cur = test;
+        }
+    });
+    if (cur) lines.push(cur);
+    return lines;
+}
+
+// =====================================================================
+// AUTO-FIT TEKS: semua shape dibatasi MAKSIMAL 2 BARIS.
+// - Jika muat 1 baris di ukuran huruf standar -> pakai 1 baris (ukuran huruf standar, seperti kondisi semula).
+// - Jika tidak muat 1 baris -> pecah jadi 2 baris, ukuran huruf TETAP standar.
+// - Jika 2 baris pun masih tidak cukup (kata terlalu panjang) -> paksa tetap 2 baris,
+//   ukuran huruf diperkecil bertahap (auto-fit) sampai muat. Teks tetap center tengah atas-bawah.
+// =====================================================================
+const FONT_FAMILY = "'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+const measureCanvas = document.createElement('canvas');
+const measureCtx = measureCanvas.getContext('2d');
+function textWidth(text, fontSize, weight) {
+    measureCtx.font = `${weight} ${fontSize}px ${FONT_FAMILY}`;
+    return measureCtx.measureText(text).width;
+}
+// cari titik pecah 2 baris terbaik (paling seimbang) dari sebuah nama
+function bestTwoLineSplit(words, fontSize, weight) {
+    if (words.length === 1) {
+        return { lines: [words[0]], maxW: textWidth(words[0], fontSize, weight) };
+    }
+    let best = null;
+    for (let i = 1; i < words.length; i++) {
+        const l1 = words.slice(0, i).join(' ');
+        const l2 = words.slice(i).join(' ');
+        const w1 = textWidth(l1, fontSize, weight);
+        const w2 = textWidth(l2, fontSize, weight);
+        const maxW = Math.max(w1, w2);
+        if (!best || maxW < best.maxW) best = { lines: [l1, l2], maxW };
+    }
+    return best;
+}
+function fitNameToBox(name, maxWidth, baseFontSize, weight) {
+    const minFontSize = 9;
+    const words = name.trim().split(/\s+/);
+
+    // 1) coba 1 baris di ukuran huruf standar (kondisi saat ini)
+    if (textWidth(name, baseFontSize, weight) <= maxWidth) {
+        return { lines: [name], fontSize: baseFontSize };
+    }
+    // 2) coba 2 baris, ukuran huruf tetap standar
+    if (words.length > 1) {
+        const split = bestTwoLineSplit(words, baseFontSize, weight);
+        if (split.maxW <= maxWidth) return { lines: split.lines, fontSize: baseFontSize };
+    }
+    // 3) paksa 2 baris: kecilkan ukuran huruf bertahap sampai muat
+    let size = baseFontSize;
+    while (size > minFontSize) {
+        size -= 0.5;
+        if (words.length === 1) {
+            if (textWidth(name, size, weight) <= maxWidth) return { lines: [name], fontSize: size };
+        } else {
+            const split = bestTwoLineSplit(words, size, weight);
+            if (split.maxW <= maxWidth) return { lines: split.lines, fontSize: size };
+        }
+    }
+    // 4) fallback di ukuran huruf minimum, tetap dipaksa 2 baris
+    if (words.length === 1) return { lines: [name], fontSize: minFontSize };
+    const split = bestTwoLineSplit(words, minFontSize, weight);
+    return { lines: split.lines, fontSize: minFontSize };
+}
+// jarak antar baris KHUSUS untuk nama panjang yang terpaksa 2 baris (dibuat lebih rapat dari lineHeight).
+// Ini hanya berlaku antar baris dari SATU nama yang sama; jarak antara 2 nama berbeda (suami & isteri
+// dalam 1 shape gabungan) tetap memakai pemisahan bagian (topH/bottomH + garis pemisah) seperti biasa.
+const NAME_LINE_HEIGHT = 16;
+
+// ===== Tinggi shape SYEKH MAULANA ISHAQ dijadikan acuan ukuran seragam =====
+// Dihitung dengan rumus & data yang SAMA dengan shape gabungan Maulana Ishaq di bawah
+// (nama + pasangan), supaya semua shape lain (kecuali shape Nabi) berukuran sama persis.
+const _refNameFit = fitNameToBox("SYEKH MAULANA ISHAQ", cardWidth - 24, 15.5, 800);
+const _refSpouseFit = fitNameToBox("DEWI SEKARDADU / SAYU ATIKAH / DEWI KASIHAN", cardWidth - 24, 14, 800);
+const _refTopH = _refNameFit.lines.length * NAME_LINE_HEIGHT + 4;
+const _refBottomH = _refSpouseFit.lines.length * NAME_LINE_HEIGHT + 4;
+// tinggi shape Nabi Muhammad SAW TETAP seperti semula (dikecualikan dari penyeragaman)
+const ROOT_H = 2 * lineHeight + padY;
+// tinggi seragam utk semua shape lain (chain gen1-gen6 & keturunan gen7), disamakan dgn shape Maulana Ishaq
+const STANDARD_H = _refTopH + _refBottomH;
+
+function shapeBodyPath(w, h, rRight, rLeft) {
+    return `M ${rLeft},${-h/2} L ${w-rRight},${-h/2} Q ${w},${-h/2} ${w},${-h/2+rRight} ` +
+        `L ${w},${h/2-rRight} Q ${w},${h/2} ${w-rRight},${h/2} ` +
+        `L ${rLeft},${h/2} Q 0,${h/2} 0,${h/2-rLeft} ` +
+        `L 0,${-h/2+rLeft} Q 0,${-h/2} ${rLeft},${-h/2} Z`;
+}
+
+const svgNS = "http://www.w3.org/2000/svg";
+function el(tag, attrs) {
+    const e = document.createElementNS(svgNS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+}
+
+const container = document.getElementById('chart-container');
+
+// hitung info tiap shape: tinggi SERAGAM (cukup utk 2 baris), teks di-auto-fit max 2 baris
+const nodesInfo = chain.map((n, idx) => {
+    const isRoot = idx === 0;
+    const w = isRoot ? founderWidth : cardWidth;
+    const baseFontSize = isRoot ? 16 : 13.5;
+    const weight = isRoot ? 800 : 700;
+    const fit = fitNameToBox(n.name, w - 24, baseFontSize, weight);
+    const h = isRoot ? ROOT_H : STANDARD_H;
+    return { data: n, idx, w, h, lines: fit.lines, fontSize: fit.fontSize, weight, isRoot };
+});
+
+// bangun defs gradient sekali per generasi yang dipakai
+function buildDefs(svg) {
+    const defs = el('defs', {});
+    Object.entries(GEN_COLORS).forEach(([key, c]) => {
+        const lg = el('linearGradient', { id: 'grad-'+key, x1:'0%', y1:'0%', x2:'0%', y2:'100%' });
+        [[ '0%', c.light ], ['22%', c.mid], ['58%', c.mid2], ['88%', c.dark], ['100%', c.dark]]
+            .forEach(([off, col]) => lg.appendChild(el('stop', { offset: off, 'stop-color': col })));
+        defs.appendChild(lg);
+
+        const gloss = el('linearGradient', { id: 'gloss-'+key, x1:'0%', y1:'0%', x2:'0%', y2:'100%' });
+        gloss.appendChild(el('stop', { offset:'0%', 'stop-color':'#ffffff', 'stop-opacity':0.85 }));
+        gloss.appendChild(el('stop', { offset:'32%', 'stop-color':'#ffffff', 'stop-opacity':0.28 }));
+        gloss.appendChild(el('stop', { offset:'68%', 'stop-color':'#ffffff', 'stop-opacity':0 }));
+        defs.appendChild(gloss);
+    });
+    const metalBase = el('linearGradient', { id:'grad-metal-base', x1:'0%', y1:'0%', x2:'100%', y2:'0%' });
+    [['0%','#475569'],['20%','#94a3b8'],['45%','#e2e8f0'],['70%','#94a3b8'],['100%','#334155']]
+        .forEach(([off,col]) => metalBase.appendChild(el('stop', { offset: off, 'stop-color': col })));
+    defs.appendChild(metalBase);
+
+    const metalNub = el('linearGradient', { id:'grad-metal-nub', x1:'0%', y1:'0%', x2:'100%', y2:'0%' });
+    [['0%','#334155'],['25%','#94a3b8'],['50%','#e2e8f0'],['75%','#94a3b8'],['100%','#1e293b']]
+        .forEach(([off,col]) => metalNub.appendChild(el('stop', { offset: off, 'stop-color': col })));
+    defs.appendChild(metalNub);
+
+    svg.appendChild(defs);
+}
+
+function drawBatteryShape(g, w, h, type) {
+    const r = Math.min(22, Math.round(h*0.42));
+    const rLeft = Math.max(2, Math.round(r*0.15));
+    const nubBaseW = NUB_BASE_W, nubBaseH = NUB_BASE_H, nubW = NUB_W, nubH = NUB_H;
+
+    g.appendChild(el('path', {
+        transform: 'translate(1.5,2)', d: shapeBodyPath(w,h,r,rLeft), fill:'#000', opacity:0.09
+    }));
+    g.appendChild(el('path', {
+        class:'real-body', d: shapeBodyPath(w,h,r,rLeft), fill:`url(#grad-${type})`,
+        stroke:'#1e293b', 'stroke-width':0.9, 'stroke-opacity':0.18
+    }));
+    g.appendChild(el('rect', {
+        x: r*0.6, y: -h/2+2.5, width: w-r*1.2, height: h*0.36, rx: r*0.5,
+        fill:`url(#gloss-${type})`, 'pointer-events':'none'
+    }));
+    g.appendChild(el('rect', {
+        x: w, y: -nubBaseH/2, width: nubBaseW, height: nubBaseH, rx:2.2,
+        fill:'url(#grad-metal-base)', stroke:'#64748b', 'stroke-width':0.6
+    }));
+    const nubG = el('g', { transform:`translate(${w+nubBaseW},0)` });
+    nubG.appendChild(el('rect', { x:0, y:-nubH/2, width:nubW, height:nubH, rx:5, fill:'url(#grad-metal-nub)', stroke:'#334155', 'stroke-width':0.7 }));
+    nubG.appendChild(el('rect', { x:2, y:-nubH/2+2, width:nubW-4, height:nubH*0.38, rx:2, fill:'#ffffff', opacity:0.55, 'pointer-events':'none' }));
+    g.appendChild(nubG);
+}
+
+function renderChain() {
+    container.innerHTML = '';
+    nodesInfo.forEach((info, i) => {
+        const block = document.createElement('div');
+        block.className = 'node-block';
+
+        if (i > 0) {
+            const line = document.createElement('div');
+            line.className = 'connector';
+            line.style.height = gapBetween + 'px';
+            block.appendChild(line);
+        }
+
+        const svg = el('svg', { width: info.w + 26, height: info.h + 6, viewBox: `0 0 ${info.w+26} ${info.h+6}` });
+        buildDefs(svg);
+        const g = el('g', { class:'node-shape', transform:`translate(0, ${info.h/2+2})` });
+        const type = info.isRoot ? 'root' : (info.data.type in GEN_COLORS ? info.data.type : 'gen1');
+        drawBatteryShape(g, info.w, info.h, type);
+
+        const textEl = el('text', {
+            x: info.w/2, y: 0, 'text-anchor':'middle', 'dominant-baseline':'middle',
+            fill:'#0f172a', 'font-weight': info.weight,
+            'font-size': info.fontSize
+        });
+        const startY = -((info.lines.length - 1) * NAME_LINE_HEIGHT) / 2;
+        info.lines.forEach((ln, li) => {
+            const tspan = el('tspan', { x: info.w/2, y: startY + li*NAME_LINE_HEIGHT });
+            tspan.textContent = ln;
+            textEl.appendChild(tspan);
+        });
+        g.appendChild(textEl);
+        svg.appendChild(g);
+        block.appendChild(svg);
+
+        // ===== Node terakhir (SYEKH JUMADIL QUBRO) jadi "akar" cabang keturunan =====
+        // Tampilan generasi DI ATASNYA (chain Nabi Muhammad SAW s/d node ini) TIDAK diubah sama sekali.
+        // Hanya ditambahkan badge (+) yang saat diklik memunculkan keturunannya di SEBELAH KANAN,
+        // persis seperti model klik-buka pada silsilah Bani Isbadar.
+        if (i === nodesInfo.length - 1) {
+            svg.style.cursor = 'pointer';
+            const badgeDiv = document.createElement('div');
+            badgeDiv.className = 'expand-badge';
+            badgeDiv.id = 'desc-badge';
+            badgeDiv.title = 'Tampilkan keturunan Syekh Jumadil Qubro';
+            badgeDiv.innerHTML = plusIconSVG();
+            badgeDiv.addEventListener('click', (e) => { e.stopPropagation(); toggleDescTree(); });
+            svg.addEventListener('click', () => toggleDescTree());
+
+            // ----- Hitung titik tengah NUB baterai secara presisi -----
+            // Nub digambar drawBatteryShape() di x = w (badan shape) + nubBaseW + nubW,
+            // jadi titik tengah horizontal nub = w + nubBaseW + nubW/2 = w + 16.
+            // Nub berada di tengah vertikal shape (y=0 relatif terhadap g),
+            // dan g diposisikan translate(0, h/2+2) di dalam svg.
+            const nubCenterX = info.w + 16;
+            const svgTopInBlock = (i > 0 ? gapBetween : 0); // svg didahului garis connector setinggi gapBetween
+            const nubCenterY = svgTopInBlock + (info.h / 2 + 2);
+            badgeDiv.style.left = (nubCenterX - 13) + 'px';
+            badgeDiv.style.top = (nubCenterY - 13) + 'px';
+
+            block.appendChild(badgeDiv);
+
+            const anchorDiv = document.createElement('div');
+            anchorDiv.className = 'desc-anchor';
+            anchorDiv.id = 'desc-anchor';
+            // titik tengah vertikal anchor disamakan persis dengan titik tengah nub baterai
+            // (nubCenterY), bukan 50% tinggi blok (yang ikut menghitung garis connector di atas),
+            // supaya garis lengkung penghubung ke keturunan benar-benar center terhadap nub.
+            anchorDiv.style.top = nubCenterY + 'px';
+            block.appendChild(anchorDiv);
+        }
+
+        container.appendChild(block);
+    });
+}
+renderChain();
+
+// =====================================================================
+// CABANG KETURUNAN SYEKH JUMADIL QUBRO — tampil di SEBELAH KANAN saat diklik
+// (mengikuti model interaksi yang sama dengan silsilah Bani Isbadar)
+// =====================================================================
+const SUNAN_GIRI_NAME = "SUNAN GIRI / RADEN PAKU / JOKO SAMUDRO / MUHAMMAD AINUL YAQIN / PRABU SATMOTO";
+const descChildren = [
+    { name: "SYEKH MAULANA IBRAHIM ASMORO QONDI", type: "gen7" },
+    { name: "SYEKH MAULANA SYARIF MAKKAH", type: "gen7" },
+    {
+        name: "SYEKH MAULANA ISHAQ", type: "gen7", combined: true,
+        spouseName: "DEWI SEKARDADU / SAYU ATIKAH / DEWI KASIHAN",
+        children: [
+            {
+                name: SUNAN_GIRI_NAME, type: "gen8",
+                // 3 isteri Sunan Giri, MASING-MASING dibuat shape gabungan terpisah
+                children: [
+                    {
+                        name: SUNAN_GIRI_NAME, type: "gen9", combined: true,
+                        spouseName: "DEWI MURTOSIYAH BINTI SUNAN AMPEL",
+                        children: [
+                            { name: "NYAI GEDE KUKUSAN", type: "gen10" },
+                            { name: "SUNAN DALEM WETAN", type: "gen10" },
+                            { name: "SUNAN TEGAL WANGI", type: "gen10" },
+                            { name: "NYAI GEDE SELO LUHUR", type: "gen10" },
+                            { name: "SUNAN KULON", type: "gen10" },
+                            { name: "SUNAN KIDUL", type: "gen10" },
+                            { name: "NYAI AGENG SAWO", type: "gen10" },
+                            { name: "SUNAN WERUJU", type: "gen10" }
+                        ]
+                    },
+                    {
+                        name: SUNAN_GIRI_NAME, type: "gen9", combined: true,
+                        spouseName: "DEWI WARDAH BINTI SUNAN BUNGKUL",
+                        children: [
+                            { name: "PANGERAN PASIR BATANG", type: "gen10" }
+                        ]
+                    },
+                    {
+                        name: SUNAN_GIRI_NAME, type: "gen9", combined: true,
+                        spouseName: "DEWI UTSAMI BINTI RAJA MAJAPAHIT",
+                        children: [
+                            { name: "YUGO PUTRI (WAFAT WAKTU KECIL)", type: "gen10" }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+];
+const descGapY = 12;
+const descChildWidth = 260;
+const descCombinedWidth = 260;
+const descStemX = 22;
+const descStubLen = 18;
+
+function plusIconSVG() {
+    return `<svg viewBox="0 0 10 10"><line x1="1" y1="5" x2="9" y2="5"/><line x1="5" y1="1" x2="5" y2="9"/></svg>`;
+}
+function minusIconSVG() {
+    return `<svg viewBox="0 0 10 10"><line x1="1" y1="5" x2="9" y2="5"/></svg>`;
+}
+
+// Hitung ukuran shape tiap anak. Untuk Maulana Ishaq: SATU shape besar gabungan
+// suami + isteri, dengan garis pemisah di tengah.
+function computeChildDims(nd) {
+    if (nd.combined) {
+        const nameFit = fitNameToBox(nd.name, descCombinedWidth - 24, 15.5, 800);
+        // nama isteri + alias digabung jadi satu teks (dipisah '/'), ukuran huruf SERAGAM (tidak ada lagi teks kecil terpisah)
+        const spouseFit = fitNameToBox(nd.spouseName, descCombinedWidth - 24, 14, 800);
+        const nameLines = nameFit.lines, spouseLines = spouseFit.lines;
+        // padding dirampingkan (tidak lagi dipatok ke tinggi standar 2-baris, cukup mengikuti isi teks)
+        const topH = nameLines.length * NAME_LINE_HEIGHT + 4;
+        const bottomH = spouseLines.length * NAME_LINE_HEIGHT + 4;
+        const h = topH + bottomH;
+        return Object.assign({}, nd, {
+            w: descCombinedWidth, h, nameLines, spouseLines, topH, bottomH,
+            nameFontSize: nameFit.fontSize, spouseFontSize: spouseFit.fontSize
+        });
+    }
+    const fit = fitNameToBox(nd.name, descChildWidth - 24, 13.5, 700);
+    const h = STANDARD_H;
+    return Object.assign({}, nd, { w: descChildWidth, h, lines: fit.lines, fontSize: fit.fontSize });
+}
+
+// Shape gabungan suami-isteri: satu body besar + garis pemisah horizontal di tengah.
+function drawCombinedShape(g, dims) {
+    const { w, h, topH, nameLines, spouseLines, aliasLines, bottomH } = dims;
+    const r = 20;
+    g.appendChild(el('path', { transform: 'translate(1.5,2)', d: shapeBodyPath(w, h, r, r/3), fill:'#000', opacity:0.1 }));
+    g.appendChild(el('path', { class:'real-body', d: shapeBodyPath(w, h, r, r/3), fill:`url(#grad-${dims.type})`, stroke:'#1e293b', 'stroke-width':1, 'stroke-opacity':0.22 }));
+    g.appendChild(el('rect', { x:r*0.5, y:-h/2+2.5, width:w-r, height:h*0.26, rx:r*0.5, fill:`url(#gloss-${dims.type})`, 'pointer-events':'none' }));
+
+    // --- nub baterai (sama seperti drawBatteryShape, supaya shape gabungan
+    //     Maulana Ishaq & Dewi Sekardadu juga punya nub seperti shape lainnya) ---
+    const nubBaseW = NUB_BASE_W, nubBaseH = NUB_BASE_H, nubW = NUB_W, nubH = NUB_H;
+    g.appendChild(el('rect', {
+        x: w, y: -nubBaseH/2, width: nubBaseW, height: nubBaseH, rx:2.2,
+        fill:'url(#grad-metal-base)', stroke:'#64748b', 'stroke-width':0.6
+    }));
+    const nubG = el('g', { transform:`translate(${w+nubBaseW},0)` });
+    nubG.appendChild(el('rect', { x:0, y:-nubH/2, width:nubW, height:nubH, rx:5, fill:'url(#grad-metal-nub)', stroke:'#334155', 'stroke-width':0.7 }));
+    nubG.appendChild(el('rect', { x:2, y:-nubH/2+2, width:nubW-4, height:nubH*0.38, rx:2, fill:'#ffffff', opacity:0.55, 'pointer-events':'none' }));
+    g.appendChild(nubG);
+
+    // --- nama suami (bagian atas) ---
+    const husbandText = el('text', { x:w/2, y:0, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:'#0f172a' });
+    const hCenterY = -h/2 + topH/2;
+    const hStartY = hCenterY - ((nameLines.length - 1) * NAME_LINE_HEIGHT) / 2;
+    nameLines.forEach((ln, li) => {
+        const tspan = el('tspan', { x:w/2, y: hStartY + li*NAME_LINE_HEIGHT, 'font-weight':800, 'font-size':dims.nameFontSize });
+        tspan.textContent = ln;
+        husbandText.appendChild(tspan);
+    });
+    g.appendChild(husbandText);
+
+    // --- garis pemisah suami & isteri ---
+    g.appendChild(el('line', { x1:w*0.08, y1:-h/2+topH, x2:w*0.92, y2:-h/2+topH, stroke:'#1e293b', 'stroke-width':1.5, 'stroke-opacity':0.4, 'stroke-dasharray':'3,3' }));
+
+    // --- nama isteri (alias digabung dgn '/'), ukuran huruf seragam, center tengah atas-bawah ---
+    const wifeTop = -h/2 + topH;
+    const wifeText = el('text', { x:w/2, y:0, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:'#0f172a' });
+    const wCenterY = wifeTop + bottomH/2;
+    const wStartY = wCenterY - ((spouseLines.length - 1) * NAME_LINE_HEIGHT) / 2;
+    spouseLines.forEach((ln, li) => {
+        const tspan = el('tspan', { x:w/2, y: wStartY + li*NAME_LINE_HEIGHT, 'font-weight':800, 'font-size':dims.spouseFontSize });
+        tspan.textContent = ln;
+        wifeText.appendChild(tspan);
+    });
+    g.appendChild(wifeText);
+}
+
+function drawLeafShape(g, dims) {
+    drawBatteryShape(g, dims.w, dims.h, dims.type);
+    const textEl = el('text', { x: dims.w/2, y:0, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:'#0f172a', 'font-weight':700, 'font-size':dims.fontSize });
+    const startY = -((dims.lines.length - 1) * NAME_LINE_HEIGHT) / 2;
+    dims.lines.forEach((ln, li) => {
+        const tspan = el('tspan', { x: dims.w/2, y: startY + li*NAME_LINE_HEIGHT });
+        tspan.textContent = ln;
+        textEl.appendChild(tspan);
+    });
+    g.appendChild(textEl);
+}
+
+// fungsi kurva bezier horizontal, PERSIS model "diagonal()" di silsilah Bani Isbadar:
+// melengkung landai dari tepi kanan node induk menuju tepi kiri node anak.
+function diagonalCurve(sx, sy, tx, ty) {
+    const midX = (sx + tx) / 2;
+    return `M ${sx} ${sy} C ${midX} ${sy}, ${midX} ${ty}, ${tx} ${ty}`;
+}
+
+// =====================================================================
+// RENDER GENERIK satu "kelompok anak" (siblings) ke dalam sebuah hostDiv.
+// Dipakai berulang di SETIAP level cabang (bukan cuma sekali di Jumadil Qubro),
+// supaya keturunan bisa terus dibuka berjenjang ke kanan: anak -> cucu -> cicit, dst.
+// Setiap node yang punya `children` otomatis diberi badge (+/-) sendiri.
+// =====================================================================
+function renderSiblingGroup(nodes, hostDiv) {
+    const siblingGroupState = []; // kumpulan controller anak2 di LEVEL INI, dipakai utk auto-collapse
+    const dims = nodes.map(computeChildDims);
+    const totalH = dims.reduce((s, d) => s + d.h, 0) + (dims.length - 1) * descGapY;
+    const maxW = Math.max(...dims.map(d => d.w));
+    const svgW = descStemX + descStubLen + maxW + 30; // +30: ruang utk nub baterai (24px) + margin aman
+    const svgH = totalH + 12;
+    const svg = el('svg', { width: svgW, height: svgH, viewBox: `0 0 ${svgW} ${svgH}` });
+    buildDefs(svg);
+    const g = el('g', { transform: 'translate(0,6)' });
+
+    const centerY = totalH / 2;
+    let cursorY = 0;
+    const childCenters = dims.map(d => { const c = cursorY + d.h/2; cursorY += d.h + descGapY; return c; });
+
+    // titik pangkal (tepi kanan shape induk)
+    const childX = descStemX + descStubLen; // titik kiri tempat shape anak mulai digambar
+
+    // garis kurva penghubung + shape tiap anak
+    dims.forEach((d, i) => {
+        const cy = childCenters[i];
+        g.appendChild(el('path', {
+            d: diagonalCurve(0, centerY, childX, cy),
+            class: 'desc-link', fill: 'none', stroke: 'rgba(0,0,0,0.55)', 'stroke-width': 1
+        }));
+        const childG = el('g', { class:'node-shape desc-node', transform:`translate(${childX}, ${cy})` });
+        if (d.combined) drawCombinedShape(childG, d); else drawLeafShape(childG, d);
+        g.appendChild(childG);
+
+        const hasKids = d.children && d.children.length;
+        if (hasKids) {
+            // titik tengah nub baterai node ini, dalam koordinat svg kelompok ini
+            // (sama persis rumusnya dgn nub di drawBatteryShape/drawCombinedShape: w + 16)
+            const nubCenterXinSvg = childX + d.w + 16;
+            const nubCenterYinSvg = cy + 6; // +6 mengikuti translate(0,6) pada g
+            setupExpandable(d, childG, hostDiv, nubCenterXinSvg, nubCenterYinSvg, siblingGroupState);
+        } else {
+            childG.addEventListener('click', () => {
+                showToast(d.combined
+                    ? `Data keturunan ${d.name} & ${d.spouseName} akan menyusul.`
+                    : `Data keturunan ${d.name} akan menyusul.`);
+            });
+        }
+    });
+
+    svg.appendChild(g);
+    hostDiv.appendChild(svg);
+    return siblingGroupState;
+}
+
+// Pasang badge (+/-) & anchor cabang berikutnya pada sebuah node yang punya children,
+// lalu urus buka/tutup (lazy-build: kelompok anaknya baru dirender saat pertama diklik).
+// siblingGroupState: daftar controller SEMUA saudara di level yang sama, dipakai utk auto-collapse.
+function setupExpandable(dims, childG, hostDiv, nubCenterX, nubCenterY, siblingGroupState) {
+    childG.style.cursor = 'pointer';
+
+    const badge = document.createElement('div');
+    badge.className = 'expand-badge';
+    badge.innerHTML = plusIconSVG();
+    badge.title = `Tampilkan keturunan ${dims.name}`;
+    badge.style.left = (nubCenterX - 13) + 'px';
+    badge.style.top = (nubCenterY - 13) + 'px';
+    hostDiv.appendChild(badge);
+
+    const subAnchor = document.createElement('div');
+    subAnchor.className = 'desc-anchor';
+    subAnchor.style.left = (nubCenterX + 2) + 'px';
+    subAnchor.style.top = nubCenterY + 'px';
+    hostDiv.appendChild(subAnchor);
+
+    let built = false, open = false, childGroupState = null;
+
+    function setIcon() {
+        badge.innerHTML = open ? minusIconSVG() : plusIconSVG();
+        badge.title = open ? `Tutup keturunan ${dims.name}` : `Tampilkan keturunan ${dims.name}`;
+    }
+
+    // menutup cabang ini; kalau collapseInside true, cabang2 DI DALAMNYA yang masih
+    // terbuka ikut direset tertutup juga, supaya saat dibuka lagi kondisinya bersih.
+    function closeBranch(collapseInside) {
+        if (!open) return;
+        open = false;
+        subAnchor.classList.remove('open');
+        setIcon();
+        if (collapseInside && childGroupState) {
+            childGroupState.forEach(c => c.close(true));
+        }
+    }
+
+    const controller = { close: closeBranch, isOpen: () => open };
+    siblingGroupState.push(controller);
+
+    function toggle() {
+        if (open) {
+            closeBranch(true);
+            showToast('Cabang keturunan ditutup.');
+            return;
+        }
+        if (!built) { childGroupState = renderSiblingGroup(dims.children, subAnchor); built = true; }
+        // ===== AUTO-COLLAPSE: kalau KUNCI OFF, saudara lain di level yang sama
+        // yang sedang terbuka otomatis ditutup (beserta cabang di dalamnya). =====
+        if (!lockOn) {
+            siblingGroupState.forEach(c => { if (c !== controller) c.close(true); });
+        }
+        open = true;
+        subAnchor.classList.add('open');
+        setIcon();
+        showToast(`Menampilkan keturunan ${dims.name} di sebelah kanan.`);
+    }
+    badge.addEventListener('click', (e) => { e.stopPropagation(); toggle(); });
+    childG.addEventListener('click', () => toggle());
+}
+
+let descBuilt = false;
+let descChildrenState = null;
+function buildDescTree() {
+    const anchor = document.getElementById('desc-anchor');
+    if (!anchor || descBuilt) return;
+    descBuilt = true;
+    descChildrenState = renderSiblingGroup(descChildren, anchor);
+}
+
+let descOpen = false;
+function toggleDescTree() {
+    buildDescTree();
+    const anchor = document.getElementById('desc-anchor');
+    const badge = document.getElementById('desc-badge');
+    descOpen = !descOpen;
+    if (anchor) anchor.classList.toggle('open', descOpen);
+    if (!descOpen && descChildrenState) {
+        // saat cabang utama ditutup, semua cabang di dalamnya ikut direset tertutup
+        descChildrenState.forEach(c => c.close(true));
+    }
+    if (badge) {
+        badge.innerHTML = descOpen ? minusIconSVG() : plusIconSVG();
+        badge.title = descOpen ? 'Tutup keturunan Syekh Jumadil Qubro' : 'Tampilkan keturunan Syekh Jumadil Qubro';
+    }
+    showToast(descOpen
+        ? 'Menampilkan 3 putra Syekh Jumadil Qubro di sebelah kanan.'
+        : 'Cabang keturunan ditutup.');
+}
+
+// =====================================================================
+// GESER (drag) & ZOOM (scroll mouse / pinch) — rule SAMA dengan silsilah
+// Bani Isbadar: skala 0.2x s/d 2x, drag untuk geser, scroll/pinch untuk
+// zoom in-out. Ditulis native JS (tanpa library luar) supaya selalu jalan.
+// =====================================================================
+const wrapEl = document.getElementById('chart-wrap');
+const contEl = document.getElementById('chart-container');
+const SCALE_MIN = 0.2, SCALE_MAX = 2;
+let tState = { x: 0, y: 0, k: 1 };
+
+function applyTransform() {
+    contEl.style.transform = `translate(${tState.x}px, ${tState.y}px) scale(${tState.k})`;
+}
+
+function centeredTransform(k) {
+    const scale = k || 1;
+    const tx = (wrapEl.clientWidth - contEl.offsetWidth * scale) / 2;
+    const ty = Math.max(90, (wrapEl.clientHeight - contEl.offsetHeight * scale) / 2);
+    return { x: tx, y: ty, k: scale };
+}
+
+function centerChart(animate) {
+    const t = centeredTransform(1);
+    if (animate) {
+        contEl.style.transition = 'transform 0.5s ease';
+        setTimeout(() => { contEl.style.transition = ''; }, 520);
+    }
+    tState = t;
+    applyTransform();
+}
+
+// ----- Drag (mouse) untuk geser -----
+let isDragging = false, dragStartX = 0, dragStartY = 0, startTx = 0, startTy = 0, movedWhileDown = false;
+wrapEl.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.expand-badge')) return; // biar tombol +/- tetap bisa diklik
+    isDragging = true; movedWhileDown = false;
+    wrapEl.classList.add('grabbing');
+    dragStartX = e.clientX; dragStartY = e.clientY;
+    startTx = tState.x; startTy = tState.y;
+});
+window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStartX, dy = e.clientY - dragStartY;
+    if (Math.abs(dx) > 2 || Math.abs(dy) > 2) movedWhileDown = true;
+    tState.x = startTx + dx;
+    tState.y = startTy + dy;
+    applyTransform();
+});
+window.addEventListener('mouseup', () => {
+    isDragging = false;
+    wrapEl.classList.remove('grabbing');
+});
+
+// ----- Touch (geser 1 jari, pinch 2 jari untuk zoom) -----
+let touchStartDist = null, touchStartScale = 1, touchStartTx = 0, touchStartTy = 0;
+function touchDist(t1, t2) { return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY); }
+wrapEl.addEventListener('touchstart', (e) => {
+    if (e.target.closest('.expand-badge')) return;
+    if (e.touches.length === 1) {
+        isDragging = true;
+        dragStartX = e.touches[0].clientX; dragStartY = e.touches[0].clientY;
+        startTx = tState.x; startTy = tState.y;
+    } else if (e.touches.length === 2) {
+        isDragging = false;
+        touchStartDist = touchDist(e.touches[0], e.touches[1]);
+        touchStartScale = tState.k;
+        touchStartTx = tState.x; touchStartTy = tState.y;
+    }
+}, { passive: true });
+wrapEl.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 1 && isDragging) {
+        tState.x = startTx + (e.touches[0].clientX - dragStartX);
+        tState.y = startTy + (e.touches[0].clientY - dragStartY);
+        applyTransform();
+    } else if (e.touches.length === 2 && touchStartDist) {
+        const newDist = touchDist(e.touches[0], e.touches[1]);
+        let k = touchStartScale * (newDist / touchStartDist);
+        k = Math.min(SCALE_MAX, Math.max(SCALE_MIN, k));
+        tState.k = k; tState.x = touchStartTx; tState.y = touchStartTy;
+        applyTransform();
+    }
+}, { passive: true });
+wrapEl.addEventListener('touchend', (e) => {
+    if (e.touches.length === 0) { isDragging = false; touchStartDist = null; }
+}, { passive: true });
+
+// ----- Scroll mouse untuk zoom in/out (zoom terpusat di posisi kursor) -----
+wrapEl.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const factor = Math.exp(-e.deltaY * 0.0015);
+    const newK = Math.min(SCALE_MAX, Math.max(SCALE_MIN, tState.k * factor));
+    const rect = wrapEl.getBoundingClientRect();
+    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    const wx = (mx - tState.x) / tState.k, wy = (my - tState.y) / tState.k;
+    tState.x = mx - wx * newK;
+    tState.y = my - wy * newK;
+    tState.k = newK;
+    applyTransform();
+}, { passive: false });
+
+centerChart(false);
+window.addEventListener('resize', () => centerChart(false));
+
+// ===== Panel Rincian Keturunan =====
+function fillRincian() {
+    const tbody = document.getElementById('rincian-body');
+    tbody.innerHTML = chain.map((n, i) =>
+        `<tr><td>${i === 0 ? 'Awal' : 'Ke-'+i}</td><td>${n.name}</td></tr>`
+    ).join('');
+}
+fillRincian();
+function openRincian(){ document.getElementById('rincian-panel').classList.add('open'); }
+function closeRincian(){ document.getElementById('rincian-panel').classList.remove('open'); }
+
+// ===== Legend toggle (tab GENERASI) =====
+function toggleLegend() {
+    const legend = document.getElementById('gen-legend');
+    legend.classList.toggle('open');
+}
+
+// ===== Tombol RESET =====
+function resetView() {
+    centerChart(true);
+    showToast('Tampilan silsilah direset ke posisi awal.');
+}
+
+// ===== Tombol KUNCI ON/OFF (disiapkan untuk versi lanjutan bercabang) =====
+let lockOn = false;
+function toggleLock() {
+    lockOn = !lockOn;
+    const btn = document.getElementById('lock-btn');
+    if (lockOn) {
+        btn.textContent = '🔒 KUNCI: ON';
+        btn.style.background = '#16a34a';
+        showToast('Mode kunci aktif: cabang lain tidak akan tertutup otomatis (berlaku saat silsilah sudah bercabang).');
+    } else {
+        btn.textContent = '🔓 KUNCI: OFF';
+        btn.style.background = '#64748b';
+    }
+}
+
+// ===== Toast notifikasi kecil =====
+let toastTimer = null;
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+</script>
+</body>
+</html>
