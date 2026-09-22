@@ -362,7 +362,9 @@ const GEN_COLORS = {
     gen10: { light:'#fff1f2', mid:'#fecdd3', mid2:'#fda4af', dark:'#fb7185' },
     gen11: { light:'#fef9c3', mid:'#fde047', mid2:'#facc15', dark:'#eab308' },
     gen12: { light:'#e0f2fe', mid:'#7dd3fc', mid2:'#38bdf8', dark:'#0ea5e9' },
-    ancestor: MAJAPAHIT_RED_WHITE
+    ancestor: MAJAPAHIT_RED_WHITE,
+    // warna khusus shape gabungan besar jalur Mataram (Pangeran Wirosobo -> Amangkurat III)
+    mataram: { light:'#fefce8', mid:'#fde68a', mid2:'#fbbf24', dark:'#b45309' }
 };
 
 function flattenChain(node, list) {
@@ -717,7 +719,17 @@ const descChildren = [
                                     { name: "PANGERAN MERAH DELIMA", type: "gen11" },
                                     { name: "PANGERAN KERTOSONO", type: "gen11" },
                                     { name: "PANGERAN BETOYO", type: "gen11" },
-                                    { name: "PANGERAN WIROSOBO", type: "gen11" },
+                                    { name: "PANGERAN WIROSOBO", type: "gen11", children: [
+                                        { chainList: true, type: "mataram", items: [
+                                            "NYAI AGENG SABINAH + KI AGENG PAMENAHAN",
+                                            "SENOPATI",
+                                            "PANEMBAHAN KRAPYAK",
+                                            "SULTAN AGUNG MATARAM",
+                                            "AMANGKURAT I",
+                                            "AMANGKURAT II",
+                                            "AMANGKURAT III"
+                                        ] }
+                                    ] },
                                     { name: "NYAI AGENG KAWISTO", type: "gen11" },
                                     { name: "PANGERAN SENOPATI", type: "gen11" },
                                     { name: "PANGERAN KHOTIB PAJANG KLANGONAN", type: "gen11" }
@@ -794,6 +806,15 @@ function computeChildDims(nd) {
             nameFontSize: nameFit.fontSize, spouseFontSize: spouseFit.fontSize
         });
     }
+    if (nd.chainList) {
+        // SATU shape besar memanjang KE BAWAH berisi seluruh nama jalur keturunan
+        // (dipakai untuk data yang HANYA jalur lurus / tidak bercabang, sehingga
+        // tidak perlu dipecah jadi banyak shape terpisah dengan garis melengkung).
+        const itemFits = nd.items.map(it => fitNameToBox(it, descCombinedWidth - 24, 14, 800));
+        const itemHeights = itemFits.map(f => f.lines.length * NAME_LINE_HEIGHT + 14);
+        const h = itemHeights.reduce((a, b) => a + b, 0) + 6;
+        return Object.assign({}, nd, { w: descCombinedWidth, h, itemFits, itemHeights });
+    }
     const fit = fitNameToBox(nd.name, descChildWidth - 24, 13.5, 700);
     const h = STANDARD_H;
     return Object.assign({}, nd, { w: descChildWidth, h, lines: fit.lines, fontSize: fit.fontSize });
@@ -844,6 +865,47 @@ function drawCombinedShape(g, dims) {
         wifeText.appendChild(tspan);
     });
     g.appendChild(wifeText);
+}
+
+// Shape gabungan BESAR memanjang ke bawah: satu body tunggal berisi berturut-turut
+// SEMUA nama pada jalur keturunan (mis. Pangeran Wirosobo -> ... -> Amangkurat III),
+// dipisah garis putus-putus lurus horizontal antar generasi (bukan garis melengkung
+// terpisah), persis seperti diminta: "1 shape besar kebawah, garis lurus vertikal".
+function drawChainShape(g, dims) {
+    const { w, h, itemFits, itemHeights, type } = dims;
+    const r = 20;
+    g.appendChild(el('path', { transform: 'translate(1.5,2)', d: shapeBodyPath(w, h, r, r/3), fill:'#000', opacity:0.1 }));
+    g.appendChild(el('path', { class:'real-body', d: shapeBodyPath(w, h, r, r/3), fill:`url(#grad-${type})`, stroke:'#1e293b', 'stroke-width':1, 'stroke-opacity':0.22 }));
+    g.appendChild(el('rect', { x:r*0.5, y:-h/2+2.5, width:w-r, height:Math.min(h*0.10, 18), rx:r*0.5, fill:`url(#gloss-${type})`, 'pointer-events':'none' }));
+
+    // --- nub baterai, sama seperti shape lain, di tengah vertikal shape ---
+    const nubBaseW = NUB_BASE_W, nubBaseH = NUB_BASE_H, nubW = NUB_W, nubH = NUB_H;
+    g.appendChild(el('rect', { x:w, y:-nubBaseH/2, width:nubBaseW, height:nubBaseH, rx:2.2, fill:'url(#grad-metal-base)', stroke:'#64748b', 'stroke-width':0.6 }));
+    const nubG = el('g', { transform:`translate(${w+nubBaseW},0)` });
+    nubG.appendChild(el('rect', { x:0, y:-nubH/2, width:nubW, height:nubH, rx:5, fill:'url(#grad-metal-nub)', stroke:'#334155', 'stroke-width':0.7 }));
+    nubG.appendChild(el('rect', { x:2, y:-nubH/2+2, width:nubW-4, height:nubH*0.38, rx:2, fill:'#ffffff', opacity:0.55, 'pointer-events':'none' }));
+    g.appendChild(nubG);
+
+    // --- tulis setiap nama berurutan dari atas ke bawah, garis pemisah lurus di antaranya ---
+    let cursorTop = -h/2;
+    itemFits.forEach((fit, idx) => {
+        const secH = itemHeights[idx];
+        const cy = cursorTop + secH/2;
+        const text = el('text', { x:w/2, y:0, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:'#0f172a' });
+        const startY = cy - ((fit.lines.length - 1) * NAME_LINE_HEIGHT) / 2;
+        fit.lines.forEach((ln, li) => {
+            const tspan = el('tspan', { x:w/2, y: startY + li*NAME_LINE_HEIGHT, 'font-weight':800, 'font-size':fit.fontSize });
+            tspan.textContent = ln;
+            text.appendChild(tspan);
+        });
+        g.appendChild(text);
+        cursorTop += secH;
+        if (idx < itemFits.length - 1) {
+            // garis vertikal pendek tepat di tengah horizontal, menandai turun ke generasi berikutnya
+            const vHalf = Math.min(7, secH * 0.28);
+            g.appendChild(el('line', { x1:w/2, y1:cursorTop - vHalf, x2:w/2, y2:cursorTop + vHalf, stroke:'#1e293b', 'stroke-width':2, 'stroke-opacity':0.55, 'stroke-linecap':'round' }));
+        }
+    });
 }
 
 function drawLeafShape(g, dims) {
@@ -941,7 +1003,9 @@ function renderSiblingGroup(nodes, hostDiv, onResize, parentController) {
         linkEls.push(link);
 
         const childG = el('g', { class: 'node-shape desc-node' });
-        if (d.combined) drawCombinedShape(childG, d); else drawLeafShape(childG, d);
+        if (d.combined) drawCombinedShape(childG, d);
+        else if (d.chainList) drawChainShape(childG, d);
+        else drawLeafShape(childG, d);
         if (d.markId) childG.id = d.markId;
         g.appendChild(childG);
         childGs.push(childG);
@@ -967,9 +1031,13 @@ function renderSiblingGroup(nodes, hostDiv, onResize, parentController) {
         } else {
             badgeEls.push(null); anchorEls.push(null);
             childG.addEventListener('click', () => {
-                showToast(d.combined
-                    ? `Data keturunan ${d.name} & ${d.spouseName} akan menyusul.`
-                    : `Data keturunan ${d.name} akan menyusul.`);
+                if (d.chainList) {
+                    showToast('Jalur keturunan ini sudah lengkap (data tetap, tidak ada percabangan lain).');
+                } else {
+                    showToast(d.combined
+                        ? `Data keturunan ${d.name} & ${d.spouseName} akan menyusul.`
+                        : `Data keturunan ${d.name} akan menyusul.`);
+                }
             });
         }
     });
@@ -1368,6 +1436,12 @@ function collectAllNames() {
                     if (sTrim && !set.has(sTrim)) set.set(sTrim, {name: sTrim});
                 });
             }
+            if (n.items) {
+                n.items.forEach(it => {
+                    const key = it.toUpperCase().trim();
+                    if (!set.has(key)) set.set(key, {name: key});
+                });
+            }
             if (n.children) walk(n.children);
         });
     }
@@ -1450,7 +1524,8 @@ function findDescPath(nodes, targetUpper, path) {
         const curPath = path.concat([nd]);
         const nameU = (nd.name || '').toUpperCase().trim();
         const spouseMatch = nd.spouseName && nd.spouseName.toUpperCase().includes(targetUpper);
-        if (nameU === targetUpper || spouseMatch) return curPath;
+        const itemMatch = nd.items && nd.items.some(it => it.toUpperCase().includes(targetUpper));
+        if (nameU === targetUpper || spouseMatch || itemMatch) return curPath;
         if (nd.children && nd.children.length) {
             const sub = findDescPath(nd.children, targetUpper, curPath);
             if (sub) return sub;
