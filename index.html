@@ -127,8 +127,46 @@
     .node text { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-transform: uppercase; }
     /* UPPERCASE semua teks dalam shape silsilah */
     .node-block text, .node-shape text, tspan { text-transform: uppercase !important; }
-    .desc-item, .real-body text { text-transform: uppercase !important; }
     .node-shape .real-body { filter: drop-shadow(0 3px 6px rgba(0,0,0,0.18)); }
+
+    /* ===== SEARCH BOX ===== */
+    #search-wrap {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: white;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 4px 12px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    #search-wrap input {
+        border: none;
+        outline: none;
+        font-size: 13px;
+        font-weight: 600;
+        width: 180px;
+        background: transparent;
+        text-transform: uppercase;
+    }
+    #search-wrap input::placeholder { color: #94a3b8; font-weight: 500; text-transform: none; }
+    #search-wrap button {
+        border: none;
+        background: #f1f5f9;
+        width: 22px; height: 22px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #search-wrap button:hover { background: #e2e8f0; }
+    .node-block.highlight { outline: 3px solid #facc15; outline-offset: 3px; border-radius: 14px; background: rgba(254,249,195,0.6); }
+    .node-block.highlight svg .real-body { filter: drop-shadow(0 0 10px #facc15) drop-shadow(0 0 20px #eab308); }
+    @keyframes pulse-highlight { 0%{transform:scale(1)} 50%{transform:scale(1.03)} 100%{transform:scale(1)} }
+    .node-block.highlight { animation: pulse-highlight 0.6s ease 2; }
+
 
     /* ===== Badge (+/-) untuk membuka cabang keturunan Jumadil Qubro ke kanan ===== */
     /* posisi left/top diatur presisi lewat JS supaya tepat di tengah nub baterai */
@@ -163,6 +201,11 @@
         <p>GARIS KETURUNAN DARI NABI MUHAMMAD SAW</p>
     </div>
     <div class="controls">
+        <div id="search-wrap">
+            <span style="font-size:13px;">🔍</span>
+            <input id="search-input" type="text" placeholder="Cari nama..." oninput="searchNames(this.value)" />
+            <button onclick="clearSearch()" title="Hapus">✕</button>
+        </div>
         <button class="btn" onclick="resetView()">RESET</button>
         <button class="btn" onclick="showToast('Semua shape pada silsilah ini selalu tampil, tidak ada yang disembunyikan.')">BUKA SEMUA</button>
         <button class="btn" onclick="showToast('Semua shape pada silsilah ini selalu tampil, tidak ada yang disembunyikan.')">TUTUP SEMUA</button>
@@ -1241,14 +1284,68 @@ function toggleLock() {
     if (lockOn) {
         btn.textContent = '🔒 KUNCI: ON';
         btn.style.background = '#16a34a';
-        showToast('KUNCI ON: boleh buka banyak cabang, auto-geser hanya di kolom yang dibuka, kiri tetap.');
+        showToast('Mode kunci aktif: cabang lain tidak akan tertutup otomatis (berlaku saat silsilah sudah bercabang).');
     } else {
         btn.textContent = '🔓 KUNCI: OFF';
         btn.style.background = '#64748b';
-        showToast('KUNCI OFF: kembali rapat.');
     }
 }
 
+
+// ===== FITUR PENCARIAN NAMA (UPPERCASE) =====
+function clearSearch() {
+    const inp = document.getElementById('search-input');
+    if (inp) { inp.value = ''; searchNames(''); }
+}
+function searchNames(q) {
+    const query = (q || '').trim().toUpperCase();
+    // hapus highlight lama
+    document.querySelectorAll('.node-block.highlight').forEach(el => el.classList.remove('highlight'));
+    document.querySelectorAll('.highlight-search').forEach(el => el.classList.remove('highlight-search'));
+    
+    if (!query) {
+        if (q === '') showToast('Pencarian dibersihkan');
+        return;
+    }
+    
+    let matches = [];
+    // Cari di semua node-block yang sudah dirender
+    document.querySelectorAll('.node-block').forEach(block => {
+        const tspans = block.querySelectorAll('tspan');
+        let text = Array.from(tspans).map(t => t.textContent).join(' ').toUpperCase();
+        if (text.includes(query)) {
+            block.classList.add('highlight');
+            matches.push(block);
+        }
+    });
+    
+    // Juga cari di data lengkap (termasuk yang belum dibuka) untuk kasih info
+    let hiddenMatches = [];
+    function searchData(nodes, path=[]) {
+        nodes.forEach(n => {
+            const nameUp = (n.name || '').toUpperCase();
+            const spouseUp = (n.spouseName || '').toUpperCase();
+            if (nameUp.includes(query) || spouseUp.includes(query)) {
+                hiddenMatches.push({name: n.name, path: [...path, n.name].join(' → ')});
+            }
+            if (n.children) searchData(n.children, [...path, n.name]);
+        });
+    }
+    try {
+        if (typeof descChildren !== 'undefined') searchData(descChildren);
+        if (typeof ancestorChainData !== 'undefined') searchData(ancestorChainData);
+    } catch(e) {}
+    
+    if (matches.length > 0) {
+        matches[0].scrollIntoView({behavior:'smooth', block:'center', inline:'center'});
+        showToast(`Ditemukan ${matches.length} shape terlihat + ${hiddenMatches.length} total di data untuk "${q}"`);
+    } else if (hiddenMatches.length > 0) {
+        showToast(`"${q}" ada di ${hiddenMatches.length} data tapi cabangnya belum dibuka. Contoh: ${hiddenMatches[0].path}`);
+        console.log('Hidden matches:', hiddenMatches);
+    } else {
+        showToast(`Tidak ditemukan "${q}"`);
+    }
+}
 
 // ===== Toast notifikasi kecil =====
 let toastTimer = null;
