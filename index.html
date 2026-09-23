@@ -738,7 +738,24 @@ const descChildren = [
                                     { name: "PANGERAN JALADENANSIH", type: "gen11" },
                                     { name: "PANGERAN SAWO GIRI", type: "gen11" },
                                     { name: "PANGERAN INTAL", type: "gen11" },
-                                    { name: "PANGERAN MAS PEPANDAN RINGIN PITU", type: "gen11" }
+                                    { name: "PANGERAN MAS PEPANDAN RINGIN PITU", type: "gen11", children: [
+                                        { chainList: true, type: "gen11", items: [
+                                            "MAS PENGANTEN",
+                                            "PANGERAN RANGGA",
+                                            "RATU IBU / SYARIFAH AMBAMI"
+                                        ], highlightIndex: 2, highlightColor: "#fde047",
+                                          spouseOfLast: "RADEN PRASENO / CAKRANINGRAT I MADURA",
+                                          spouseAnchorId: "anchor-cakraningrat-spouse",
+                                          childChain: [
+                                            "PANGERAN CAKRANINGRAT I",
+                                            "PANGERAN CAKRANINGRAT II",
+                                            "PANGERAN CAKRANINGRAT III",
+                                            "PANGERAN CAKRANINGRAT IV",
+                                            "PANGERAN CAKRANINGRAT V",
+                                            "PANGERAN CAKRANINGRAT VI",
+                                            "PANGERAN CAKRANINGRAT VII"
+                                          ] }
+                                    ] }
                                 ] },
                             { name: "SUNAN WERUJU", type: "gen10", children: [
                                     { name: "NYAI AGENG PAMENGKANG SUMUR SONGO", type: "gen11" }
@@ -813,7 +830,17 @@ function computeChildDims(nd) {
         const itemFits = nd.items.map(it => fitNameToBox(it, descCombinedWidth - 24, 14, 800));
         const itemHeights = itemFits.map(f => f.lines.length * NAME_LINE_HEIGHT + 14);
         const h = itemHeights.reduce((a, b) => a + b, 0) + 6;
-        return Object.assign({}, nd, { w: descCombinedWidth, h, itemFits, itemHeights });
+        const boxW = descCombinedWidth;
+        let w = boxW, spouseFit = null, spouseBoxW = 0, spouseBoxH = 0;
+        // --- opsional: item terakhir punya pasangan, digambar sbg kotak terpisah
+        //     di sisi kanan, dihubungkan garis putus + tanda '+' ---
+        if (nd.spouseOfLast) {
+            spouseBoxW = 190;
+            spouseFit = fitNameToBox(nd.spouseOfLast, spouseBoxW - 20, 13, 700);
+            spouseBoxH = spouseFit.lines.length * NAME_LINE_HEIGHT + 18;
+            w = boxW + 40 + spouseBoxW; // lebar total termasuk konektor & kotak pasangan
+        }
+        return Object.assign({}, nd, { w, boxW, h, itemFits, itemHeights, spouseFit, spouseBoxW, spouseBoxH });
     }
     const fit = fitNameToBox(nd.name, descChildWidth - 24, 13.5, 700);
     const h = STANDARD_H;
@@ -869,13 +896,37 @@ function drawCombinedShape(g, dims) {
 
 // Shape gabungan BESAR memanjang ke bawah: satu body tunggal berisi berturut-turut
 // SEMUA nama pada jalur keturunan (mis. Pangeran Wirosobo -> ... -> Amangkurat III),
-// dipisah garis putus-putus lurus horizontal antar generasi (bukan garis melengkung
-// terpisah), persis seperti diminta: "1 shape besar kebawah, garis lurus vertikal".
+// dipisah PANAH KE BAWAH lurus antar nama (bukan garis melengkung terpisah), persis
+// seperti diminta: "1 shape besar kebawah, panah kebawah antar nama". Mendukung
+// opsional highlight warna pada satu item (mis. item terakhir diberi latar kuning)
+// dan opsional kotak PASANGAN terpisah di sisi kanan utk item terakhir.
+let chainClipCounter = 0;
 function drawChainShape(g, dims) {
-    const { w, h, itemFits, itemHeights, type } = dims;
+    const { h, itemFits, itemHeights, type } = dims;
+    const w = dims.boxW || dims.w; // lebar body utama (TIDAK termasuk kotak pasangan)
     const r = 20;
+    const clipId = 'chainclip-' + (chainClipCounter++);
+
+    const defs = el('defs', {});
+    const clip = el('clipPath', { id: clipId });
+    clip.appendChild(el('path', { d: shapeBodyPath(w, h, r, r/3) }));
+    defs.appendChild(clip);
+    g.appendChild(defs);
+
     g.appendChild(el('path', { transform: 'translate(1.5,2)', d: shapeBodyPath(w, h, r, r/3), fill:'#000', opacity:0.1 }));
     g.appendChild(el('path', { class:'real-body', d: shapeBodyPath(w, h, r, r/3), fill:`url(#grad-${type})`, stroke:'#1e293b', 'stroke-width':1, 'stroke-opacity':0.22 }));
+
+    // --- highlight khusus utk salah satu item (mis. item terakhir diberi latar kuning),
+    //     diclip supaya tetap ikut sudut membulat body ---
+    if (typeof dims.highlightIndex === 'number' && dims.highlightIndex >= 0 && dims.highlightIndex < itemHeights.length) {
+        let topAcc = -h/2;
+        for (let k = 0; k < dims.highlightIndex; k++) topAcc += itemHeights[k];
+        const hlH = itemHeights[dims.highlightIndex];
+        const hlG = el('g', { 'clip-path': `url(#${clipId})` });
+        hlG.appendChild(el('rect', { x:0, y: topAcc, width: w, height: hlH, fill: dims.highlightColor || '#fde047' }));
+        g.appendChild(hlG);
+    }
+
     g.appendChild(el('rect', { x:r*0.5, y:-h/2+2.5, width:w-r, height:Math.min(h*0.10, 18), rx:r*0.5, fill:`url(#gloss-${type})`, 'pointer-events':'none' }));
 
     // --- nub baterai, sama seperti shape lain, di tengah vertikal shape ---
@@ -886,11 +937,13 @@ function drawChainShape(g, dims) {
     nubG.appendChild(el('rect', { x:2, y:-nubH/2+2, width:nubW-4, height:nubH*0.38, rx:2, fill:'#ffffff', opacity:0.55, 'pointer-events':'none' }));
     g.appendChild(nubG);
 
-    // --- tulis setiap nama berurutan dari atas ke bawah, garis pemisah lurus di antaranya ---
+    // --- tulis setiap nama berurutan dari atas ke bawah, PANAH KE BAWAH di antaranya ---
     let cursorTop = -h/2;
+    let lastItemCenterY = 0;
     itemFits.forEach((fit, idx) => {
         const secH = itemHeights[idx];
         const cy = cursorTop + secH/2;
+        lastItemCenterY = cy;
         const text = el('text', { x:w/2, y:0, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:'#0f172a' });
         const startY = cy - ((fit.lines.length - 1) * NAME_LINE_HEIGHT) / 2;
         fit.lines.forEach((ln, li) => {
@@ -901,11 +954,119 @@ function drawChainShape(g, dims) {
         g.appendChild(text);
         cursorTop += secH;
         if (idx < itemFits.length - 1) {
-            // garis vertikal pendek tepat di tengah horizontal, menandai turun ke generasi berikutnya
-            const vHalf = Math.min(7, secH * 0.28);
-            g.appendChild(el('line', { x1:w/2, y1:cursorTop - vHalf, x2:w/2, y2:cursorTop + vHalf, stroke:'#1e293b', 'stroke-width':2, 'stroke-opacity':0.55, 'stroke-linecap':'round' }));
+            // panah kecil menunjuk ke bawah, menandai arah keturunan ke nama berikutnya
+            const ah = Math.min(7, secH * 0.26);
+            g.appendChild(el('line', {
+                x1:w/2, y1:cursorTop - ah, x2:w/2, y2:cursorTop - ah*0.35,
+                stroke:'#1e293b', 'stroke-width':1.6, 'stroke-opacity':0.75
+            }));
+            g.appendChild(el('polygon', {
+                points: `${w/2-4},${cursorTop-ah*0.35} ${w/2+4},${cursorTop-ah*0.35} ${w/2},${cursorTop+ah*0.6}`,
+                fill: '#1e293b', 'fill-opacity':0.75
+            }));
         }
     });
+
+    // --- opsional: pasangan (spouse) utk item terakhir -> garis putus + tanda '+'
+    //     + kotak terpisah berisi nama pasangan, di sisi kanan sejajar item terakhir ---
+    if (dims.spouseFit) {
+        const gapConn = 40;
+        const spX = w + gapConn;
+        const midY = lastItemCenterY;
+
+        g.appendChild(el('line', { x1:w, y1:midY, x2:spX, y2:midY, stroke:'#1e293b', 'stroke-width':1.6, 'stroke-dasharray':'4,3' }));
+
+        const plusSize = 5, plusX = w + gapConn/2;
+        g.appendChild(el('line', { x1:plusX-plusSize, y1:midY, x2:plusX+plusSize, y2:midY, stroke:'#1e293b', 'stroke-width':1.8 }));
+        g.appendChild(el('line', { x1:plusX, y1:midY-plusSize, x2:plusX, y2:midY+plusSize, stroke:'#1e293b', 'stroke-width':1.8 }));
+
+        const spW = dims.spouseBoxW, spH = dims.spouseBoxH;
+        const spY = midY - spH/2;
+        // dibungkus dalam <g> ber-ID supaya bisa dijadikan titik acuan (anchor)
+        // untuk menyambungkan rantai keturunan (childChain) di bawahnya.
+        const spouseG = el('g', {});
+        if (dims.spouseAnchorId) spouseG.id = dims.spouseAnchorId;
+        spouseG.appendChild(el('rect', { x:spX, y:spY, width:spW, height:spH, rx:10, fill:'#ffffff', stroke:'#1e293b', 'stroke-width':1.4 }));
+        const spText = el('text', { x: spX+spW/2, y: midY, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:'#0f172a' });
+        const spLines = dims.spouseFit.lines;
+        const spStartY = midY - ((spLines.length-1)*NAME_LINE_HEIGHT)/2;
+        spLines.forEach((ln, li) => {
+            const tspan = el('tspan', { x: spX+spW/2, y: spStartY+li*NAME_LINE_HEIGHT, 'font-weight':700, 'font-size':dims.spouseFit.fontSize });
+            tspan.textContent = ln;
+            spText.appendChild(tspan);
+        });
+        spouseG.appendChild(spText);
+        g.appendChild(spouseG);
+    }
+}
+
+// =====================================================================
+// RANTAI KETURUNAN yang MENEMPEL di bawah sebuah kotak pasangan (spouse box)
+// milik shape chainList, mis. keturunan RATU IBU/SYARIFAH AMBAMI + RADEN
+// PRASENO/CAKRANINGRAT I MADURA -> PANGERAN CAKRANINGRAT I s/d VII.
+// Setiap nama digambar sbg KOTAK TERPISAH (bukan 1 shape gabungan), disambung
+// panah hitam ke bawah antar kotak, sesuai contoh acuan yang diberikan.
+// Dibangun sbg elemen HTML biasa (persis gaya rantai leluhur Dewi Sekardadu)
+// supaya otomatis ikut geser/zoom bersama container, lalu diposisikan tepat
+// di bawah anchor (kotak pasangan) memakai getBoundingClientRect.
+// =====================================================================
+function buildAttachedDescendantChain(anchorEl, names) {
+    if (!anchorEl || !names || !names.length) return;
+    const boxWidth = 210;
+
+    const wrap = document.createElement('div');
+    wrap.style.position = 'absolute';
+    wrap.style.zIndex = 3;
+    wrap.style.display = 'flex';
+    wrap.style.flexDirection = 'column';
+    wrap.style.alignItems = 'center';
+    container.appendChild(wrap);
+
+    names.forEach((name, i) => {
+        if (i > 0) {
+            const arrow = document.createElement('div');
+            arrow.textContent = '\u2193';
+            arrow.style.cssText = 'font-size:15px;font-weight:900;color:#1e293b;line-height:1;margin:3px 0;';
+            wrap.appendChild(arrow);
+        }
+        const box = document.createElement('div');
+        box.textContent = name;
+        box.style.cssText = `width:${boxWidth}px;box-sizing:border-box;padding:8px 10px;text-align:center;` +
+            'background:linear-gradient(180deg,#ffffff 0%,#f1f2f4 55%,#dcdee1 100%);' +
+            'border:1.5px solid #334155;border-radius:5px;' +
+            'font-size:12px;font-weight:700;color:#0f172a;text-transform:uppercase;line-height:1.3;' +
+            'box-shadow:0 2px 5px rgba(0,0,0,0.18);';
+        wrap.appendChild(box);
+    });
+
+    function position() {
+        const containerRect = container.getBoundingClientRect();
+        const anchorRect = anchorEl.getBoundingClientRect();
+        const scale = (tState && tState.k) || 1;
+
+        const anchorLocalX = (anchorRect.left + anchorRect.width / 2 - containerRect.left) / scale;
+        const anchorLocalBottomY = (anchorRect.top + anchorRect.height - containerRect.top) / scale;
+        const gap = 24;
+        const wrapW = wrap.offsetWidth;
+
+        wrap.style.left = (anchorLocalX - wrapW / 2) + 'px';
+        wrap.style.top = (anchorLocalBottomY + gap) + 'px';
+
+        const ovId = 'chain-link-' + (anchorEl.id || 'x');
+        let overlay = document.getElementById(ovId);
+        if (overlay) overlay.remove();
+        overlay = el('svg', { id: ovId, width: 22, height: gap + 4, viewBox: `0 0 22 ${gap + 4}` });
+        overlay.style.position = 'absolute';
+        overlay.style.left = (anchorLocalX - 11) + 'px';
+        overlay.style.top = anchorLocalBottomY + 'px';
+        overlay.style.zIndex = 3;
+        overlay.appendChild(el('line', { x1:11, y1:0, x2:11, y2:gap - 7, stroke:'#1e293b', 'stroke-width':2.2 }));
+        overlay.appendChild(el('polygon', { points:`5,${gap-7} 17,${gap-7} 11,${gap+3}`, fill:'#1e293b' }));
+        container.appendChild(overlay);
+    }
+
+    setTimeout(position, 380);
+    window.addEventListener('resize', () => setTimeout(position, 60));
 }
 
 function drawLeafShape(g, dims) {
@@ -1009,6 +1170,15 @@ function renderSiblingGroup(nodes, hostDiv, onResize, parentController) {
         if (d.markId) childG.id = d.markId;
         g.appendChild(childG);
         childGs.push(childG);
+
+        // ===== jika chainList ini punya kotak pasangan (spouseOfLast) DAN rantai
+        // keturunan lanjutan (childChain), bangun rantai kotak terpisah yang
+        // menempel di bawah kotak pasangan tsb, setelah shape benar2 ter-render. =====
+        if (d.chainList && d.childChain && d.childChain.length && d.spouseAnchorId) {
+            setTimeout(() => {
+                buildAttachedDescendantChain(document.getElementById(d.spouseAnchorId), d.childChain);
+            }, 400);
+        }
 
         const hasKids = d.children && d.children.length;
         if (hasKids) {
