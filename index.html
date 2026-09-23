@@ -293,8 +293,8 @@
     <div class="controls">
         <div class="controls-buttons">
             <button class="btn" onclick="resetView()">RESET</button>
-            <button class="btn" onclick="showToast('Semua shape pada silsilah ini selalu tampil, tidak ada yang disembunyikan.')">BUKA SEMUA</button>
-            <button class="btn" onclick="showToast('Semua shape pada silsilah ini selalu tampil, tidak ada yang disembunyikan.')">TUTUP SEMUA</button>
+            <button class="btn" onclick="expandAllBranches()">BUKA SEMUA</button>
+            <button class="btn" onclick="collapseAllBranches()">TUTUP SEMUA</button>
             <button class="btn" id="lock-btn" onclick="toggleLock()" style="background:#64748b;">🔓 KUNCI: OFF</button>
         </div>
         <div id="search-wrap">
@@ -1732,6 +1732,40 @@ function toggleLock() {
     }
 }
 
+
+// ===== Tombol BUKA SEMUA / TUTUP SEMUA =====
+// BUKA SEMUA: rekursif membuka seluruh cabang keturunan di pohon (descChildren),
+// sekaligus mengaktifkan KUNCI supaya cabang yang sudah terbuka tidak otomatis
+// tertutup ketika cabang lain dibuka (fitur auto-collapse dimatikan sementara).
+function expandAllBranches() {
+    if (!lockOn) {
+        lockOn = true;
+        const btn = document.getElementById('lock-btn');
+        if (btn) { btn.textContent = '🔒 KUNCI: ON'; btn.style.background = '#16a34a'; }
+    }
+    if (!descOpen) toggleDescTree();
+    function openLevel(nodes) {
+        nodes.forEach(nd => {
+            if (nd.children && nd.children.length) {
+                const toggleFn = nodeToggleRegistry.get(nd);
+                if (toggleFn && !toggleFn.isOpen()) toggleFn();
+                openLevel(nd.children);
+            }
+        });
+    }
+    openLevel(descChildren);
+    showToast('Semua cabang keturunan dibuka (Kunci otomatis diaktifkan).');
+}
+
+// TUTUP SEMUA: menutup cabang utama (yang otomatis menutup rekursif seluruh
+// cabang di dalamnya, lewat mekanisme close(true) yang sudah ada).
+function collapseAllBranches() {
+    if (descOpen) {
+        toggleDescTree();
+    } else {
+        showToast('Semua cabang keturunan sudah tertutup.');
+    }
+}
 
 // ===== FITUR PENCARIAN NAMA - 1 BARIS SAJA, HANYA NAMA =====
 let allNamesCache = null;
