@@ -661,7 +661,7 @@ renderChain();
 // =====================================================================
 const SUNAN_GIRI_NAME = "SUNAN GIRI / RADEN PAKU / JOKO SAMUDRO / MUHAMMAD AINUL YAQIN / PRABU SATMOTO";
 const descChildren = [
-    { name: "SYEKH MAULANA IBRAHIM ASMORO QONDI", type: "gen7", children: [
+    { name: "SYEKH MAULANA IBRAHIM ASMORO QONDI", type: "gen7", markId: "node-ibrahim-asmoro-qondi", children: [
         { name: "Raden Santri / Raja Pandito Wungkal / Sayyid Ali Murtadho", type: "gen8", combined: true, spouseName: "Putri Arya Baribin", children: [
             { name: "Usman Haji / Sunan Ngudung", type: "gen9" },
             { name: "Haji Usman", type: "gen9" },
@@ -1428,12 +1428,14 @@ function buildAncestorChain(targetEl) {
     wrap.style.zIndex = 3;
     wrap.style.width = ancestorWidth + 'px';
     wrap.style.boxSizing = 'border-box';
-    wrap.style.background = '#c9f2c0';
+    wrap.style.background = '#9ccb6b';
     wrap.style.border = '4px solid #000000';
     wrap.style.borderRadius = '10px';
     wrap.style.padding = '14px 14px 16px';
     wrap.style.textAlign = 'center';
-    wrap.style.boxShadow = '0 10px 22px rgba(0,0,0,0.32), 0 3px 8px rgba(0,0,0,0.22)';
+    wrap.style.fontFamily = "'Courier New', Courier, monospace";
+    wrap.style.boxShadow = '0 10px 22px rgba(0,0,0,0.32), 0 3px 8px rgba(0,0,0,0.22), ' +
+        'inset 0 2px 7px rgba(0,0,0,0.28), inset 0 -2px 5px rgba(255,255,255,0.18)';
     container.appendChild(wrap);
 
     const titleLine1 = document.createElement('div');
@@ -1473,21 +1475,20 @@ function buildAncestorChain(targetEl) {
 
     const finalCaption = document.createElement('div');
     finalCaption.textContent = '(Isteri Syekh Maulana Ishaq)';
-    finalCaption.style.cssText = 'font-size:11px;font-weight:700;font-style:italic;color:#1e293b;' +
+    finalCaption.style.cssText = 'font-size:11px;font-weight:700;font-style:italic;color:#000000;' +
         'line-height:1.3;margin-top:4px;';
     wrap.appendChild(finalCaption);
 
-    // ===== posisikan wrap di SEBELAH KANAN shape "NABI MUHAMMAD SAW"
-    // (node teratas rantai utama), sejajar bagian atasnya lalu memanjang ke
-    // bawah -- supaya TIDAK menimpa cabang keturunan yang terbuka di sebelah
-    // kanan Syekh Jumadil Qubro (mis. Syekh Maulana Ibrahim Asmoro Qondi dst),
-    // lalu tetap disambungkan dengan garis lengkung menuju shape Syekh
-    // Maulana Ishaq & Dewi Sekardadu. =====
+    // ===== posisikan wrap di SEBELAH KANAN shape "SYEKH MAULANA IBRAHIM
+    // ASMORO QONDI", hampir mepet (jarak sangat tipis) dan disejajarkan
+    // (center) secara vertikal dengan kotak tersebut -- lalu tetap
+    // disambungkan dengan garis lengkung menuju shape Syekh Maulana Ishaq
+    // & Dewi Sekardadu. =====
     function positionAndConnect() {
         const containerRect = container.getBoundingClientRect();
         const targetRect = targetEl.getBoundingClientRect();
-        const nabiEl = document.getElementById('node-nabi-muhammad');
-        const nabiRect = nabiEl ? nabiEl.getBoundingClientRect() : targetRect;
+        const ibrahimEl = document.getElementById('node-ibrahim-asmoro-qondi');
+        const ibrahimRect = ibrahimEl ? ibrahimEl.getBoundingClientRect() : targetRect;
         const scale = (tState && tState.k) || 1;
 
         const targetLocalX = (targetRect.left - containerRect.left) / scale;
@@ -1501,11 +1502,13 @@ function buildAncestorChain(targetEl) {
         const wrapW = wrap.offsetWidth;
         const wrapH = wrap.offsetHeight;
 
-        const nabiLocalRight = (nabiRect.right - containerRect.left) / scale;
-        const nabiLocalTop = (nabiRect.top - containerRect.top) / scale;
-        const gapFromChain = 90; // jarak aman dari nub/badge shape Nabi Muhammad SAW
-        const leftPx = nabiLocalRight + gapFromChain;
-        const topPx = nabiLocalTop;
+        const ibrahimLocalRight = (ibrahimRect.right - containerRect.left) / scale;
+        const ibrahimLocalTop = (ibrahimRect.top - containerRect.top) / scale;
+        const ibrahimH = ibrahimRect.height / scale;
+        const gapFromChain = 14; // hampir mepet dgn shape Syekh Maulana Ibrahim Asmoro Qondi
+        const leftPx = ibrahimLocalRight + gapFromChain;
+        // center vertikal wrap terhadap kotak Syekh Maulana Ibrahim Asmoro Qondi
+        const topPx = ibrahimLocalTop + (ibrahimH / 2) - (wrapH / 2);
 
         wrap.style.left = leftPx + 'px';
         wrap.style.top = topPx + 'px';
