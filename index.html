@@ -1433,7 +1433,7 @@ function buildAncestorChain(targetEl) {
     wrap.style.borderRadius = '10px';
     wrap.style.padding = '14px 14px 16px';
     wrap.style.textAlign = 'center';
-    wrap.style.fontFamily = "'Courier New', Courier, monospace";
+    wrap.style.fontFamily = "'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
     wrap.style.boxShadow = '0 10px 22px rgba(0,0,0,0.32), 0 3px 8px rgba(0,0,0,0.22), ' +
         'inset 0 2px 7px rgba(0,0,0,0.28), inset 0 -2px 5px rgba(255,255,255,0.18)';
     container.appendChild(wrap);
@@ -1479,11 +1479,11 @@ function buildAncestorChain(targetEl) {
         'line-height:1.3;margin-top:4px;';
     wrap.appendChild(finalCaption);
 
-    // ===== posisikan wrap di SEBELAH KANAN shape "SYEKH MAULANA IBRAHIM
-    // ASMORO QONDI", hampir mepet (jarak sangat tipis) dan disejajarkan
-    // (center) secara vertikal dengan kotak tersebut -- lalu tetap
-    // disambungkan dengan garis lengkung menuju shape Syekh Maulana Ishaq
-    // & Dewi Sekardadu. =====
+    // ===== posisikan wrap di ATAS shape "SYEKH MAULANA IBRAHIM ASMORO QONDI",
+    // sejajar tengah (center) secara horizontal dengan kotak tersebut dan
+    // hanya berjarak tipis (mepet) di atasnya -- lalu tetap disambungkan
+    // dengan garis lengkung menuju shape Syekh Maulana Ishaq & Dewi
+    // Sekardadu. =====
     function positionAndConnect() {
         const containerRect = container.getBoundingClientRect();
         const targetRect = targetEl.getBoundingClientRect();
@@ -1502,64 +1502,20 @@ function buildAncestorChain(targetEl) {
         const wrapW = wrap.offsetWidth;
         const wrapH = wrap.offsetHeight;
 
-        const ibrahimLocalRight = (ibrahimRect.right - containerRect.left) / scale;
+        const ibrahimLocalX = (ibrahimRect.left - containerRect.left) / scale;
         const ibrahimLocalTop = (ibrahimRect.top - containerRect.top) / scale;
-        const ibrahimH = ibrahimRect.height / scale;
+        const ibrahimW = ibrahimRect.width / scale;
         const gapFromChain = 14; // hampir mepet dgn shape Syekh Maulana Ibrahim Asmoro Qondi
-        const leftPx = ibrahimLocalRight + gapFromChain;
-        // center vertikal wrap terhadap kotak Syekh Maulana Ibrahim Asmoro Qondi
-        const topPx = ibrahimLocalTop + (ibrahimH / 2) - (wrapH / 2);
+        // center horizontal wrap terhadap kotak Syekh Maulana Ibrahim Asmoro Qondi
+        const leftPx = ibrahimLocalX + (ibrahimW / 2) - (wrapW / 2);
+        const topPx = ibrahimLocalTop - wrapH - gapFromChain;
 
         wrap.style.left = leftPx + 'px';
         wrap.style.top = topPx + 'px';
 
+        // garis penghubung ke kotak Syekh Maulana Ishaq dihapus atas permintaan
         let overlay = document.getElementById('ancestor-link-overlay');
         if (overlay) overlay.remove();
-
-        const startX = leftPx + wrapW / 2;
-        const startY = topPx + wrapH - 6;
-        const endX = targetBottomX;
-        const endY = targetBottomY + 3; // sedikit turun dari garis tepi bawah shape supaya panah tidak menempel/tertutup
-        const dropYAbs = Math.max(startY, endY) + 24;
-        const ovLeft = Math.min(startX, endX) - 10;
-        const ovTop = Math.min(startY, endY) - 10;
-        const ovW = Math.abs(endX - startX) + 20;
-        const ovH = (dropYAbs - Math.min(startY, endY)) + 10;
-
-        overlay = el('svg', { id: 'ancestor-link-overlay', width: ovW, height: ovH, viewBox: `0 0 ${ovW} ${ovH}` });
-        overlay.style.position = 'absolute';
-        overlay.style.left = ovLeft + 'px';
-        overlay.style.top = ovTop + 'px';
-        overlay.style.pointerEvents = 'none';
-        overlay.style.zIndex = 3;
-
-        const sx = startX - ovLeft, sy = startY - ovTop, ex = endX - ovLeft, ey = endY - ovTop;
-        // ===== garis penghubung ortogonal dengan SUDUT MELENGKUNG halus (bukan
-        // siku tajam) supaya terlihat lebih rapi, hitam agak tebal, dan mata
-        // panah PADAT (segitiga terisi) di ujung yang masuk ke shape Syekh
-        // Maulana Ishaq. =====
-        const dropY = Math.max(sy, ey) + 24;
-        const r = 12;           // radius lengkung di tiap sudut
-        const arrowLen = 9;     // panjang mata panah
-        const dx2 = Math.sign(ex - sx) || 1;
-
-        const pathD = `M ${sx} ${sy} ` +
-            `L ${sx} ${dropY - r} ` +
-            `Q ${sx} ${dropY} ${sx + r * dx2} ${dropY} ` +
-            `L ${ex - r * dx2} ${dropY} ` +
-            `Q ${ex} ${dropY} ${ex} ${dropY - r} ` +
-            `L ${ex} ${ey + arrowLen}`;
-
-        overlay.appendChild(el('path', {
-            d: pathD,
-            fill: 'none', stroke: '#000000', 'stroke-width': 2.4,
-            'stroke-linecap': 'round', 'stroke-linejoin': 'round'
-        }));
-        overlay.appendChild(el('polygon', {
-            points: `${ex},${ey} ${ex - 6},${ey + arrowLen} ${ex + 6},${ey + arrowLen}`,
-            fill: '#000000'
-        }));
-        container.appendChild(overlay);
     }
 
     // tunggu transisi buka anchor (0.25s) selesai supaya ukuran/posisi terukur akurat
