@@ -1413,7 +1413,7 @@ const ancestorChainData = [
     { name: "BRHE WIRABHUMI" },
     { name: "MINAK SEMBUYU / MINAK DEDALI PUTIH" }
 ];
-const ancestorWidth = 340;
+const ancestorWidth = 260;
 
 function buildAncestorChain(targetEl) {
     if (!targetEl) return;
@@ -1428,30 +1428,30 @@ function buildAncestorChain(targetEl) {
     wrap.style.zIndex = 3;
     wrap.style.width = ancestorWidth + 'px';
     wrap.style.boxSizing = 'border-box';
-    wrap.style.background = 'linear-gradient(180deg, #ffffff 0%, #ffffff 22%, #d9dadb 60%, #c3c4c6 100%)';
+    wrap.style.background = '#c9f2c0';
     wrap.style.border = '4px solid #000000';
-    wrap.style.borderRadius = '2px';
-    wrap.style.padding = '18px 20px 22px';
+    wrap.style.borderRadius = '10px';
+    wrap.style.padding = '14px 14px 16px';
     wrap.style.textAlign = 'center';
-    wrap.style.boxShadow = '0 4px 14px rgba(0,0,0,0.25)';
+    wrap.style.boxShadow = '0 10px 22px rgba(0,0,0,0.32), 0 3px 8px rgba(0,0,0,0.22)';
     container.appendChild(wrap);
 
     const titleLine1 = document.createElement('div');
     titleLine1.textContent = 'LELUHUR DEWI SEKARDADU';
-    titleLine1.style.cssText = 'font-size:16px;font-weight:800;color:#000000;line-height:1.3;' +
+    titleLine1.style.cssText = 'font-size:13.5px;font-weight:800;color:#000000;line-height:1.3;' +
         'letter-spacing:.2px;text-transform:uppercase;';
     wrap.appendChild(titleLine1);
 
     const titleLine2 = document.createElement('div');
     titleLine2.textContent = '(GARIS MAJAPAHIT)';
-    titleLine2.style.cssText = 'font-size:14px;font-weight:800;color:#000000;line-height:1.3;' +
-        'letter-spacing:.2px;text-transform:uppercase;margin-bottom:14px;';
+    titleLine2.style.cssText = 'font-size:11.5px;font-weight:800;color:#000000;line-height:1.3;' +
+        'letter-spacing:.2px;text-transform:uppercase;margin-bottom:12px;';
     wrap.appendChild(titleLine2);
 
     function addArrow() {
         const arrow = document.createElement('div');
         arrow.textContent = '\u2193';
-        arrow.style.cssText = 'font-size:18px;font-weight:900;color:#000000;line-height:1;margin:6px 0;';
+        arrow.style.cssText = 'font-size:15px;font-weight:900;color:#000000;line-height:1;margin:4px 0;';
         wrap.appendChild(arrow);
     }
 
@@ -1459,7 +1459,7 @@ function buildAncestorChain(targetEl) {
         if (i > 0) addArrow();
         const nameDiv = document.createElement('div');
         nameDiv.textContent = n.name;
-        nameDiv.style.cssText = 'font-size:14px;font-weight:600;color:#000000;line-height:1.35;' +
+        nameDiv.style.cssText = 'font-size:12px;font-weight:600;color:#000000;line-height:1.35;' +
             'text-transform:uppercase;';
         wrap.appendChild(nameDiv);
     });
@@ -1467,13 +1467,13 @@ function buildAncestorChain(targetEl) {
     addArrow();
     const finalName = document.createElement('div');
     finalName.textContent = 'DEWI SEKARDADU';
-    finalName.style.cssText = 'font-size:18px;font-weight:800;color:#000000;line-height:1.3;' +
+    finalName.style.cssText = 'font-size:15px;font-weight:800;color:#000000;line-height:1.3;' +
         'text-transform:uppercase;';
     wrap.appendChild(finalName);
 
     const finalCaption = document.createElement('div');
     finalCaption.textContent = '(Isteri Syekh Maulana Ishaq)';
-    finalCaption.style.cssText = 'font-size:13px;font-weight:700;font-style:italic;color:#1e293b;' +
+    finalCaption.style.cssText = 'font-size:11px;font-weight:700;font-style:italic;color:#1e293b;' +
         'line-height:1.3;margin-top:4px;';
     wrap.appendChild(finalCaption);
 
