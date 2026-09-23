@@ -1040,7 +1040,7 @@ function drawChainShape(g, dims) {
 // supaya otomatis ikut geser/zoom bersama container, lalu diposisikan tepat
 // di bawah anchor (kotak pasangan) memakai getBoundingClientRect.
 // =====================================================================
-function buildAttachedDescendantChain(anchorEl, names) {
+function buildAttachedDescendantChain(anchorEl, names, visibilityHost) {
     if (!anchorEl || !names || !names.length) return;
     const boxWidth = 210;
 
@@ -1069,7 +1069,20 @@ function buildAttachedDescendantChain(anchorEl, names) {
         wrap.appendChild(box);
     });
 
+    const ovId = 'chain-link-' + (anchorEl.id || 'x');
+
     function position() {
+        // ===== jika cabang induk (visibilityHost) sedang TERTUTUP, jangan hitung
+        // posisi (getBoundingClientRect anchorEl akan bernilai 0 / tidak valid
+        // saat display:none) — cukup pastikan rantai ini juga ikut tersembunyi. =====
+        if (visibilityHost && !visibilityHost.classList.contains('open')) {
+            wrap.style.display = 'none';
+            const ov = document.getElementById(ovId);
+            if (ov) ov.style.display = 'none';
+            return;
+        }
+        wrap.style.display = 'flex';
+
         const containerRect = container.getBoundingClientRect();
         const anchorRect = anchorEl.getBoundingClientRect();
         const scale = (tState && tState.k) || 1;
@@ -1082,7 +1095,6 @@ function buildAttachedDescendantChain(anchorEl, names) {
         wrap.style.left = (anchorLocalX - wrapW / 2) + 'px';
         wrap.style.top = (anchorLocalBottomY + gap) + 'px';
 
-        const ovId = 'chain-link-' + (anchorEl.id || 'x');
         let overlay = document.getElementById(ovId);
         if (overlay) overlay.remove();
         overlay = el('svg', { id: ovId, width: 22, height: gap + 4, viewBox: `0 0 22 ${gap + 4}` });
@@ -1097,6 +1109,15 @@ function buildAttachedDescendantChain(anchorEl, names) {
 
     setTimeout(position, 380);
     window.addEventListener('resize', () => setTimeout(position, 60));
+
+    // ===== ikat visibilitas rantai ini ke status buka/tutup cabang induknya:
+    // begitu cabang induk ditutup (auto-collapse maupun manual), rantai ini
+    // otomatis ikut hilang, dan muncul lagi begitu cabang induk dibuka lagi. =====
+    if (visibilityHost) {
+        const syncVisibility = () => setTimeout(position, 30);
+        const mo = new MutationObserver(syncVisibility);
+        mo.observe(visibilityHost, { attributes: true, attributeFilter: ['class'] });
+    }
 }
 
 function drawLeafShape(g, dims) {
@@ -1206,7 +1227,7 @@ function renderSiblingGroup(nodes, hostDiv, onResize, parentController) {
         // menempel di bawah kotak pasangan tsb, setelah shape benar2 ter-render. =====
         if (d.chainList && d.childChain && d.childChain.length && d.spouseAnchorId) {
             setTimeout(() => {
-                buildAttachedDescendantChain(document.getElementById(d.spouseAnchorId), d.childChain);
+                buildAttachedDescendantChain(document.getElementById(d.spouseAnchorId), d.childChain, hostDiv);
             }, 400);
         }
 
