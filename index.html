@@ -666,8 +666,38 @@ const descChildren = [
                             {
                                 name: "SUNAN DALEM WETAN", type: "gen10",
                                 children: [
-                                    { name: "RADEN FATECHAL / SUNAN PRAPEN", type: "gen11" },
-                                    { name: "SUNAN SEDO MARGI", type: "gen11" },
+                                    { name: "RADEN FATECHAL / SUNAN PRAPEN", type: "gen11", children: [
+                                        { chainList: true, type: "gen12", items: [
+                                            "PANEMBAHAN KAWIS GUWO",
+                                            "PANEMBAHAN AGUNG",
+                                            "PANEMBAHAN SEDANG RANA",
+                                            "PANEMBAHAN MAS WITONO",
+                                            "PANGERAN PUSPOHITO",
+                                            "PANGERAN SINGO NEGORO",
+                                            "PANGERAN SINGOSARI"
+                                          ],
+                                          spouseOfLast: "RADEN AYU KARSINAH",
+                                          spouseAnchorId: "anchor-karsinah-spouse",
+                                          childChain: [
+                                            "PANGERAN SEPUH",
+                                            "PANGERAN SINGODIPURO / BADU WANAR LAMONGAN",
+                                            "RADEN AYU JAMI"
+                                          ] }
+                                    ] },
+                                    { name: "SUNAN SEDO MARGI", type: "gen11", children: [
+                                        { chainList: true, type: "gen12", items: [
+                                            "SEDO PESAREAN",
+                                            "PANGERAN SETOPURO",
+                                            "RADEN AYU KARSINAH"
+                                          ],
+                                          spouseOfLast: "PANGERAN SINGOSARI",
+                                          spouseAnchorId: "anchor-karsinah-spouse-2",
+                                          childChain: [
+                                            "PANGERAN SEPUH",
+                                            "PANGERAN SINGODIPURO / BADU WANAR LAMONGAN",
+                                            "RADEN AYU JAMI"
+                                          ] }
+                                    ] },
                                     { name: "NYAI AGENG NGULUKAN", type: "gen11" },
                                     { name: "NYAI AGENG DARUKAN", type: "gen11" },
                                     {
