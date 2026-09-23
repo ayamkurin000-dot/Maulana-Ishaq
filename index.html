@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Silsilah Interaktif - MAULANA ISHAQ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&display=swap" rel="stylesheet">
 <meta property="og:title" content="Silsilah Interaktif - Maulana Ishaq" />
 <meta property="og:description" content="Garis keturunan Maulana Ishaq dari Nabi Muhammad SAW" />
 <style>
@@ -135,8 +138,9 @@
         font-family: 'Georgia', serif;
     }
     .rujukan-text {
-        font-size: 0.76rem; line-height: 1.55; color: #2b2210; font-weight: 600;
-        font-family: 'Georgia', 'Times New Roman', serif; letter-spacing: 0.1px;
+        font-size: 1.15rem; line-height: 1.4; color: #2b2210; font-weight: 600;
+        font-family: 'Dancing Script', 'Brush Script MT', cursive; font-style: italic;
+        letter-spacing: 0.2px;
     }
     #rincian-close {
         position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.12);
@@ -1667,12 +1671,12 @@ window.addEventListener('resize', () => centerChart(false));
 function fillRujukan() {
     const list = document.getElementById('rujukan-list');
     const rujukan = [
-        "SERAT WALISANA ANGGETIPUN SOESOEHOENAN ING GIRI INGKANG KAPING KALIH TAHOEN 1450 M, INGKANG NEDAK HARDJAWIJAJA TAHUN 1848 M",
-        "BABAD GIRI KEDATON TAHUN 1854 M",
-        "BABAD HING GRESIK TAHUN 1879 M",
-        "BABAD BLAMBANGAN KARYA RADEN TUMENGGUNG ARYA NATADININGRAT TAHUN 1915 M",
-        "BUKU SEJARAH DAN DAKWAH ISLAMIYAH SUNAN GIRI TAHUN 1973 M",
-        "BUKU WALIYAH ZAINAB OLEH KH. DR. M. DHIYAUDDIN QUSHWANDHI"
+        "Serat Walisana Anggetipun Soesoehoenan ing Giri Ingkang Kaping Kalih Tahoen 1450 M, Ingkang Nedak Hardjawijaja Tahun 1848 M",
+        "Babad Giri Kedaton Tahun 1854 M",
+        "Babad Hing Gresik Tahun 1879 M",
+        "Babad Blambangan Karya Raden Tumenggung Arya Natadiningrat Tahun 1915 M",
+        "Buku Sejarah dan Dakwah Islamiyah Sunan Giri Tahun 1973 M",
+        "Buku Waliyah Zainab oleh KH. Dr. M. Dhiyauddin Qushwandhi"
     ];
     list.innerHTML = rujukan.map((r, i) =>
         `<li class="rujukan-item"><span class="rujukan-badge">${i + 1}</span><span class="rujukan-text">${r}</span></li>`
