@@ -88,29 +88,62 @@
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     #rincian-panel {
-        position: fixed; top: 0; right: -340px; width: 320px; height: 100%;
-        background: #ffffff; box-shadow: -4px 0 20px rgba(0,0,0,0.15);
-        z-index: 15000; transition: right 0.3s ease; padding: 70px 16px 16px;
-        overflow-y: auto;
+        position: fixed; top: 0; right: -380px; width: 360px; height: 100%;
+        background: linear-gradient(175deg, #fffdf7 0%, #fbf3e1 55%, #f6ead0 100%);
+        box-shadow: -8px 0 32px rgba(0,0,0,0.25);
+        z-index: 15000; transition: right 0.4s cubic-bezier(.22,1,.36,1); padding: 0;
+        overflow-y: auto; border-left: 1px solid #d9bf85;
     }
     #rincian-panel.open { right: 0; }
-    #rincian-panel h4 { color: #0f172a; font-size: 0.95rem; margin-bottom: 4px; }
+    #rincian-panel-head {
+        position: sticky; top: 0; z-index: 2;
+        background: linear-gradient(135deg, #1e2749 0%, #2c3968 45%, #1e2749 100%);
+        padding: 30px 24px 22px; text-align: center;
+        border-bottom: 3px solid #d4af37;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+    }
+    #rincian-panel-head .ruj-icon { font-size: 1.6rem; margin-bottom: 6px; display: block; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); }
+    #rincian-panel h4 {
+        color: #f4e4bc; font-size: 1.05rem; letter-spacing: 2px; font-weight: 800;
+        font-family: 'Georgia', 'Times New Roman', serif; margin: 0;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    }
+    #rincian-panel-head .ruj-divider {
+        width: 64px; height: 2px; margin: 10px auto 0;
+        background: linear-gradient(90deg, transparent, #d4af37, transparent);
+    }
     #rincian-panel small { color: #64748b; }
     #rincian-panel table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.72rem; }
     #rincian-panel th, #rincian-panel td { border-bottom: 1px solid #f1f5f9; padding: 6px 4px; text-align: left; }
     #rincian-panel th { color: #64748b; font-size: 0.62rem; text-transform: uppercase; }
-    .rujukan-list { margin-top: 14px; padding-left: 20px; }
-    .rujukan-list li { font-size: 0.78rem; line-height: 1.5; color: #1e293b; margin-bottom: 12px; font-weight: 600; }
+    .rujukan-list { list-style: none; margin: 0; padding: 22px 20px 30px; }
+    .rujukan-item {
+        display: flex; gap: 14px; align-items: flex-start;
+        background: #fffefb; border: 1px solid #e7d6ab; border-radius: 10px;
+        padding: 14px 16px; margin-bottom: 14px;
+        box-shadow: 0 2px 8px rgba(120,90,20,0.08), inset 0 0 0 1px rgba(255,255,255,0.6);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .rujukan-item:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(120,90,20,0.16); }
+    .rujukan-badge {
+        flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%;
+        background: linear-gradient(145deg, #f3d98b, #d4af37 60%, #a97c1f);
+        color: #3a2a06; font-weight: 800; font-size: 0.72rem;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.25), inset 0 1px 1px rgba(255,255,255,0.6);
+        font-family: 'Georgia', serif;
+    }
+    .rujukan-text {
+        font-size: 0.76rem; line-height: 1.55; color: #2b2210; font-weight: 600;
+        font-family: 'Georgia', 'Times New Roman', serif; letter-spacing: 0.1px;
+    }
     #rincian-close {
-        position: absolute; top: 16px; right: 16px; background: #fff; border: 1px solid #e2e8f0;
-        border-radius: 8px; width: 26px; height: 26px; cursor: pointer; font-weight: 800; color: #2563eb;
+        position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(212,175,55,0.6);
+        border-radius: 8px; width: 28px; height: 28px; cursor: pointer; font-weight: 800; color: #f4e4bc;
+        z-index: 3;
     }
-    #rincian-fab {
-        position: fixed; bottom: 90px; right: 14px; z-index: 9999;
-        background: linear-gradient(135deg, #f59e0b, #ea580c); color: #fff; border: none;
-        padding: 10px 16px; border-radius: 24px; font-size: 0.7rem; font-weight: 800;
-        box-shadow: 0 4px 14px rgba(234,88,12,0.4); cursor: pointer;
-    }
+    #rincian-close:hover { background: rgba(255,255,255,0.22); }
 
     #chart-wrap {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -272,29 +305,19 @@
     <div id="chart-container"></div>
 </div>
 
-<button id="rincian-fab" onclick="openRincian()">📚 DAFTAR RUJUKAN</button>
 <div id="rincian-panel">
-    <button id="rincian-close" onclick="closeRincian()">✕</button>
-    <h4>DAFTAR RUJUKAN</h4>
+    <div id="rincian-panel-head">
+        <button id="rincian-close" onclick="closeRincian()">✕</button>
+        <span class="ruj-icon">📖</span>
+        <h4>DAFTAR RUJUKAN</h4>
+        <div class="ruj-divider"></div>
+    </div>
     <ol id="rujukan-list" class="rujukan-list"></ol>
 </div>
 
 <div id="panel-switcher">
-    <button id="tab-generasi" class="active" onclick="toggleLegend()">GENERASI</button>
+    <button id="tab-generasi" class="active" onclick="openRincian()">📖 RUJUKAN</button>
     <button id="tab-chat" onclick="showToast('Fitur Chat Bani akan tersedia menyusul pada versi lengkap silsilah ini.')">CHAT BANI</button>
-</div>
-
-<div id="gen-legend" class="open">
-    <span class="gen-legend-title">GENERASI KE BAWAH</span>
-    <ol>
-        <li>ANAK</li>
-        <li>PUTU/CUCU</li>
-        <li>BUYUT</li>
-        <li>CANGGAH</li>
-        <li>WARENG</li>
-        <li>UDHEG-UDHEG</li>
-        <li>GANTUNG SIWUR</li>
-    </ol>
 </div>
 
 <div id="credit-tag">DIBUAT OLEH: MANNIXS-21</div>
@@ -1637,7 +1660,9 @@ function fillRujukan() {
         "BUKU SEJARAH DAN DAKWAH ISLAMIYAH SUNAN GIRI TAHUN 1973 M",
         "BUKU WALIYAH ZAINAB OLEH KH. DR. M. DHIYAUDDIN QUSHWANDHI"
     ];
-    list.innerHTML = rujukan.map(r => `<li>${r}</li>`).join('');
+    list.innerHTML = rujukan.map((r, i) =>
+        `<li class="rujukan-item"><span class="rujukan-badge">${i + 1}</span><span class="rujukan-text">${r}</span></li>`
+    ).join('');
 }
 fillRujukan();
 function openRincian(){ document.getElementById('rincian-panel').classList.add('open'); }
