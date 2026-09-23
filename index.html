@@ -167,6 +167,11 @@
     .node text { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-transform: uppercase; }
     /* UPPERCASE semua teks dalam shape silsilah */
     .node-block text, .node-shape text, tspan { text-transform: uppercase !important; }
+    /* pengecualian: teks shalawat/doa di bawah nama Nabi TIDAK uppercase, dibuat italic */
+    #chart-container .doa-text, #chart-container .doa-text tspan {
+        text-transform: none !important;
+        font-style: italic;
+    }
     .node-shape .real-body { filter: drop-shadow(0 3px 6px rgba(0,0,0,0.18)); }
 
     /* ===== SEARCH BOX - 1 BARIS NAMA SAJA ===== */
@@ -337,6 +342,7 @@
 const treeData = {
     "name": "NABI MUHAMMAD SAW",
     "yearLabel": "(570-632)",
+    "doaLines": ["Semoga Allah melimpahkan rahmat", "dan kesejahteraan kepadanya"],
     "type": "root",
     "spouseName": "Khadijah binti Khuwailid radhiyallahu 'anha",
     "children": [
@@ -529,6 +535,10 @@ const container = document.getElementById('chart-container');
 const YEAR_LINE_HEIGHT = 14;
 const YEAR_GAP = 3;
 const ROOT_TEXT_PUSH_DOWN = 10;
+// baris DOA/SHALAWAT di bawah tahun (khusus Nabi): kecil, italic, huruf biasa.
+const DOA_FONT_SIZE = 10.5;
+const DOA_LINE_HEIGHT = 12.5;
+const DOA_GAP = 3;
 
 // hitung info tiap shape: tinggi SERAGAM (cukup utk 2 baris), teks di-auto-fit max 2 baris
 const nodesInfo = chain.map((n, idx) => {
@@ -550,6 +560,13 @@ const nodesInfo = chain.map((n, idx) => {
         yearLines = yearFit.lines;
         yearFontSize = yearFit.fontSize;
     }
+    // baris DOA/SHALAWAT (khusus Nabi): sudah dipecah 2 baris manual, huruf ASLI
+    // (bukan uppercase), italic — jangan lewat fitNameToBox krn itu memaksa uppercase.
+    let doaLines = null, doaFontSize = null;
+    if (n.doaLines) {
+        doaLines = n.doaLines;
+        doaFontSize = DOA_FONT_SIZE;
+    }
     let h = isRoot ? ROOT_H : STANDARD_H;
     let spouseLines = null, spouseFontSize = null, topH = null, bottomH = null;
     if (n.spouseName) {
@@ -558,7 +575,8 @@ const nodesInfo = chain.map((n, idx) => {
         // supaya semua teks "rata atas bawah" & jarak ke garis pembatas SAMA persis di kedua sisi.
         const GAP = padY / 2;
         const nameH = fit.lines.length * NAME_LINE_HEIGHT
-            + (yearLines ? (YEAR_GAP + yearLines.length * YEAR_LINE_HEIGHT) : 0);
+            + (yearLines ? (YEAR_GAP + yearLines.length * YEAR_LINE_HEIGHT) : 0)
+            + (doaLines ? (DOA_GAP + doaLines.length * DOA_LINE_HEIGHT) : 0);
         const spouseH = spouseFit.lines.length * NAME_LINE_HEIGHT;
         // dorong blok nama+tahun (khusus Nabi) lebih ke bawah dgn menambah gap atas.
         topH = GAP + (yearLines ? ROOT_TEXT_PUSH_DOWN : 0) + nameH + GAP;
@@ -567,7 +585,7 @@ const nodesInfo = chain.map((n, idx) => {
         spouseLines = spouseFit.lines;
         spouseFontSize = spouseFit.fontSize;
     }
-    return { data: n, idx, w, h, lines: fit.lines, fontSize: fit.fontSize, weight, isRoot, spouseLines, spouseFontSize, topH, bottomH, yearLines, yearFontSize };
+    return { data: n, idx, w, h, lines: fit.lines, fontSize: fit.fontSize, weight, isRoot, spouseLines, spouseFontSize, topH, bottomH, yearLines, yearFontSize, doaLines, doaFontSize };
 });
 
 // bangun defs gradient sekali per generasi yang dipakai
@@ -680,8 +698,10 @@ function renderChain() {
             // ===== shape Nabi Muhammad SAW + nama isteri, dipisah garis pembatas
             // di dalam SATU shape yang sama (persis gaya shape gabungan lain). =====
             const yearLinesCount = info.yearLines ? info.yearLines.length : 0;
+            const doaLinesCount = info.doaLines ? info.doaLines.length : 0;
             const nameBlockH = info.lines.length * NAME_LINE_HEIGHT
-                + (yearLinesCount ? YEAR_GAP + yearLinesCount * YEAR_LINE_HEIGHT : 0);
+                + (yearLinesCount ? YEAR_GAP + yearLinesCount * YEAR_LINE_HEIGHT : 0)
+                + (doaLinesCount ? DOA_GAP + doaLinesCount * DOA_LINE_HEIGHT : 0);
             const hCenterY = -info.h/2 + info.topH/2;
             let cursorY = hCenterY - nameBlockH/2 + NAME_LINE_HEIGHT/2;
             info.lines.forEach((ln) => {
@@ -706,6 +726,25 @@ function renderChain() {
                     cursorY += YEAR_LINE_HEIGHT;
                 });
                 g.appendChild(yearText);
+            }
+
+            if (doaLinesCount) {
+                // baris DOA/SHALAWAT: kecil, italic, huruf biasa (tidak uppercase),
+                // tepat di bawah tahun.
+                cursorY = cursorY - YEAR_LINE_HEIGHT/2 + DOA_GAP + DOA_LINE_HEIGHT/2;
+                const doaText = el('text', {
+                    class: 'doa-text',
+                    x: info.w/2, y: 0, 'text-anchor':'middle', 'dominant-baseline':'middle',
+                    fill:'#1e293b', 'font-weight': 400, 'font-style': 'italic',
+                    'font-size': info.doaFontSize
+                });
+                info.doaLines.forEach((ln) => {
+                    const tspan = el('tspan', { x: info.w/2, y: cursorY });
+                    tspan.textContent = ln;
+                    doaText.appendChild(tspan);
+                    cursorY += DOA_LINE_HEIGHT;
+                });
+                g.appendChild(doaText);
             }
 
             g.appendChild(el('line', {
