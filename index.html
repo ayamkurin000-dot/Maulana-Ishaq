@@ -576,6 +576,7 @@ function renderChain() {
     nodesInfo.forEach((info, i) => {
         const block = document.createElement('div');
         block.className = 'node-block';
+        if (i === 0) block.id = 'node-nabi-muhammad';
 
         if (i > 0) {
             const line = document.createElement('div');
@@ -1463,10 +1464,23 @@ function buildAncestorChain(targetEl) {
         'text-transform:uppercase;';
     wrap.appendChild(finalName);
 
-    // ===== posisikan wrap di kiri-atas shape target, lalu gambar kurva penghubung =====
+    const finalCaption = document.createElement('div');
+    finalCaption.textContent = '(Isteri Syekh Maulana Ishaq)';
+    finalCaption.style.cssText = 'font-size:13px;font-weight:700;font-style:italic;color:#1e293b;' +
+        'line-height:1.3;margin-top:4px;';
+    wrap.appendChild(finalCaption);
+
+    // ===== posisikan wrap di SEBELAH KANAN shape "NABI MUHAMMAD SAW"
+    // (node teratas rantai utama), sejajar bagian atasnya lalu memanjang ke
+    // bawah -- supaya TIDAK menimpa cabang keturunan yang terbuka di sebelah
+    // kanan Syekh Jumadil Qubro (mis. Syekh Maulana Ibrahim Asmoro Qondi dst),
+    // lalu tetap disambungkan dengan garis lengkung menuju shape Syekh
+    // Maulana Ishaq & Dewi Sekardadu. =====
     function positionAndConnect() {
         const containerRect = container.getBoundingClientRect();
         const targetRect = targetEl.getBoundingClientRect();
+        const nabiEl = document.getElementById('node-nabi-muhammad');
+        const nabiRect = nabiEl ? nabiEl.getBoundingClientRect() : targetRect;
         const scale = (tState && tState.k) || 1;
 
         const targetLocalX = (targetRect.left - containerRect.left) / scale;
@@ -1480,14 +1494,11 @@ function buildAncestorChain(targetEl) {
         const wrapW = wrap.offsetWidth;
         const wrapH = wrap.offsetHeight;
 
-        // Jarak horizontal rantai leluhur dipastikan SELALU di sebelah kiri rantai utama
-        // (bukan hanya di sebelah kiri shape Maulana Ishaq). Rantai utama (Nabi Muhammad SAW
-        // s/d Syekh Jumadil Qubro) selalu mulai dari x=0, jadi kotak rantai leluhur cukup
-        // dijaga tepi kanannya berjarak aman di kiri x=0 (mainGapX), supaya tidak pernah
-        // menimpa shape2 pada rantai utama walau shape Maulana Ishaq letaknya berdekatan.
-        const mainGapX = 40; // jarak aman antara rantai leluhur dgn rantai utama
-        const leftPx = Math.min(targetLocalX - 70 - wrapW, -mainGapX - wrapW);
-        const topPx = targetLocalY - wrapH + 26; // ujung bawah rantai ada sedikit di atas titik sambung
+        const nabiLocalRight = (nabiRect.right - containerRect.left) / scale;
+        const nabiLocalTop = (nabiRect.top - containerRect.top) / scale;
+        const gapFromChain = 90; // jarak aman dari nub/badge shape Nabi Muhammad SAW
+        const leftPx = nabiLocalRight + gapFromChain;
+        const topPx = nabiLocalTop;
 
         wrap.style.left = leftPx + 'px';
         wrap.style.top = topPx + 'px';
