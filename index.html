@@ -337,6 +337,7 @@
 const treeData = {
     "name": "NABI MUHAMMAD SAW",
     "type": "root",
+    "spouseName": "Khadijah binti Khuwailid radhiyallahu 'anha",
     "children": [
         { "name": "SITI FATIMAH", "type": "gen1", "children": [
             { "name": "SAYYIDINA HUSAIN", "type": "gen2", "children": [
@@ -520,8 +521,22 @@ const nodesInfo = chain.map((n, idx) => {
     const baseFontSize = isRoot ? 16 : 13.5;
     const weight = isRoot ? 800 : 700;
     const fit = fitNameToBox(n.name, w - 24, baseFontSize, weight);
-    const h = isRoot ? ROOT_H : STANDARD_H;
-    return { data: n, idx, w, h, lines: fit.lines, fontSize: fit.fontSize, weight, isRoot };
+    let h = isRoot ? ROOT_H : STANDARD_H;
+    let spouseLines = null, spouseFontSize = null, topH = null, bottomH = null;
+    if (isRoot && n.spouseName) {
+        const spouseFit = fitNameToBox(n.spouseName, w - 24, 12.5, 700);
+        // GAP dipakai seragam utk 4 jarak: atas-box↔nama, nama↔garis, garis↔isteri, isteri↔bawah-box
+        // supaya semua teks "rata atas bawah" & jarak ke garis pembatas SAMA persis di kedua sisi.
+        const GAP = padY / 2;
+        const nameH = fit.lines.length * NAME_LINE_HEIGHT;
+        const spouseH = spouseFit.lines.length * NAME_LINE_HEIGHT;
+        topH = GAP + nameH + GAP;
+        bottomH = GAP + spouseH + GAP;
+        h = topH + bottomH;
+        spouseLines = spouseFit.lines;
+        spouseFontSize = spouseFit.fontSize;
+    }
+    return { data: n, idx, w, h, lines: fit.lines, fontSize: fit.fontSize, weight, isRoot, spouseLines, spouseFontSize, topH, bottomH };
 });
 
 // bangun defs gradient sekali per generasi yang dipakai
@@ -603,13 +618,45 @@ function renderChain() {
             fill:'#0f172a', 'font-weight': info.weight,
             'font-size': info.fontSize
         });
-        const startY = -((info.lines.length - 1) * NAME_LINE_HEIGHT) / 2;
-        info.lines.forEach((ln, li) => {
-            const tspan = el('tspan', { x: info.w/2, y: startY + li*NAME_LINE_HEIGHT });
-            tspan.textContent = ln;
-            textEl.appendChild(tspan);
-        });
-        g.appendChild(textEl);
+        if (info.isRoot && info.spouseLines) {
+            // ===== shape Nabi Muhammad SAW + nama isteri, dipisah garis pembatas
+            // di dalam SATU shape yang sama (persis gaya shape gabungan lain). =====
+            const hCenterY = -info.h/2 + info.topH/2;
+            const hStartY = hCenterY - ((info.lines.length - 1) * NAME_LINE_HEIGHT) / 2;
+            info.lines.forEach((ln, li) => {
+                const tspan = el('tspan', { x: info.w/2, y: hStartY + li*NAME_LINE_HEIGHT });
+                tspan.textContent = ln;
+                textEl.appendChild(tspan);
+            });
+            g.appendChild(textEl);
+
+            g.appendChild(el('line', {
+                x1: info.w*0.08, y1: -info.h/2 + info.topH, x2: info.w*0.92, y2: -info.h/2 + info.topH,
+                stroke: '#1e293b', 'stroke-width': 1.5, 'stroke-opacity': 0.4, 'stroke-dasharray': '3,3'
+            }));
+
+            const spouseTop = -info.h/2 + info.topH;
+            const spouseText = el('text', {
+                x: info.w/2, y: 0, 'text-anchor':'middle', 'dominant-baseline':'middle',
+                fill:'#0f172a', 'font-weight': 700, 'font-size': info.spouseFontSize
+            });
+            const wCenterY = spouseTop + info.bottomH/2;
+            const wStartY = wCenterY - ((info.spouseLines.length - 1) * NAME_LINE_HEIGHT) / 2;
+            info.spouseLines.forEach((ln, li) => {
+                const tspan = el('tspan', { x: info.w/2, y: wStartY + li*NAME_LINE_HEIGHT });
+                tspan.textContent = ln;
+                spouseText.appendChild(tspan);
+            });
+            g.appendChild(spouseText);
+        } else {
+            const startY = -((info.lines.length - 1) * NAME_LINE_HEIGHT) / 2;
+            info.lines.forEach((ln, li) => {
+                const tspan = el('tspan', { x: info.w/2, y: startY + li*NAME_LINE_HEIGHT });
+                tspan.textContent = ln;
+                textEl.appendChild(tspan);
+            });
+            g.appendChild(textEl);
+        }
         svg.appendChild(g);
         block.appendChild(svg);
 
