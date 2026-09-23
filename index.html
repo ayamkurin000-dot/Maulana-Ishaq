@@ -1163,59 +1163,63 @@ const ancestorChainData = [
     { name: "BRHE WIRABHUMI" },
     { name: "MINAK SEMBUYU / MINAK DEDALI PUTIH" }
 ];
-const ancestorGap = 14;
-const ancestorWidth = 236;
+const ancestorWidth = 340;
 
 function buildAncestorChain(targetEl) {
     if (!targetEl) return;
 
+    // ===== SATU kotak (shape) tunggal berisi judul 2 baris + seluruh nama
+    // leluhur + nama akhir "DEWI SEKARDADU", dipisahkan tanda panah hitam
+    // ke bawah di antara tiap nama, dengan bingkai hitam tebal & latar
+    // gradasi abu-abu — mengikuti contoh acuan yang diberikan. =====
     const wrap = document.createElement('div');
     wrap.id = 'ancestor-chain';
     wrap.style.position = 'absolute';
-    wrap.style.display = 'flex';
-    wrap.style.flexDirection = 'column';
-    wrap.style.alignItems = 'center';
     wrap.style.zIndex = 3;
+    wrap.style.width = ancestorWidth + 'px';
+    wrap.style.boxSizing = 'border-box';
+    wrap.style.background = 'linear-gradient(180deg, #ffffff 0%, #ffffff 22%, #d9dadb 60%, #c3c4c6 100%)';
+    wrap.style.border = '4px solid #000000';
+    wrap.style.borderRadius = '2px';
+    wrap.style.padding = '18px 20px 22px';
+    wrap.style.textAlign = 'center';
+    wrap.style.boxShadow = '0 4px 14px rgba(0,0,0,0.25)';
     container.appendChild(wrap);
 
-    const label = document.createElement('div');
-    label.textContent = 'LELUHUR DEWI SEKARDADU (GARIS MAJAPAHIT)';
-    label.style.cssText = 'font-size:9.5px;font-weight:800;color:#92672f;text-align:center;' +
-        'margin-bottom:6px;letter-spacing:.3px;max-width:' + ancestorWidth + 'px;';
-    wrap.appendChild(label);
+    const titleLine1 = document.createElement('div');
+    titleLine1.textContent = 'LELUHUR DEWI SEKARDADU';
+    titleLine1.style.cssText = 'font-size:16px;font-weight:800;color:#000000;line-height:1.3;' +
+        'letter-spacing:.2px;text-transform:uppercase;';
+    wrap.appendChild(titleLine1);
 
-    const dims = ancestorChainData.map(n => {
-        const fit = fitNameToBox(n.name, ancestorWidth - 24, 13, 700);
-        return { w: ancestorWidth, h: STANDARD_H, lines: fit.lines, fontSize: fit.fontSize };
+    const titleLine2 = document.createElement('div');
+    titleLine2.textContent = '(GARIS MAJAPAHIT)';
+    titleLine2.style.cssText = 'font-size:14px;font-weight:800;color:#000000;line-height:1.3;' +
+        'letter-spacing:.2px;text-transform:uppercase;margin-bottom:14px;';
+    wrap.appendChild(titleLine2);
+
+    function addArrow() {
+        const arrow = document.createElement('div');
+        arrow.textContent = '\u2193';
+        arrow.style.cssText = 'font-size:18px;font-weight:900;color:#000000;line-height:1;margin:6px 0;';
+        wrap.appendChild(arrow);
+    }
+
+    ancestorChainData.forEach((n, i) => {
+        if (i > 0) addArrow();
+        const nameDiv = document.createElement('div');
+        nameDiv.textContent = n.name;
+        nameDiv.style.cssText = 'font-size:14px;font-weight:600;color:#000000;line-height:1.35;' +
+            'text-transform:uppercase;';
+        wrap.appendChild(nameDiv);
     });
 
-    dims.forEach((d, i) => {
-        const block = document.createElement('div');
-        block.style.display = 'flex';
-        block.style.flexDirection = 'column';
-        block.style.alignItems = 'center';
-        if (i > 0) {
-            const line = document.createElement('div');
-            line.className = 'connector';
-            line.style.height = ancestorGap + 'px';
-            block.appendChild(line);
-        }
-        const svg = el('svg', { width: d.w + 26, height: d.h + 6, viewBox: `0 0 ${d.w+26} ${d.h+6}` });
-        buildDefs(svg);
-        const g = el('g', { class:'node-shape', transform:`translate(0, ${d.h/2+2})` });
-        drawBatteryShape(g, d.w, d.h, 'ancestor');
-        const textEl = el('text', { x: d.w/2, y:0, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:'#0f172a', 'font-weight':700, 'font-size':d.fontSize });
-        const startY = -((d.lines.length - 1) * NAME_LINE_HEIGHT) / 2;
-        d.lines.forEach((ln, li) => {
-            const tspan = el('tspan', { x: d.w/2, y: startY + li*NAME_LINE_HEIGHT });
-            tspan.textContent = ln;
-            textEl.appendChild(tspan);
-        });
-        g.appendChild(textEl);
-        svg.appendChild(g);
-        block.appendChild(svg);
-        wrap.appendChild(block);
-    });
+    addArrow();
+    const finalName = document.createElement('div');
+    finalName.textContent = 'DEWI SEKARDADU';
+    finalName.style.cssText = 'font-size:18px;font-weight:800;color:#000000;line-height:1.3;' +
+        'text-transform:uppercase;';
+    wrap.appendChild(finalName);
 
     // ===== posisikan wrap di kiri-atas shape target, lalu gambar kurva penghubung =====
     function positionAndConnect() {
@@ -1225,6 +1229,12 @@ function buildAncestorChain(targetEl) {
 
         const targetLocalX = (targetRect.left - containerRect.left) / scale;
         const targetLocalY = (targetRect.top + targetRect.height / 2 - containerRect.top) / scale;
+        const targetW = targetRect.width / scale;
+        const targetH = targetRect.height / scale;
+        // titik sambung sekarang di TENGAH BAWAH shape Syekh Maulana Ishaq
+        // (bukan sisi kiri), supaya mata panah tidak tertutup/menabrak shape.
+        const targetBottomX = targetLocalX + targetW / 2;
+        const targetBottomY = targetLocalY + targetH / 2;
         const wrapW = wrap.offsetWidth;
         const wrapH = wrap.offsetHeight;
 
@@ -1245,12 +1255,13 @@ function buildAncestorChain(targetEl) {
 
         const startX = leftPx + wrapW / 2;
         const startY = topPx + wrapH - 6;
-        const endX = targetLocalX;
-        const endY = targetLocalY;
+        const endX = targetBottomX;
+        const endY = targetBottomY + 3; // sedikit turun dari garis tepi bawah shape supaya panah tidak menempel/tertutup
+        const dropYAbs = Math.max(startY, endY) + 24;
         const ovLeft = Math.min(startX, endX) - 10;
         const ovTop = Math.min(startY, endY) - 10;
         const ovW = Math.abs(endX - startX) + 20;
-        const ovH = Math.abs(endY - startY) + 20;
+        const ovH = (dropYAbs - Math.min(startY, endY)) + 10;
 
         overlay = el('svg', { id: 'ancestor-link-overlay', width: ovW, height: ovH, viewBox: `0 0 ${ovW} ${ovH}` });
         overlay.style.position = 'absolute';
@@ -1260,14 +1271,30 @@ function buildAncestorChain(targetEl) {
         overlay.style.zIndex = 3;
 
         const sx = startX - ovLeft, sy = startY - ovTop, ex = endX - ovLeft, ey = endY - ovTop;
-        const midY = (sy + ey) / 2;
+        // ===== garis penghubung ortogonal dengan SUDUT MELENGKUNG halus (bukan
+        // siku tajam) supaya terlihat lebih rapi, hitam agak tebal, dan mata
+        // panah PADAT (segitiga terisi) di ujung yang masuk ke shape Syekh
+        // Maulana Ishaq. =====
+        const dropY = Math.max(sy, ey) + 24;
+        const r = 12;           // radius lengkung di tiap sudut
+        const arrowLen = 9;     // panjang mata panah
+        const dx2 = Math.sign(ex - sx) || 1;
+
+        const pathD = `M ${sx} ${sy} ` +
+            `L ${sx} ${dropY - r} ` +
+            `Q ${sx} ${dropY} ${sx + r * dx2} ${dropY} ` +
+            `L ${ex - r * dx2} ${dropY} ` +
+            `Q ${ex} ${dropY} ${ex} ${dropY - r} ` +
+            `L ${ex} ${ey + arrowLen}`;
+
         overlay.appendChild(el('path', {
-            d: `M ${sx} ${sy} C ${sx} ${midY}, ${ex} ${midY}, ${ex} ${ey}`,
-            fill: 'none', stroke: 'rgba(0,0,0,0.55)', 'stroke-width': 1
+            d: pathD,
+            fill: 'none', stroke: '#000000', 'stroke-width': 2.4,
+            'stroke-linecap': 'round', 'stroke-linejoin': 'round'
         }));
-        overlay.appendChild(el('path', {
-            d: `M ${ex-6} ${ey-5} L ${ex} ${ey} L ${ex-6} ${ey+5}`,
-            fill: 'none', stroke: 'rgba(0,0,0,0.55)', 'stroke-width': 1.4
+        overlay.appendChild(el('polygon', {
+            points: `${ex},${ey} ${ex - 6},${ey + arrowLen} ${ex + 6},${ey + arrowLen}`,
+            fill: '#000000'
         }));
         container.appendChild(overlay);
     }
