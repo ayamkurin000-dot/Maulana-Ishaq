@@ -335,7 +335,8 @@
 // selalu tampil penuh saat halaman dibuka, tidak butuh buka/tutup shape.
 // =====================================================================
 const treeData = {
-    "name": "NABI MUHAMMAD SAW (570-632)",
+    "name": "NABI MUHAMMAD SAW",
+    "yearLabel": "(570-632)",
     "type": "root",
     "spouseName": "Khadijah binti Khuwailid radhiyallahu 'anha",
     "children": [
@@ -523,6 +524,12 @@ function el(tag, attrs) {
 
 const container = document.getElementById('chart-container');
 
+// jarak antar baris & ukuran huruf khusus utk baris TAHUN di bawah nama Nabi
+// (dibuat kecil, senada dgn ukuran nama pasangan) + jarak dorong teks ke bawah.
+const YEAR_LINE_HEIGHT = 14;
+const YEAR_GAP = 3;
+const ROOT_TEXT_PUSH_DOWN = 10;
+
 // hitung info tiap shape: tinggi SERAGAM (cukup utk 2 baris), teks di-auto-fit max 2 baris
 const nodesInfo = chain.map((n, idx) => {
     const isRoot = idx === 0;
@@ -531,7 +538,18 @@ const nodesInfo = chain.map((n, idx) => {
     // nama PASANGAN (spouseName di bawahnya) tetap memakai ukuran/berat semula (lihat di bawah).
     const baseFontSize = isRoot ? 18 : 15.5;
     const weight = 800;
-    const fit = fitNameToBox(n.name, w - 24, baseFontSize, weight);
+    // "NABI MUHAMMAD SAW" WAJIB 1 baris, ukuran tetap (tidak ikut auto-shrink/wrap
+    // seperti nama lain yang bisa jadi 2 baris).
+    const fit = isRoot
+        ? { lines: [n.name.toUpperCase()], fontSize: baseFontSize }
+        : fitNameToBox(n.name, w - 24, baseFontSize, weight);
+    // baris TAHUN (khusus Nabi): kecil, seukuran nama pasangan.
+    let yearLines = null, yearFontSize = null;
+    if (n.yearLabel) {
+        const yearFit = fitNameToBox(n.yearLabel, w - 24, 12.5, 700);
+        yearLines = yearFit.lines;
+        yearFontSize = yearFit.fontSize;
+    }
     let h = isRoot ? ROOT_H : STANDARD_H;
     let spouseLines = null, spouseFontSize = null, topH = null, bottomH = null;
     if (n.spouseName) {
@@ -539,15 +557,17 @@ const nodesInfo = chain.map((n, idx) => {
         // GAP dipakai seragam utk 4 jarak: atas-box↔nama, nama↔garis, garis↔isteri, isteri↔bawah-box
         // supaya semua teks "rata atas bawah" & jarak ke garis pembatas SAMA persis di kedua sisi.
         const GAP = padY / 2;
-        const nameH = fit.lines.length * NAME_LINE_HEIGHT;
+        const nameH = fit.lines.length * NAME_LINE_HEIGHT
+            + (yearLines ? (YEAR_GAP + yearLines.length * YEAR_LINE_HEIGHT) : 0);
         const spouseH = spouseFit.lines.length * NAME_LINE_HEIGHT;
-        topH = GAP + nameH + GAP;
+        // dorong blok nama+tahun (khusus Nabi) lebih ke bawah dgn menambah gap atas.
+        topH = GAP + (yearLines ? ROOT_TEXT_PUSH_DOWN : 0) + nameH + GAP;
         bottomH = GAP + spouseH + GAP;
         h = topH + bottomH;
         spouseLines = spouseFit.lines;
         spouseFontSize = spouseFit.fontSize;
     }
-    return { data: n, idx, w, h, lines: fit.lines, fontSize: fit.fontSize, weight, isRoot, spouseLines, spouseFontSize, topH, bottomH };
+    return { data: n, idx, w, h, lines: fit.lines, fontSize: fit.fontSize, weight, isRoot, spouseLines, spouseFontSize, topH, bottomH, yearLines, yearFontSize };
 });
 
 // bangun defs gradient sekali per generasi yang dipakai
@@ -659,14 +679,34 @@ function renderChain() {
         if (info.spouseLines) {
             // ===== shape Nabi Muhammad SAW + nama isteri, dipisah garis pembatas
             // di dalam SATU shape yang sama (persis gaya shape gabungan lain). =====
+            const yearLinesCount = info.yearLines ? info.yearLines.length : 0;
+            const nameBlockH = info.lines.length * NAME_LINE_HEIGHT
+                + (yearLinesCount ? YEAR_GAP + yearLinesCount * YEAR_LINE_HEIGHT : 0);
             const hCenterY = -info.h/2 + info.topH/2;
-            const hStartY = hCenterY - ((info.lines.length - 1) * NAME_LINE_HEIGHT) / 2;
-            info.lines.forEach((ln, li) => {
-                const tspan = el('tspan', { x: info.w/2, y: hStartY + li*NAME_LINE_HEIGHT });
+            let cursorY = hCenterY - nameBlockH/2 + NAME_LINE_HEIGHT/2;
+            info.lines.forEach((ln) => {
+                const tspan = el('tspan', { x: info.w/2, y: cursorY });
                 tspan.textContent = ln;
                 textEl.appendChild(tspan);
+                cursorY += NAME_LINE_HEIGHT;
             });
             g.appendChild(textEl);
+
+            if (yearLinesCount) {
+                // baris TAHUN: kecil, seukuran nama pasangan, tepat di bawah nama.
+                cursorY = cursorY - NAME_LINE_HEIGHT/2 + YEAR_GAP + YEAR_LINE_HEIGHT/2;
+                const yearText = el('text', {
+                    x: info.w/2, y: 0, 'text-anchor':'middle', 'dominant-baseline':'middle',
+                    fill:'#0f172a', 'font-weight': 700, 'font-size': info.yearFontSize
+                });
+                info.yearLines.forEach((ln) => {
+                    const tspan = el('tspan', { x: info.w/2, y: cursorY });
+                    tspan.textContent = ln;
+                    yearText.appendChild(tspan);
+                    cursorY += YEAR_LINE_HEIGHT;
+                });
+                g.appendChild(yearText);
+            }
 
             g.appendChild(el('line', {
                 x1: info.w*0.08, y1: -info.h/2 + info.topH, x2: info.w*0.92, y2: -info.h/2 + info.topH,
