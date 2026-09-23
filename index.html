@@ -163,7 +163,7 @@
     }
 
     .node-block { display: flex; flex-direction: column; align-items: center; position: relative; }
-    .connector { width: 1px; background: rgba(0,0,0,0.55); border-radius: 2px; }
+    .connector { width: 4px; background: #000000; border-radius: 2px; }
     .node text { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-transform: uppercase; }
     /* UPPERCASE semua teks dalam shape silsilah */
     .node-block text, .node-shape text, tspan { text-transform: uppercase !important; }
@@ -339,7 +339,7 @@ const treeData = {
     "type": "root",
     "spouseName": "Khadijah binti Khuwailid radhiyallahu 'anha",
     "children": [
-        { "name": "SITI FATIMAH", "type": "gen1", "spouseName": "Ali bin Abi Thalib radhiyallahu 'anh", "children": [
+        { "name": "SITI FATIMAH AZ-ZAHRA'", "type": "gen1", "spouseName": "Ali bin Abi Thalib radhiyallahu 'anh", "children": [
             { "name": "SAYYIDINA HUSAIN", "type": "gen2", "spouseName": "Syahrbanu / Syah-e Zanan", "children": [
                 { "name": "ZAINAL ALIM", "type": "gen3", "children": [
                     { "name": "ZAINAL QUBRO", "type": "gen4", "children": [
@@ -368,6 +368,15 @@ const gapBetween = 18; // jarak pendek antar shape (panjang garis penghubung), d
 // Dipatok mengikuti ukuran nub pada shape standar (SITI FATIMAH, tinggi=56),
 // supaya nub tidak lagi ikut membesar/mengecil sesuai tinggi masing-masing shape.
 const NUB_BASE_W = 8, NUB_BASE_H = 56 * 0.68, NUB_W = 16, NUB_H = 56 * 0.46;
+// padding ekstra di sisi kiri svg supaya border tebal (shape flat gaya Sekardadu)
+// tidak terpotong oleh batas viewBox.
+const SHAPE_LEFT_PAD = 4;
+// ruang yang disediakan di sisi KANAN svg utk nub baterai (dipakai juga saat nub
+// tidak digambar, supaya lebar svg konsisten) — dipakai utk menghitung offset
+// agar garis penghubung (.connector) benar-benar center terhadap SHAPE, bukan
+// terhadap kotak svg yang lebih lebar krn ruang nub tsb.
+const NUB_RESERVE = NUB_BASE_W + NUB_W + 2;
+const CONNECTOR_CENTER_SHIFT = (NUB_RESERVE - SHAPE_LEFT_PAD) / 2;
 
 // ===== Rantai utama SITI FATIMAH s/d SYEKH JUMADIL QUBRO (gen1-gen6):
 // disatukan jadi SATU warna saja, gradasi hijau gelap ala lambang NU
@@ -518,8 +527,10 @@ const container = document.getElementById('chart-container');
 const nodesInfo = chain.map((n, idx) => {
     const isRoot = idx === 0;
     const w = isRoot ? founderWidth : cardWidth;
-    const baseFontSize = isRoot ? 16 : 13.5;
-    const weight = isRoot ? 800 : 700;
+    // nama UTAMA (Nabi Muhammad SAW s/d Syekh Jumadil Qubro) dibuat lebih besar & tebal;
+    // nama PASANGAN (spouseName di bawahnya) tetap memakai ukuran/berat semula (lihat di bawah).
+    const baseFontSize = isRoot ? 18 : 15.5;
+    const weight = 800;
     const fit = fitNameToBox(n.name, w - 24, baseFontSize, weight);
     let h = isRoot ? ROOT_H : STANDARD_H;
     let spouseLines = null, spouseFontSize = null, topH = null, bottomH = null;
@@ -567,30 +578,52 @@ function buildDefs(svg) {
     svg.appendChild(defs);
 }
 
+// ===== Shape khusus NABI MUHAMMAD SAW s/d ZAINAL HUSAIN (root..gen5):
+// tanpa nub baterai, bentuk simetris (sudut kiri=kanan), corak warna
+// mengikuti box "LELUHUR DEWI SEKARDADU" — latar hijau flat + border hitam tebal. =====
+// SEKARDADU_STYLE_TYPES: shape flat hijau + border hitam tebal + bentuk simetris,
+// dipakai utk NABI MUHAMMAD s/d SYEKH JUMADIL QUBRO (root..gen6).
+// NO_NUB_TYPES: subset yang TANPA nub baterai (root..gen5). Khusus gen6
+// (Jumadil Qubro) nub tetap dipertahankan krn jadi titik sambung cabang keturunan.
+const SEKARDADU_STYLE_TYPES = new Set(['root','gen1','gen2','gen3','gen4','gen5','gen6']);
+const NO_NUB_TYPES = new Set(['root','gen1','gen2','gen3','gen4','gen5']);
+const SEKARDADU_FILL = '#9ccb6b';
+
 function drawBatteryShape(g, w, h, type) {
+    const plain = SEKARDADU_STYLE_TYPES.has(type);
+    const skipNub = NO_NUB_TYPES.has(type);
     const r = Math.min(22, Math.round(h*0.42));
-    const rLeft = Math.max(2, Math.round(r*0.15));
+    const rLeft = plain ? r : Math.max(2, Math.round(r*0.15));
     const nubBaseW = NUB_BASE_W, nubBaseH = NUB_BASE_H, nubW = NUB_W, nubH = NUB_H;
 
+    if (!plain) {
+        g.appendChild(el('path', {
+            transform: 'translate(1.5,2)', d: shapeBodyPath(w,h,r,rLeft), fill:'#000', opacity:0.09
+        }));
+    }
     g.appendChild(el('path', {
-        transform: 'translate(1.5,2)', d: shapeBodyPath(w,h,r,rLeft), fill:'#000', opacity:0.09
+        class:'real-body', d: shapeBodyPath(w,h,r,rLeft),
+        fill: plain ? SEKARDADU_FILL : `url(#grad-${type})`,
+        stroke: plain ? '#000000' : '#1e293b',
+        'stroke-width': plain ? 4 : 0.9,
+        'stroke-opacity': plain ? 1 : 0.18
     }));
-    g.appendChild(el('path', {
-        class:'real-body', d: shapeBodyPath(w,h,r,rLeft), fill:`url(#grad-${type})`,
-        stroke:'#1e293b', 'stroke-width':0.9, 'stroke-opacity':0.18
-    }));
-    g.appendChild(el('rect', {
-        x: r*0.6, y: -h/2+2.5, width: w-r*1.2, height: h*0.36, rx: r*0.5,
-        fill:`url(#gloss-${type})`, 'pointer-events':'none'
-    }));
-    g.appendChild(el('rect', {
-        x: w, y: -nubBaseH/2, width: nubBaseW, height: nubBaseH, rx:2.2,
-        fill:'url(#grad-metal-base)', stroke:'#64748b', 'stroke-width':0.6
-    }));
-    const nubG = el('g', { transform:`translate(${w+nubBaseW},0)` });
-    nubG.appendChild(el('rect', { x:0, y:-nubH/2, width:nubW, height:nubH, rx:5, fill:'url(#grad-metal-nub)', stroke:'#334155', 'stroke-width':0.7 }));
-    nubG.appendChild(el('rect', { x:2, y:-nubH/2+2, width:nubW-4, height:nubH*0.38, rx:2, fill:'#ffffff', opacity:0.55, 'pointer-events':'none' }));
-    g.appendChild(nubG);
+    if (!plain) {
+        g.appendChild(el('rect', {
+            x: r*0.6, y: -h/2+2.5, width: w-r*1.2, height: h*0.36, rx: r*0.5,
+            fill:`url(#gloss-${type})`, 'pointer-events':'none'
+        }));
+    }
+    if (!skipNub) {
+        g.appendChild(el('rect', {
+            x: w, y: -nubBaseH/2, width: nubBaseW, height: nubBaseH, rx:2.2,
+            fill:'url(#grad-metal-base)', stroke:'#64748b', 'stroke-width':0.6
+        }));
+        const nubG = el('g', { transform:`translate(${w+nubBaseW},0)` });
+        nubG.appendChild(el('rect', { x:0, y:-nubH/2, width:nubW, height:nubH, rx:5, fill:'url(#grad-metal-nub)', stroke:'#334155', 'stroke-width':0.7 }));
+        nubG.appendChild(el('rect', { x:2, y:-nubH/2+2, width:nubW-4, height:nubH*0.38, rx:2, fill:'#ffffff', opacity:0.55, 'pointer-events':'none' }));
+        g.appendChild(nubG);
+    }
 }
 
 function renderChain() {
@@ -604,12 +637,17 @@ function renderChain() {
             const line = document.createElement('div');
             line.className = 'connector';
             line.style.height = gapBetween + 'px';
+            // geser garis agar center-nya pas di tengah SHAPE (bukan di tengah
+            // kotak svg yang lebih lebar krn ruang nub), & rapatkan ke border.
+            line.style.transform = `translateX(-${CONNECTOR_CENTER_SHIFT}px)`;
+            line.style.marginTop = '-1px';
+            line.style.marginBottom = '-1px';
             block.appendChild(line);
         }
 
-        const svg = el('svg', { width: info.w + 26, height: info.h + 6, viewBox: `0 0 ${info.w+26} ${info.h+6}` });
+        const svg = el('svg', { width: info.w + 26 + SHAPE_LEFT_PAD, height: info.h + 2, viewBox: `-${SHAPE_LEFT_PAD} 0 ${info.w+26+SHAPE_LEFT_PAD} ${info.h+2}` });
         buildDefs(svg);
-        const g = el('g', { class:'node-shape', transform:`translate(0, ${info.h/2+2})` });
+        const g = el('g', { class:'node-shape', transform:`translate(0, ${info.h/2+1})` });
         const type = info.isRoot ? 'root' : (info.data.type in GEN_COLORS ? info.data.type : 'gen1');
         drawBatteryShape(g, info.w, info.h, type);
 
@@ -679,9 +717,9 @@ function renderChain() {
             // jadi titik tengah horizontal nub = w + nubBaseW + nubW/2 = w + 16.
             // Nub berada di tengah vertikal shape (y=0 relatif terhadap g),
             // dan g diposisikan translate(0, h/2+2) di dalam svg.
-            const nubCenterX = info.w + 16;
+            const nubCenterX = info.w + 16 + SHAPE_LEFT_PAD;
             const svgTopInBlock = (i > 0 ? gapBetween : 0); // svg didahului garis connector setinggi gapBetween
-            const nubCenterY = svgTopInBlock + (info.h / 2 + 2);
+            const nubCenterY = svgTopInBlock + (info.h / 2 + 1);
             badgeDiv.style.left = (nubCenterX - 13) + 'px';
             badgeDiv.style.top = (nubCenterY - 13) + 'px';
 
