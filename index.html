@@ -1378,7 +1378,7 @@ function setupExpandable(d, index, badge, subAnchor, openExtra, relayoutParent, 
         subAnchor.classList.remove('open');
         setIcon();
         openExtra[index] = 0;
-        relayoutParent(false); // kiri tetap
+        relayoutParent(true); // kiri tetap; FIX: teruskan ke leluhur
         if (collapseInside && childCtrl) {
             childCtrl.state.forEach(c => c.close(true));
         }
@@ -1397,9 +1397,9 @@ function setupExpandable(d, index, badge, subAnchor, openExtra, relayoutParent, 
         if (!built) {
             // relayout otomatis tiap kali tinggi cabang anak ini berubah (mis. ada cucu yg dibuka di dalamnya)
             childCtrl = renderSiblingGroup(d.children, subAnchor, () => {
-                if (!childCtrl) return; // hindari error saat build awal (childCtrl belum ke-assign)
+                if (!childCtrl || !open) return; // hindari error saat build awal & abaikan jika cabang ini sedang tertutup
                 openExtra[index] = childCtrl.getHeight();
-                relayoutParent(false); // kiri tetap, hanya kolom ini
+                relayoutParent(true); // FIX: teruskan perubahan tinggi sampai ke akar supaya shape leluhur ikut bergeser (tidak tumpang tindih)
             }, controller);
             built = true;
         }
@@ -1418,7 +1418,7 @@ function setupExpandable(d, index, badge, subAnchor, openExtra, relayoutParent, 
         subAnchor.classList.add('open');
         setIcon();
         openExtra[index] = childCtrl.getHeight();
-                relayoutParent(false); // kiri tetap, hanya kolom ini // <-- auto geser: dorong saudara lain menjauh sesuai tinggi cabang yg baru dibuka
+                relayoutParent(true); // kiri tetap, teruskan ke leluhur // <-- auto geser: dorong saudara lain menjauh sesuai tinggi cabang yg baru dibuka
         showToast(`Menampilkan keturunan ${d.name} di sebelah kanan.`);
     }
     badge.addEventListener('click', (e) => { e.stopPropagation(); toggle(); });
