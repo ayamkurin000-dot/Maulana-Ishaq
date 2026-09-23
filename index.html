@@ -339,8 +339,8 @@ const treeData = {
     "type": "root",
     "spouseName": "Khadijah binti Khuwailid radhiyallahu 'anha",
     "children": [
-        { "name": "SITI FATIMAH", "type": "gen1", "children": [
-            { "name": "SAYYIDINA HUSAIN", "type": "gen2", "children": [
+        { "name": "SITI FATIMAH", "type": "gen1", "spouseName": "Ali bin Abi Thalib radhiyallahu 'anh", "children": [
+            { "name": "SAYYIDINA HUSAIN", "type": "gen2", "spouseName": "Syahrbanu / Syah-e Zanan", "children": [
                 { "name": "ZAINAL ALIM", "type": "gen3", "children": [
                     { "name": "ZAINAL QUBRO", "type": "gen4", "children": [
                         { "name": "ZAINAL HUSAIN", "type": "gen5", "children": [
@@ -523,7 +523,7 @@ const nodesInfo = chain.map((n, idx) => {
     const fit = fitNameToBox(n.name, w - 24, baseFontSize, weight);
     let h = isRoot ? ROOT_H : STANDARD_H;
     let spouseLines = null, spouseFontSize = null, topH = null, bottomH = null;
-    if (isRoot && n.spouseName) {
+    if (n.spouseName) {
         const spouseFit = fitNameToBox(n.spouseName, w - 24, 12.5, 700);
         // GAP dipakai seragam utk 4 jarak: atas-box↔nama, nama↔garis, garis↔isteri, isteri↔bawah-box
         // supaya semua teks "rata atas bawah" & jarak ke garis pembatas SAMA persis di kedua sisi.
@@ -618,7 +618,7 @@ function renderChain() {
             fill:'#0f172a', 'font-weight': info.weight,
             'font-size': info.fontSize
         });
-        if (info.isRoot && info.spouseLines) {
+        if (info.spouseLines) {
             // ===== shape Nabi Muhammad SAW + nama isteri, dipisah garis pembatas
             // di dalam SATU shape yang sama (persis gaya shape gabungan lain). =====
             const hCenterY = -info.h/2 + info.topH/2;
