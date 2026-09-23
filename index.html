@@ -2081,8 +2081,13 @@ document.getElementById('search-input').addEventListener('keydown', function(e) 
 });
 
 // ===== Toast notifikasi kecil =====
+// SEMENTARA DINONAKTIFKAN: baik pop-up "splash" saat halaman pertama dibuka
+// (dipicu toggleDescTree() di akhir skrip) maupun keterangan latar hitam yang
+// muncul saat shape/badge diklik, untuk sementara tidak ditampilkan. Cukup
+// hapus baris "return;" di bawah ini utk mengaktifkannya kembali nanti.
 let toastTimer = null;
 function showToast(msg) {
+    return;
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.classList.add('show');
