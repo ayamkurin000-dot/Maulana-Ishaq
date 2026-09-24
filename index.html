@@ -359,7 +359,7 @@
         border-radius: 20px;
         padding: 4px 12px;
         box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-        position: relative;
+        position: relative;        align-self: flex-start;   /* baris pencarian rata kiri */
     }
     #search-wrap input {
         border: none;
@@ -479,7 +479,7 @@
         </div>
         <div id="search-wrap">
             <span style="font-size:13px;">🔍</span>
-            <input id="search-input" type="text" placeholder="Cari nama..." oninput="searchNames(this.value)" autocomplete="off" />
+            <input id="search-input" type="text" placeholder="Cari nama (min. 3 huruf)..." oninput="searchNames(this.value)" autocomplete="off" />
             <button onclick="clearSearch()" title="Hapus">✕</button>
             <div id="search-dropdown"></div>
         </div>
