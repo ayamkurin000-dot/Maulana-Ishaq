@@ -461,6 +461,61 @@
     .desc-anchor.open { display: block; opacity: 1; transform: translateY(-50%) scale(1); }
     .desc-node .real-body { filter: drop-shadow(0 3px 6px rgba(0,0,0,0.18)); }
     .desc-node:hover .real-body { filter: drop-shadow(0 4px 9px rgba(0,0,0,0.28)); }
+
+    /* ===== PANEL SARAN (diadaptasi dari sistem "Chat Bani" di silsilah Mbah Kung) ===== */
+    .chat-notif-badge {
+        position: absolute; top: -6px; right: -6px; min-width: 15px; height: 15px;
+        padding: 0 3px; background: #dc2626; color: #ffffff; border-radius: 999px;
+        font-size: 0.55rem; font-weight: 800; line-height: 15px; text-align: center;
+        box-shadow: 0 0 0 2px #ffffff; pointer-events: none;
+    }
+    #panel-switcher button { position: relative; }
+    #chat-panel {
+        position: fixed; bottom: 46px; left: 14px; z-index: 9998;
+        background: #fffdf7ee; border: 1px solid #e2d3ac; border-radius: 10px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.14); width: 330px; max-width: 330px;
+        height: 60vh; max-height: 500px; display: none; flex-direction: column;
+        overflow: hidden; backdrop-filter: blur(6px);
+    }
+    #chat-panel.active { display: flex; }
+    .chat-header {
+        padding: 10px 12px; background: #f6ead0; border-bottom: 1px solid #e2d3ac;
+        font-weight: 800; font-size: 0.78rem; color: #0f172a;
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    .chat-header small { font-weight: 600; color: #64748b; font-size: 0.65rem; }
+    #chat-login-form { padding: 14px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+    #chat-login-form label { font-size: 0.7rem; font-weight: 700; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; }
+    #chat-login-form input { width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 7px; font-size: 0.8rem; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+    #chat-login-form input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+    .chat-user-info { padding: 10px 12px; background: #eff6ff; border-bottom: 1px solid #dbeafe; display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; }
+    .chat-user-info b { color: #1d4ed8; }
+    #chat-messages { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; background: #fffefb; }
+    .chat-msg { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 10px; font-size: 0.76rem; line-height: 1.4; position: relative; }
+    .chat-msg .msg-actions { margin-top: 6px; display: flex; gap: 8px; }
+    .chat-msg .msg-actions button { background: none; border: none; font-size: 0.65rem; font-weight: 700; color: #2563eb; cursor: pointer; padding: 0; }
+    .chat-msg .msg-actions button:hover { color: #1d4ed8; text-decoration: underline; }
+    .chat-msg .reply-preview { font-size: 0.65rem; color: #64748b; background: #f1f5f9; padding: 3px 6px; border-radius: 5px; margin-bottom: 5px; border-left: 2px solid #94a3b8; }
+    .chat-msg.is-reply-target { box-shadow: 0 0 0 2px #93c5fd; }
+    .thread-replies { margin-top: 10px; margin-left: 40px; display: flex; flex-direction: column; gap: 10px; }
+    .thread-reply { padding: 0; border-radius: 8px; }
+    .thread-reply.is-reply-target { background: #dbeafe; box-shadow: 0 0 0 4px #dbeafe; }
+    .thread-replies .msg-avatar { width: 26px !important; height: 26px !important; min-width: 26px !important; font-size: 0.62rem !important; }
+    .inline-reply-box { margin-top: 10px; margin-left: 40px; display: flex; flex-direction: column; gap: 6px; }
+    .inline-reply-label { display: flex; justify-content: space-between; align-items: center; font-size: 0.68rem; color: #1e40af; font-weight: 700; }
+    .inline-reply-label button { background: none; border: none; color: #dc2626; font-weight: 800; cursor: pointer; font-size: 0.8rem; }
+    .inline-reply-box textarea { width: 100%; box-sizing: border-box; min-height: 54px; max-height: 120px; padding: 8px 10px; border: 1px solid #93c5fd; border-radius: 8px; font-size: 0.8rem; resize: vertical; outline: none; font-family: inherit; background: #ffffff; }
+    .inline-reply-box textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+    .inline-reply-actions { display: flex; gap: 6px; }
+    .inline-reply-actions button { padding: 7px 12px; border-radius: 8px; font-size: 0.72rem; font-weight: 800; cursor: pointer; border: 1px solid #e2e8f0; background: #f1f5f9; color: #475569; }
+    .inline-reply-actions button.send { flex: 1; background: #2563eb; border-color: #2563eb; color: #ffffff; }
+    .inline-reply-actions button.send:hover { background: #1d4ed8; }
+    #chat-input-area { padding: 10px; border-top: 1px solid #e2d3ac; background: #f6ead0; display: flex; flex-direction: column; gap: 6px; }
+    #chat-input-area textarea { width: 100%; min-height: 58px; max-height: 90px; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.8rem; resize: vertical; outline: none; font-family: inherit; }
+    #chat-input-area textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+    @media (max-width: 640px) {
+        #chat-panel { bottom: 44px; left: 8px; right: 8px; width: auto; max-width: none; height: 56vh; max-height: 56vh; }
+    }
 </style>
 </head>
 <body>
@@ -504,10 +559,116 @@
 
 <div id="panel-switcher">
     <button id="tab-generasi" class="active" onclick="openRincian()">📖 RUJUKAN</button>
-    <button id="tab-chat" onclick="showToast('Fitur Chat Bani akan tersedia menyusul pada versi lengkap silsilah ini.')">CHAT BANI</button>
+    <button id="tab-chat" onclick="toggleSaranPanel()">💬 SARAN<span id="chat-notif-badge" class="chat-notif-badge" style="display:none;">0</span></button>
 </div>
 
 <div id="credit-tag">DIBUAT OLEH: MANNIXS-21</div>
+
+<div id="chat-panel">
+    <div class="chat-header">
+        <span>💬 KOTAK SARAN</span>
+        <span style="display:flex; align-items:center; gap:6px;">
+            <small id="chat-version" title="Versi kode saran" style="font-size:0.55rem; color:#94a3b8; font-weight:700; border:1px solid #cbd5e1; border-radius:6px; padding:1px 4px;">v1</small>
+            <small id="chat-count">0 saran</small>
+        </span>
+    </div>
+
+    <!-- PESAN SARAN - SELALU TAMPIL, SIAPA SAJA BISA BACA TANPA LOGIN -->
+    <div id="chat-messages"></div>
+
+    <!-- GUEST BAR - tampil untuk pengunjung yang BELUM login -->
+    <div id="chat-guest-bar" style="padding:10px 12px; border-top:1px solid #e2d3ac; background:#f6ead0;">
+        <button class="btn" style="width:100%; padding:9px; font-size:0.8rem;" onclick="showLoginForm()">✍️ Masuk untuk Kirim Saran</button>
+    </div>
+
+    <!-- LOGIN FORM - hanya nama (+ email opsional) -->
+    <div id="chat-login-form" style="display:none;">
+        <div style="display:flex; justify-content:flex-end; margin:-6px -6px -6px 0;">
+            <button onclick="hideLoginForm()" title="Tutup" style="background:none; border:none; color:#94a3b8; font-weight:800; font-size:0.95rem; cursor:pointer; padding:2px 6px;">✕</button>
+        </div>
+        <div style="text-align:center; padding: 0 0 6px;">
+            <div style="font-size:1.3rem;">👋</div>
+            <div style="font-weight:800; font-size:0.85rem; color:#0f172a;">Masuk untuk Kirim Saran</div>
+            <div style="font-size:0.68rem; color:#64748b; margin-top:3px;">Isi nama kamu untuk mulai</div>
+        </div>
+        <div style="display:flex; justify-content:center; margin-bottom:2px;">
+            <div style="position:relative;">
+                <div id="profile-photo-preview" style="width:64px; height:64px; border-radius:50%; background:#e2e8f0; display:flex; align-items:center; justify-content:center; font-size:1.5rem; color:#94a3b8; overflow:hidden; border:2px dashed #cbd5e1; cursor:pointer;" onclick="document.getElementById('chat-profile-photo-input').click()" title="Upload foto profil">📷</div>
+                <input type="file" id="chat-profile-photo-input" accept="image/*" style="display:none;">
+            </div>
+        </div>
+        <div style="text-align:center; font-size:0.6rem; color:#94a3b8; margin:-4px 0 8px;">Tap foto untuk upload foto profil (opsional)</div>
+        <div>
+            <label>Email (opsional) - tidak wajib</label>
+            <input type="email" id="chat-email" placeholder="nama@email.com (opsional, tidak wajib)">
+        </div>
+        <div>
+            <label>Nama Lengkap *</label>
+            <input type="text" id="chat-name" placeholder="Contoh: Ahmad Fauzi" maxlength="40">
+        </div>
+        <button class="btn" id="login-submit-btn" disabled style="width:100%; padding:9px; margin-top:4px; font-size:0.82rem;" onclick="loginChat()">MASUK →</button>
+        <div style="font-size:0.62rem; color:#94a3b8; text-align:center; line-height:1.4;">Data hanya disimpan di browser ini &amp; database saran (Firebase) khusus halaman ini.</div>
+    </div>
+
+    <!-- AREA SARAN (setelah login) -->
+    <div id="chat-main" style="display:none; flex-direction:column; overflow:hidden;">
+        <div class="chat-user-info">
+            <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                <div id="chat-header-avatar" onclick="document.getElementById('chat-profile-photo-edit-input').click()" title="Ganti foto profil" style="width:34px; height:34px; min-width:34px; border-radius:50%; overflow:hidden; cursor:pointer; flex-shrink:0;"></div>
+                <input type="file" id="chat-profile-photo-edit-input" accept="image/*" style="display:none;">
+                <div style="min-width:0;">
+                    <span>Halo, <b id="chat-user-name"></b> <span id="admin-badge" style="display:none; background:#7c3aed; color:white; padding:2px 6px; border-radius:10px; font-size:0.55rem; font-weight:900; margin-left:4px;">ADMIN FULL</span></span>
+                </div>
+            </div>
+            <button onclick="logoutChat()" style="background:#fee2e2; border:1px solid #fecaca; color:#dc2626; padding:4px 8px; border-radius:6px; font-size:0.65rem; font-weight:700; cursor:pointer;">KELUAR</button>
+        </div>
+
+        <div id="chat-input-area">
+            <div id="file-preview" style="display:none; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:8px; padding:8px; margin-bottom:6px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span id="file-preview-name" style="font-size:0.7rem; font-weight:700; color:#334155;"></span>
+                    <button onclick="clearFilePreview()" style="background:none; border:none; color:#dc2626; font-weight:800; cursor:pointer;">✕ Hapus</button>
+                </div>
+                <img id="file-preview-img" style="display:none; max-width:100%; max-height:120px; border-radius:6px; margin-top:6px;">
+            </div>
+            <div style="display:flex; gap:6px; align-items:flex-end;">
+                <textarea id="chat-input" placeholder="Tulis saran... (Enter kirim)" style="flex:1; min-height:58px;"></textarea>
+                <input type="file" id="chat-file-input" accept="image/*,.pdf,.doc,.docx,.txt" style="display:none;">
+                <button class="btn" style="background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; padding:8px 10px;" onclick="document.getElementById('chat-file-input').click()" title="Lampirkan file / foto">📎</button>
+            </div>
+            <div style="display:flex; gap:6px; margin-top:6px;">
+                <button class="btn" style="flex:1; padding:8px;" onclick="sendMessage()">KIRIM SARAN 💬</button>
+                <button class="btn" style="background:#f1f5f9; color:#475569; border:1px solid #e2e8f0;" onclick="clearChatLocal()">HAPUS</button>
+                <button id="admin-clear-all" class="btn" style="display:none; background:#7c3aed; color:white;" onclick="adminClearAll()">HAPUS SEMUA (ADMIN)</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL CROP FOTO PROFIL -->
+<div id="photo-crop-modal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.75); z-index:20000; align-items:center; justify-content:center; padding:16px;">
+    <div style="background:#ffffff; border-radius:14px; padding:18px; width:300px; max-width:100%; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.35);">
+        <div style="font-weight:800; font-size:0.85rem; color:#0f172a; margin-bottom:10px;">✂️ Sesuaikan Foto Profil</div>
+        <div id="crop-viewport" style="width:240px; height:240px; margin:0 auto; border-radius:50%; overflow:hidden; position:relative; background:#e2e8f0; cursor:grab; border:2px solid #cbd5e1; touch-action:none;">
+            <img id="crop-image" draggable="false" style="position:absolute; top:0; left:0; user-select:none; -webkit-user-drag:none; max-width:none;">
+        </div>
+        <input type="range" id="crop-zoom" min="100" max="300" value="100" style="width:100%; margin-top:14px; accent-color:#2563eb;">
+        <div style="font-size:0.6rem; color:#94a3b8; margin-top:2px;">Geser foto untuk atur posisi &bull; geser slider untuk zoom</div>
+        <div style="display:flex; gap:8px; margin-top:14px;">
+            <button class="btn" style="flex:1; background:#f1f5f9; color:#475569; border:1px solid #e2e8f0;" onclick="cancelCrop()">Batal</button>
+            <button class="btn" style="flex:1;" onclick="confirmCrop()">Simpan Foto</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL LIGHTBOX FOTO PROFIL -->
+<div id="photo-lightbox-modal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.85); z-index:20000; align-items:center; justify-content:center; padding:20px;" onclick="closePhotoLightbox()">
+    <div style="max-width:90vw; max-height:85vh; text-align:center;" onclick="event.stopPropagation()">
+        <img id="lightbox-photo-img" style="max-width:min(80vw, 380px); max-height:70vh; border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,0.5); display:block; margin:0 auto; object-fit:cover; aspect-ratio:1/1;">
+        <div id="lightbox-photo-name" style="color:#fff; font-weight:700; font-size:0.95rem; margin-top:14px;"></div>
+        <button onclick="closePhotoLightbox()" style="margin-top:14px; background:#ffffff22; border:1px solid #ffffff55; color:#fff; padding:6px 16px; border-radius:8px; font-size:0.75rem; cursor:pointer;">Tutup ✕</button>
+    </div>
+</div>
 
 <!-- Petunjuk geser layar 4 arah: muncul setelah shape Jumadil Qubro diketuk -->
 <div id="pan-hint">
@@ -2634,6 +2795,845 @@ function showToast(msg) {
 // Nabi Muhammad SAW s/d Syekh Maulana Ishaq terlihat utuh di layar (termasuk HP).
 setTimeout(() => centerChart(false), 100);
 setTimeout(() => centerChart(false), 500);
+</script>
+
+<script>
+// =====================================================================
+// PANEL SARAN - diadaptasi dari aturan/rule tombol "CHAT BANI" pada
+// silsilah Mbah Kung, dengan Firebase TERPISAH & mandiri khusus halaman ini.
+// Koleksi Firestore: saran_ishaq_chat & saran_ishaq_profiles
+// =====================================================================
+
+// >>> GANTI dengan config Firebase PROYEK BARU milik halaman Maulana Ishaq ini.
+// Jangan pakai config yang sama dengan silsilah Mbah Kung, supaya datanya
+// benar-benar mandiri/terpisah. Buat project baru di https://console.firebase.google.com
+const FIREBASE_CONFIG = {
+    apiKey: "GANTI_DENGAN_API_KEY_PROYEK_ISHAQ",
+    authDomain: "GANTI-PROYEK-ISHAQ.firebaseapp.com",
+    projectId: "GANTI-PROYEK-ISHAQ",
+    storageBucket: "GANTI-PROYEK-ISHAQ.firebasestorage.app",
+    messagingSenderId: "GANTI_SENDER_ID",
+    appId: "GANTI_APP_ID"
+};
+const USE_FIREBASE = true; // set false untuk mode lokal (localStorage) saja
+
+const ADMIN_CONFIG = {
+    names: ['mannixs-21'],
+    emails: ['ayamkurin000@gmail.com'],
+    secretCode: null
+};
+function isAdminUser(user) {
+    if (!user) return false;
+    const name = (user.name||'').toLowerCase().trim();
+    const email = (user.email||'').toLowerCase().trim();
+    if (email === 'ayamkurin000@gmail.com') return true;
+    if (name === 'mannixs-21') return true;
+    if (name === 'mannixs21') return true;
+    return false;
+}
+
+let db = null, auth = null, firebaseApp = null;
+let useFirebase = false;
+let allMessagesCache = [];
+let fsFns = null;
+let firebaseInitStarted = false;
+async function initFirebase() {
+    if (firebaseInitStarted) return useFirebase;
+    firebaseInitStarted = true;
+    if (typeof USE_FIREBASE === 'undefined' || !USE_FIREBASE) return false;
+    try {
+        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+        const { getFirestore, collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, doc, deleteDoc, getDocs, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+        const { getAuth, signInAnonymously } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+        firebaseApp = initializeApp(FIREBASE_CONFIG);
+        db = getFirestore(firebaseApp);
+        auth = getAuth(firebaseApp);
+        await signInAnonymously(auth);
+        useFirebase = true;
+        fsFns = { collection, addDoc, serverTimestamp, doc, deleteDoc, getDocs, setDoc };
+        const q = query(collection(db, 'saran_ishaq_chat'), orderBy('ts','asc'));
+        onSnapshot(q, (snap)=>{
+            const msgs = [];
+            snap.forEach(d=>{
+                const data = d.data();
+                msgs.push({ id: d.id, ...data, ts: data.ts || (data.createdAt ? data.createdAt.seconds*1000 : Date.now()) });
+            });
+            allMessagesCache = msgs;
+            if (typeof renderMessages === 'function') renderMessages();
+        });
+        onSnapshot(collection(db, 'saran_ishaq_profiles'), (snap)=>{
+            snap.forEach(d=>{
+                const data = d.data();
+                profilePhotoMap[d.id] = data.photoUrl || null;
+            });
+            if (typeof renderMessages === 'function') renderMessages();
+        }, (err)=>{
+            console.error('Gagal baca koleksi saran_ishaq_profiles dari Firestore. Kemungkinan Security Rules belum mengizinkan koleksi ini.', err);
+        });
+        return true;
+    } catch(e) { console.warn('Firebase gagal (SARAN Ishaq)', e); useFirebase = false; return false; }
+}
+
+let chatUser = null;
+let replyToId = null;
+let pendingReplyId = null;
+let replyDraft = '';
+let profilePhotoMap = {};
+
+function getEffectivePhoto(email, fallbackPhoto) {
+    const key = String(email || '').toLowerCase();
+    if (chatUser && chatUser.email === key) return chatUser.photoUrl || null;
+    if (Object.prototype.hasOwnProperty.call(profilePhotoMap, key)) return profilePhotoMap[key];
+    return fallbackPhoto || null;
+}
+function saveProfilePhoto(email, name, photoUrl) {
+    const key = String(email || '').toLowerCase();
+    if (!key) return;
+    profilePhotoMap[key] = photoUrl;
+    if (typeof useFirebase !== 'undefined' && useFirebase && db && fsFns && fsFns.setDoc && fsFns.doc) {
+        fsFns.setDoc(fsFns.doc(db, 'saran_ishaq_profiles', key), { name, photoUrl, updatedAt: Date.now() }).catch(e => console.error('Gagal simpan foto profil ke Firestore (saran_ishaq_profiles).', e));
+    }
+    if (typeof renderMessages === 'function') renderMessages();
+}
+function openPhotoLightbox(url, name) {
+    const modal = document.getElementById('photo-lightbox-modal');
+    const img = document.getElementById('lightbox-photo-img');
+    const nameEl = document.getElementById('lightbox-photo-name');
+    if (!modal || !img || !url) return;
+    img.src = url;
+    if (nameEl) nameEl.textContent = name || '';
+    modal.style.display = 'flex';
+}
+function closePhotoLightbox() {
+    const modal = document.getElementById('photo-lightbox-modal');
+    if (modal) modal.style.display = 'none';
+}
+document.addEventListener('click', function(e) {
+    const avatar = e.target.closest ? e.target.closest('.avatar-clickable') : null;
+    if (!avatar) return;
+    const img = avatar.querySelector('img');
+    if (!img || !img.src) return;
+    openPhotoLightbox(img.src, avatar.getAttribute('data-avatar-name') || '');
+});
+
+function escapeHtml(s) {
+    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function formatChatTime(ts) {
+    if (!ts) return '';
+    try {
+        const d = new Date(ts);
+        const tgl = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Jakarta' });
+        const jam = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' });
+        return tgl + ', ' + jam + ' WIB';
+    } catch(e) { return ''; }
+}
+function formatRelativeTime(ts) {
+    if (!ts) return '';
+    const diffSec = Math.floor((Date.now() - ts) / 1000);
+    if (diffSec < 10) return 'Baru saja';
+    if (diffSec < 60) return diffSec + ' detik yang lalu';
+    const diffMin = Math.floor(diffSec / 60);
+    if (diffMin < 60) return diffMin + ' menit yang lalu';
+    const diffHour = Math.floor(diffMin / 60);
+    if (diffHour < 24) return diffHour + ' jam yang lalu';
+    const diffDay = Math.floor(diffHour / 24);
+    if (diffDay < 30) return diffDay + ' hari yang lalu';
+    const diffMonth = Math.floor(diffDay / 30);
+    if (diffMonth < 12) return diffMonth + ' bulan yang lalu';
+    const diffYear = Math.floor(diffDay / 365);
+    return diffYear + ' tahun yang lalu';
+}
+function refreshRelativeTimes() {
+    document.querySelectorAll('.msg-time-relative').forEach(el => {
+        const ts = parseInt(el.getAttribute('data-ts'), 10);
+        if (ts) el.textContent = formatRelativeTime(ts);
+    });
+}
+setInterval(refreshRelativeTimes, 30000);
+
+const AVATAR_PALETTE = ['#ef4444','#f97316','#f59e0b','#84cc16','#10b981','#14b8a6','#06b6d4','#3b82f6','#6366f1','#8b5cf6','#d946ef','#ec4899'];
+function hashStr(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) { h = (h * 31 + str.charCodeAt(i)) >>> 0; }
+    return h;
+}
+function getAvatarColor(key) {
+    const idx = hashStr(String(key||'')) % AVATAR_PALETTE.length;
+    return AVATAR_PALETTE[idx];
+}
+function getInitials(name) {
+    if (!name) return '?';
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return '?';
+    if (parts.length === 1) return parts[0].slice(0,2).toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+function renderAvatarHtml(name, key, photoUrl) {
+    if (photoUrl) {
+        const safeName = escapeHtml(name || '');
+        return `<div class="msg-avatar avatar-clickable" data-avatar-name="${safeName}" style="width:32px; height:32px; min-width:32px; border-radius:50%; overflow:hidden; flex-shrink:0; background:#e2e8f0; cursor:pointer;" title="Ketuk untuk perbesar"><img src="${photoUrl}" style="width:100%; height:100%; object-fit:cover; display:block; pointer-events:none;" alt=""></div>`;
+    }
+    const initials = getInitials(name);
+    const color = getAvatarColor(key || name);
+    return `<div class="msg-avatar" style="width:32px; height:32px; min-width:32px; border-radius:50%; background:${color}; color:#ffffff; display:flex; align-items:center; justify-content:center; font-size:0.72rem; font-weight:800; flex-shrink:0; user-select:none;">${escapeHtml(initials)}</div>`;
+}
+function renderHeaderAvatarHtml(name, key, photoUrl) {
+    if (photoUrl) {
+        return `<img src="${photoUrl}" style="width:100%; height:100%; object-fit:cover; display:block;" alt="">`;
+    }
+    const initials = getInitials(name);
+    const color = getAvatarColor(key || name);
+    return `<div style="width:100%; height:100%; background:${color}; color:#ffffff; display:flex; align-items:center; justify-content:center; font-size:0.72rem; font-weight:800; user-select:none;">${escapeHtml(initials)}</div>`;
+}
+function renderHeaderAvatar() {
+    const el = document.getElementById('chat-header-avatar');
+    if (!el || !chatUser) return;
+    el.innerHTML = renderHeaderAvatarHtml(chatUser.name, chatUser.email, chatUser.photoUrl);
+}
+
+// ===== TOGGLE PANEL SARAN (pengganti switchSide, mandiri dari panel Rujukan) =====
+let saranOpen = false;
+function toggleSaranPanel() {
+    const panel = document.getElementById('chat-panel');
+    const tabChat = document.getElementById('tab-chat');
+    if (!panel) return;
+    saranOpen = !saranOpen;
+    if (saranOpen) {
+        panel.classList.add('active');
+        if (tabChat) tabChat.classList.add('active');
+        setTimeout(renderMessages, 50);
+        markChatAsRead();
+    } else {
+        panel.classList.remove('active');
+        if (tabChat) tabChat.classList.remove('active');
+    }
+}
+document.addEventListener('click', function(e) {
+    if (!saranOpen) return;
+    const panel = document.getElementById('chat-panel');
+    const switcher = document.getElementById('panel-switcher');
+    const lightbox = document.getElementById('photo-lightbox-modal');
+    const cropModal = document.getElementById('photo-crop-modal');
+    if (panel && panel.contains(e.target)) return;
+    if (switcher && switcher.contains(e.target)) return;
+    if (lightbox && lightbox.contains(e.target)) return;
+    if (cropModal && cropModal.contains(e.target)) return;
+    saranOpen = false;
+    panel.classList.remove('active');
+    const tabChat = document.getElementById('tab-chat');
+    if (tabChat) tabChat.classList.remove('active');
+}, true);
+
+// ===== BADGE NOTIF SARAN BELUM DIBACA =====
+function getLastReadTs() {
+    return parseInt(localStorage.getItem('ishaq_saran_last_read') || '0', 10);
+}
+function markChatAsRead() {
+    localStorage.setItem('ishaq_saran_last_read', String(Date.now()));
+    updateChatNotifBadge();
+}
+function updateChatNotifBadge() {
+    const badge = document.getElementById('chat-notif-badge');
+    if (!badge) return;
+    if (saranOpen) {
+        localStorage.setItem('ishaq_saran_last_read', String(Date.now()));
+        badge.style.display = 'none';
+        return;
+    }
+    const lastRead = getLastReadTs();
+    let msgs = typeof getAllMessages === 'function' ? getAllMessages() : [];
+    msgs = msgs.filter(m => !m.sys && m.ts > lastRead);
+    if (chatUser && chatUser.email) {
+        msgs = msgs.filter(m => m.email !== chatUser.email);
+    }
+    const count = msgs.length;
+    if (count > 0) {
+        badge.textContent = count > 99 ? '99+' : String(count);
+        badge.style.display = 'inline-flex';
+        badge.style.alignItems = 'center';
+        badge.style.justifyContent = 'center';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+function loadUserSession() {
+    try {
+        const u = JSON.parse(localStorage.getItem('ishaq_saran_user')||'null');
+        if (u && u.name) {
+            chatUser = u;
+            document.getElementById('chat-login-form').style.display = 'none';
+            document.getElementById('chat-guest-bar').style.display = 'none';
+            document.getElementById('chat-main').style.display = 'flex';
+            document.getElementById('chat-user-name').textContent = u.name;
+            const admBadge = document.getElementById('admin-badge');
+            if (admBadge) admBadge.style.display = isAdminUser(u) ? 'inline-block' : 'none';
+            if (isAdminUser(u)) {
+                document.getElementById('chat-user-name').style.color = '#7c3aed';
+                const ac = document.getElementById('admin-clear-all');
+                if (ac) ac.style.display = 'inline-block';
+            }
+            renderHeaderAvatar();
+        } else {
+            document.getElementById('chat-main').style.display = 'none';
+            document.getElementById('chat-login-form').style.display = 'none';
+            document.getElementById('chat-guest-bar').style.display = 'block';
+        }
+    } catch(e){}
+    renderMessages();
+}
+function showLoginForm() {
+    const guestBar = document.getElementById('chat-guest-bar');
+    const form = document.getElementById('chat-login-form');
+    if (guestBar) guestBar.style.display = 'none';
+    if (form) form.style.display = 'flex';
+}
+function hideLoginForm() {
+    pendingReplyId = null;
+    const guestBar = document.getElementById('chat-guest-bar');
+    const form = document.getElementById('chat-login-form');
+    if (form) form.style.display = 'none';
+    if (!chatUser && guestBar) guestBar.style.display = 'block';
+}
+function loginChat() {
+    const name = document.getElementById('chat-name').value.trim();
+    const emailEl = document.getElementById('chat-email');
+    const email = emailEl ? emailEl.value.trim() : '';
+    if (!name || name.length < 3) { alert('Nama minimal 3 huruf ya'); return; }
+    if (name.toLowerCase() === 'mannixs-21' && email.toLowerCase() !== 'ayamkurin000@gmail.com') {
+        alert('Untuk login sebagai MANNIXS-21 harus pakai email ayamkurin000@gmail.com');
+        return;
+    }
+    const user = { name, email: (email||name.toLowerCase().replace(/\s+/g,'_')+'@saran.local').toLowerCase(), loginAt: new Date().toISOString(), photoUrl: pendingProfilePhoto || null };
+    localStorage.setItem('ishaq_saran_user', JSON.stringify(user));
+    chatUser = user;
+    pendingProfilePhoto = null;
+    document.getElementById('chat-login-form').style.display = 'none';
+    document.getElementById('chat-guest-bar').style.display = 'none';
+    document.getElementById('chat-main').style.display = 'flex';
+    document.getElementById('chat-user-name').textContent = user.name;
+    const admBadge = document.getElementById('admin-badge');
+    if (admBadge) admBadge.style.display = isAdminUser(user) ? 'inline-block' : 'none';
+    if (isAdminUser(user)) {
+        document.getElementById('chat-user-name').style.color = '#7c3aed';
+        const ac = document.getElementById('admin-clear-all');
+        if (ac) ac.style.display = 'inline-block';
+    }
+    renderHeaderAvatar();
+    if (user.photoUrl) saveProfilePhoto(user.email, user.name, user.photoUrl);
+    renderMessages();
+    if (pendingReplyId) {
+        const rid = pendingReplyId;
+        pendingReplyId = null;
+        replyMessage(rid);
+    }
+}
+function logoutChat() {
+    if (!confirm('Keluar dari saran?')) return;
+    localStorage.removeItem('ishaq_saran_user');
+    chatUser = null;
+    document.getElementById('chat-main').style.display = 'none';
+    document.getElementById('chat-login-form').style.display = 'none';
+    document.getElementById('chat-guest-bar').style.display = 'block';
+    document.getElementById('chat-name').value = '';
+    document.getElementById('chat-email').value = '';
+    pendingProfilePhoto = null;
+    const photoPreview = document.getElementById('profile-photo-preview');
+    if (photoPreview) photoPreview.innerHTML = '📷';
+    if (typeof updateLoginButtonState === 'function') updateLoginButtonState();
+    renderMessages();
+}
+function getMessages() {
+    try { return JSON.parse(localStorage.getItem('ishaq_saran_messages')||'[]'); } catch(e){ return []; }
+}
+function getAllMessages() {
+    if (typeof useFirebase !== 'undefined' && useFirebase) return allMessagesCache;
+    return getMessages();
+}
+function saveMessages(arr) {
+    localStorage.setItem('ishaq_saran_messages', JSON.stringify(arr));
+    const el = document.getElementById('chat-count');
+    if (el) el.textContent = arr.length + ' saran';
+}
+
+// ===== LAMPIRAN FILE / FOTO =====
+let pendingFileData = null;
+let pendingFileName = null;
+let pendingFileType = null;
+let pendingProfilePhoto = null;
+
+function clearFilePreview() {
+    pendingFileData = null;
+    pendingFileName = null;
+    pendingFileType = null;
+    const preview = document.getElementById('file-preview');
+    const img = document.getElementById('file-preview-img');
+    const nameEl = document.getElementById('file-preview-name');
+    const fileInput = document.getElementById('chat-file-input');
+    if (preview) preview.style.display = 'none';
+    if (img) { img.style.display = 'none'; img.src = ''; }
+    if (nameEl) nameEl.textContent = '';
+    if (fileInput) fileInput.value = '';
+}
+function compressImage(dataUrl, maxWidth, callback) {
+    const img = new Image();
+    img.onload = function() {
+        let width = img.width;
+        let height = img.height;
+        if (width > maxWidth) {
+            height = height * (maxWidth / width);
+            width = maxWidth;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const compressed = canvas.toDataURL('image/jpeg', 0.7);
+        callback(compressed);
+    };
+    img.onerror = function() { callback(dataUrl); };
+    img.src = dataUrl;
+}
+
+// ===== CROP FOTO PROFIL (geser + zoom) =====
+const CROP_VP = 240;
+let cropTargetContext = null;
+let cropMinScale = 1;
+let cropScale = 1;
+let cropImgX = 0, cropImgY = 0;
+let cropNaturalW = 0, cropNaturalH = 0;
+let cropDragging = false;
+let cropDragStartX = 0, cropDragStartY = 0, cropStartImgX = 0, cropStartImgY = 0;
+
+function openCropModal(dataUrl, context) {
+    cropTargetContext = context;
+    const modal = document.getElementById('photo-crop-modal');
+    const imgEl = document.getElementById('crop-image');
+    const zoomSlider = document.getElementById('crop-zoom');
+    if (!modal || !imgEl) return;
+    imgEl.onload = function() {
+        cropNaturalW = imgEl.naturalWidth;
+        cropNaturalH = imgEl.naturalHeight;
+        cropMinScale = Math.max(CROP_VP / cropNaturalW, CROP_VP / cropNaturalH);
+        cropScale = cropMinScale;
+        cropImgX = (CROP_VP - cropNaturalW * cropScale) / 2;
+        cropImgY = (CROP_VP - cropNaturalH * cropScale) / 2;
+        if (zoomSlider) zoomSlider.value = 100;
+        applyCropTransform();
+    };
+    imgEl.src = dataUrl;
+    modal.style.display = 'flex';
+}
+function applyCropTransform() {
+    const imgEl = document.getElementById('crop-image');
+    if (!imgEl) return;
+    imgEl.style.width = (cropNaturalW * cropScale) + 'px';
+    imgEl.style.height = (cropNaturalH * cropScale) + 'px';
+    imgEl.style.transform = `translate(${cropImgX}px, ${cropImgY}px)`;
+}
+function clampCropPosition() {
+    const dispW = cropNaturalW * cropScale;
+    const dispH = cropNaturalH * cropScale;
+    const minX = CROP_VP - dispW;
+    const minY = CROP_VP - dispH;
+    cropImgX = Math.min(0, Math.max(minX, cropImgX));
+    cropImgY = Math.min(0, Math.max(minY, cropImgY));
+}
+function cancelCrop() {
+    const modal = document.getElementById('photo-crop-modal');
+    if (modal) modal.style.display = 'none';
+    cropTargetContext = null;
+}
+function confirmCrop() {
+    const EXPORT_SIZE = 320;
+    const ratio = EXPORT_SIZE / CROP_VP;
+    const canvas = document.createElement('canvas');
+    canvas.width = EXPORT_SIZE;
+    canvas.height = EXPORT_SIZE;
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    const imgEl = document.getElementById('crop-image');
+    ctx.drawImage(
+        imgEl,
+        cropImgX * ratio,
+        cropImgY * ratio,
+        cropNaturalW * cropScale * ratio,
+        cropNaturalH * cropScale * ratio
+    );
+    const finalPhoto = canvas.toDataURL('image/jpeg', 0.9);
+    if (cropTargetContext === 'login') {
+        pendingProfilePhoto = finalPhoto;
+        const preview = document.getElementById('profile-photo-preview');
+        if (preview) preview.innerHTML = `<img src="${finalPhoto}" style="width:100%; height:100%; object-fit:cover; display:block;" alt="">`;
+    } else if (cropTargetContext === 'header' && chatUser) {
+        chatUser.photoUrl = finalPhoto;
+        localStorage.setItem('ishaq_saran_user', JSON.stringify(chatUser));
+        saveProfilePhoto(chatUser.email, chatUser.name, finalPhoto);
+        renderHeaderAvatar();
+    }
+    cancelCrop();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const viewport = document.getElementById('crop-viewport');
+    const zoomSlider = document.getElementById('crop-zoom');
+    if (!viewport) return;
+    function startDrag(clientX, clientY) {
+        cropDragging = true;
+        cropDragStartX = clientX;
+        cropDragStartY = clientY;
+        cropStartImgX = cropImgX;
+        cropStartImgY = cropImgY;
+        viewport.style.cursor = 'grabbing';
+    }
+    function moveDrag(clientX, clientY) {
+        if (!cropDragging) return;
+        cropImgX = cropStartImgX + (clientX - cropDragStartX);
+        cropImgY = cropStartImgY + (clientY - cropDragStartY);
+        clampCropPosition();
+        applyCropTransform();
+    }
+    function endDrag() {
+        cropDragging = false;
+        viewport.style.cursor = 'grab';
+    }
+    viewport.addEventListener('pointerdown', (e) => {
+        viewport.setPointerCapture(e.pointerId);
+        startDrag(e.clientX, e.clientY);
+    });
+    viewport.addEventListener('pointermove', (e) => moveDrag(e.clientX, e.clientY));
+    viewport.addEventListener('pointerup', endDrag);
+    viewport.addEventListener('pointercancel', endDrag);
+    if (zoomSlider) {
+        zoomSlider.addEventListener('input', () => {
+            const oldScale = cropScale;
+            const newScale = cropMinScale * (parseFloat(zoomSlider.value) / 100);
+            const cx = (CROP_VP / 2 - cropImgX) / oldScale;
+            const cy = (CROP_VP / 2 - cropImgY) / oldScale;
+            cropScale = newScale;
+            cropImgX = CROP_VP / 2 - cx * cropScale;
+            cropImgY = CROP_VP / 2 - cy * cropScale;
+            clampCropPosition();
+            applyCropTransform();
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', ()=>{
+    const fileInput = document.getElementById('chat-file-input');
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) { alert('File terlalu besar, maksimal 5MB ya'); fileInput.value = ''; return; }
+            pendingFileName = file.name;
+            pendingFileType = file.type;
+            const preview = document.getElementById('file-preview');
+            const nameEl = document.getElementById('file-preview-name');
+            const imgEl = document.getElementById('file-preview-img');
+            if (nameEl) nameEl.textContent = '📎 ' + file.name + ' (' + (file.size/1024).toFixed(0) + 'KB)';
+            if (preview) preview.style.display = 'block';
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const dataUrl = ev.target.result;
+                if (file.type.startsWith('image/')) {
+                    compressImage(dataUrl, 800, function(compressed) {
+                        pendingFileData = compressed;
+                        if (imgEl) { imgEl.src = compressed; imgEl.style.display = 'block'; }
+                    });
+                } else {
+                    pendingFileData = dataUrl;
+                    if (imgEl) imgEl.style.display = 'none';
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    const profilePhotoInput = document.getElementById('chat-profile-photo-input');
+    if (profilePhotoInput) {
+        profilePhotoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) { alert('File harus berupa gambar/foto'); profilePhotoInput.value = ''; return; }
+            if (file.size > 5 * 1024 * 1024) { alert('Foto terlalu besar, maksimal 5MB ya'); profilePhotoInput.value = ''; return; }
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                openCropModal(ev.target.result, 'login');
+                profilePhotoInput.value = '';
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    const profilePhotoEditInput = document.getElementById('chat-profile-photo-edit-input');
+    if (profilePhotoEditInput) {
+        profilePhotoEditInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) { alert('File harus berupa gambar/foto'); profilePhotoEditInput.value = ''; return; }
+            if (file.size > 5 * 1024 * 1024) { alert('Foto terlalu besar, maksimal 5MB ya'); profilePhotoEditInput.value = ''; return; }
+            if (!chatUser) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                openCropModal(ev.target.result, 'header');
+                profilePhotoEditInput.value = '';
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    const nameInput = document.getElementById('chat-name');
+    if (nameInput) nameInput.addEventListener('input', updateLoginButtonState);
+    updateLoginButtonState();
+});
+
+function updateLoginButtonState() {
+    const nameInput = document.getElementById('chat-name');
+    const btn = document.getElementById('login-submit-btn');
+    if (!nameInput || !btn) return;
+    btn.disabled = !(nameInput.value.trim().length >= 3);
+}
+
+async function sendMessage(fromInline) {
+    const inline = fromInline === true;
+    if (!chatUser) { showLoginForm(); return; }
+    const input = document.getElementById(inline ? 'inline-reply-input' : 'chat-input');
+    if (!input) return;
+    const text = input.value.trim();
+    const useFile = !inline && !!pendingFileData;
+    if (!text && !useFile) return;
+    if (text.length < 2 && !useFile) { alert('Saran terlalu pendek'); return; }
+    const msg = {
+        id: 'msg_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
+        parentId: inline ? replyToId : null,
+        name: chatUser.name,
+        email: chatUser.email,
+        text,
+        ts: Date.now()
+    };
+    if (useFile) { msg.image = pendingFileData; msg.fileName = pendingFileName; }
+    if (typeof useFirebase !== 'undefined' && useFirebase && db && fsFns) {
+        try {
+            const { id, ...msgData } = msg;
+            await fsFns.addDoc(fsFns.collection(db, 'saran_ishaq_chat'), msgData);
+        } catch (e) {
+            console.warn('Gagal kirim ke Firebase, simpan lokal saja', e);
+            const arr = getMessages();
+            arr.push(msg);
+            saveMessages(arr);
+        }
+    } else {
+        const arr = getMessages();
+        arr.push(msg);
+        saveMessages(arr);
+    }
+    input.value = '';
+    const wasReply = !!msg.parentId;
+    if (inline) { replyToId = null; replyDraft = ''; }
+    if (useFile) clearFilePreview();
+    renderMessages();
+    if (!wasReply) setTimeout(()=>{ const c=document.getElementById('chat-messages'); c.scrollTop=c.scrollHeight; }, 60);
+}
+
+function getThreadRootId(id, visMap) {
+    let cur = visMap[id], guard = 0;
+    while (cur && cur.parentId && visMap[cur.parentId] && guard++ < 50) cur = visMap[cur.parentId];
+    return cur ? cur.id : id;
+}
+function syncInputArea() {
+    const area = document.getElementById('chat-input-area');
+    if (area) area.style.display = replyToId ? 'none' : '';
+}
+
+function renderMessages() {
+    const container = document.getElementById('chat-messages');
+    if (!container) return;
+    const oldTa = document.getElementById('inline-reply-input');
+    let hadFocus = false, selS = 0, selE = 0;
+    if (oldTa) {
+        replyDraft = oldTa.value;
+        hadFocus = (document.activeElement === oldTa);
+        selS = oldTa.selectionStart; selE = oldTa.selectionEnd;
+    }
+    const prevScroll = container.scrollTop;
+    const wasAtBottom = (container.scrollHeight - prevScroll - container.clientHeight) < 80;
+    const firstRender = container.dataset.rendered !== '1';
+
+    let msgs = typeof getAllMessages === 'function' ? getAllMessages() : (typeof getMessages === 'function' ? getMessages() : []);
+    if (typeof updateChatNotifBadge === 'function') updateChatNotifBadge();
+    msgs = msgs.filter(m => !m.sys);
+    msgs.sort((a,b)=>a.ts-b.ts);
+    if (msgs.length > 100) msgs = msgs.slice(msgs.length-100);
+    if (msgs.length === 0) {
+        replyToId = null; replyDraft = '';
+        syncInputArea();
+        container.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8; font-size:0.72rem;">Belum ada saran.<br>Tulis saran pertama! 💬</div>';
+        container.dataset.rendered = '1';
+        const ce = document.getElementById('chat-count');
+        if (ce) ce.textContent = '0 saran';
+        return;
+    }
+    const allMap = {};
+    (typeof getAllMessages === 'function' ? getAllMessages() : msgs).forEach(m=>allMap[m.id]=m);
+    const visMap = {};
+    msgs.forEach(m=>visMap[m.id]=m);
+    const isAdmin = typeof isAdminUser === 'function' ? isAdminUser(chatUser) : false;
+
+    if (replyToId && (!visMap[replyToId] || !chatUser)) { replyToId = null; replyDraft = ''; }
+    const replyRootId = replyToId ? getThreadRootId(replyToId, visMap) : null;
+
+    const threads = {};
+    const tops = [];
+    msgs.forEach(m=>{
+        const rid = getThreadRootId(m.id, visMap);
+        if (rid === m.id) tops.push(m);
+        else (threads[rid] = threads[rid] || []).push(m);
+    });
+
+    function itemHtml(m, isReply, rootId) {
+        const isMe = chatUser && m.email && chatUser.email === m.email;
+        let parentHtml = '';
+        if (m.parentId && allMap[m.parentId] && (!isReply || m.parentId !== rootId)) {
+            const p = allMap[m.parentId];
+            parentHtml = `<div class="reply-preview">↳ ${escapeHtml(p.name)}: ${escapeHtml((p.text||'').slice(0,50))}</div>`;
+        }
+        return `${parentHtml}
+            <div style="display:flex; gap:8px; align-items:flex-start;">
+                ${renderAvatarHtml(m.name, m.email, getEffectivePhoto(m.email, m.photoUrl))}
+                <div style="flex:1; min-width:0;">
+                    <div class="msg-head" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; gap:6px;">
+                        <span style="display:flex; align-items:baseline; gap:6px; min-width:0; flex:1; overflow:hidden;">
+                            <span class="msg-name" style="font-weight:800; color:#0f172a; font-size:0.8rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;">${escapeHtml(m.name)}</span>
+                        </span>
+                    </div>
+                    <div class="msg-text" style="color:#334155; font-size:0.82rem; line-height:1.4; white-space:pre-wrap; word-break:break-word;">${escapeHtml(m.text)}</div>${m.image ? `<div style="margin-top:8px;"><img src="${m.image}" style="max-width:220px; max-height:220px; border-radius:10px; border:1px solid #e2e8f0; cursor:pointer;" onclick="window.open(this.src, '_blank')"><div style="font-size:0.6rem; color:#64748b; margin-top:2px;">📎 ${escapeHtml(m.fileName||'file')}</div></div>` : ''}
+                    <div class="msg-actions" style="margin-top:6px; display:flex; gap:10px; align-items:center;">
+                        <button onclick="replyMessage('${m.id}')" style="background:none; border:none; font-size:0.68rem; font-weight:700; color:#2563eb; cursor:pointer;">↩️ Balas</button>
+                        ${(isMe||isAdmin)?`<button onclick="deleteMessage('${m.id}')" style="background:none; border:none; font-size:0.68rem; font-weight:700; color:${isAdmin && !isMe ? '#7c3aed' : '#dc2626'}; cursor:pointer;">${isAdmin && !isMe ? '🛡️ Hapus' : '🗑️ Hapus'}</button>`:''}
+                        <span class="msg-time-relative" data-ts="${m.ts}" title="${formatChatTime(m.ts)}" style="margin-left:auto; font-size:0.62rem; color:#94a3b8; font-weight:600; white-space:nowrap; flex-shrink:0; text-align:right;">${formatRelativeTime(m.ts)}</span>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    let htmlOut = '';
+    tops.forEach(m=>{
+        const isMe = chatUser && m.email && chatUser.email === m.email;
+        const replies = threads[m.id] || [];
+        let repliesHtml = '';
+        if (replies.length) {
+            repliesHtml = `<div class="thread-replies">` + replies.map(r=>{
+                const rMe = chatUser && r.email && chatUser.email === r.email;
+                return `<div class="thread-reply${rMe?' is-me':''}${r.id===replyToId?' is-reply-target':''}">${itemHtml(r, true, m.id)}</div>`;
+            }).join('') + `</div>`;
+        }
+        let composerHtml = '';
+        if (replyToId && m.id === replyRootId) {
+            composerHtml = `<div class="inline-reply-box">
+                <div class="inline-reply-label"><span>↩️ Membalas <b>${escapeHtml(visMap[replyToId].name)}</b></span><button onclick="cancelReply()" title="Batal">✕</button></div>
+                <textarea id="inline-reply-input" placeholder="Tulis balasan... (Enter kirim, Shift+Enter baris baru)"></textarea>
+                <div class="inline-reply-actions"><button class="send" onclick="sendMessage(true)">KIRIM BALASAN</button><button onclick="cancelReply()">BATAL</button></div>
+            </div>`;
+        }
+        htmlOut += `<div class="chat-msg${m.id===replyToId?' is-reply-target':''}" id="thread-${m.id}" style="${isMe?'border-color:#93c5fd; background:#eff6ff;':''}">
+            ${itemHtml(m, false, m.id)}
+            ${repliesHtml}
+            ${composerHtml}
+        </div>`;
+    });
+    container.innerHTML = htmlOut;
+    container.dataset.rendered = '1';
+
+    if (firstRender || wasAtBottom || container.clientHeight === 0) container.scrollTop = container.scrollHeight;
+    else container.scrollTop = prevScroll;
+
+    const ta = document.getElementById('inline-reply-input');
+    if (ta) {
+        ta.value = replyDraft;
+        ta.addEventListener('input', ()=>{ replyDraft = ta.value; });
+        ta.addEventListener('keydown', (e)=>{
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(true); }
+            else if (e.key === 'Escape') { cancelReply(); }
+        });
+        if (hadFocus) {
+            ta.focus({ preventScroll: true });
+            try { ta.setSelectionRange(selS, selE); } catch(_) {}
+        }
+    }
+    const ce = document.getElementById('chat-count');
+    if (ce) ce.textContent = msgs.length + ' saran';
+    syncInputArea();
+}
+function replyMessage(id) {
+    if (!chatUser) { pendingReplyId = id; showLoginForm(); return; }
+    const list = typeof getAllMessages === 'function' ? getAllMessages() : getMessages();
+    const m = list.find(x=>x.id===id);
+    if (!m) return;
+    replyToId = id;
+    renderMessages();
+    const ta = document.getElementById('inline-reply-input');
+    if (ta) {
+        ta.focus({ preventScroll: true });
+        ta.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+}
+function cancelReply() {
+    replyToId = null;
+    replyDraft = '';
+    if (typeof renderMessages === 'function') renderMessages();
+}
+async function deleteMessage(id) {
+    if (!confirm('Hapus saran ini?')) return;
+    if (typeof useFirebase !== 'undefined' && useFirebase && db && fsFns) {
+        try {
+            await fsFns.deleteDoc(fsFns.doc(db, 'saran_ishaq_chat', id));
+        } catch (e) {
+            console.warn('Gagal hapus di Firebase', e);
+            alert('Gagal menghapus saran, coba lagi.');
+        }
+    } else {
+        let arr = getMessages();
+        arr = arr.filter(m=>m.id!==id);
+        saveMessages(arr);
+        renderMessages();
+    }
+}
+async function adminClearAll() {
+    if (!isAdminUser(chatUser)) { alert('Hanya MANNIXS-21 yang bisa hapus semua!'); return; }
+    if (!confirm('ADMIN FULL CONTROL: Hapus SEMUA saran? Tidak bisa dibatalkan!')) return;
+    if (typeof useFirebase !== 'undefined' && useFirebase && typeof db !== 'undefined' && db) {
+        const { collection, getDocs, deleteDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+        const snap = await getDocs(collection(db, 'saran_ishaq_chat'));
+        for (const d of snap.docs) { await deleteDoc(doc(db, 'saran_ishaq_chat', d.id)); }
+        alert('Semua saran Firebase dihapus oleh Admin');
+    } else {
+        localStorage.removeItem('ishaq_saran_messages');
+        if (typeof allMessagesCache !== 'undefined') allMessagesCache = [];
+        if (typeof renderMessages === 'function') renderMessages();
+        alert('Semua saran lokal dihapus oleh Admin');
+    }
+}
+function clearChatLocal() {
+    if (!confirm('Hapus semua saran di browser ini? (hanya lokal)')) return;
+    localStorage.removeItem('ishaq_saran_messages');
+    renderMessages();
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+    initFirebase();
+    loadUserSession();
+    const ta = document.getElementById('chat-input');
+    if (ta) {
+        ta.addEventListener('keydown', (e)=>{
+            if (e.key==='Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    }
+});
+initFirebase();
+loadUserSession();
 </script>
 </body>
 </html>
