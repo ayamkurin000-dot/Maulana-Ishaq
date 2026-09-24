@@ -608,18 +608,11 @@
             <label>Nama Lengkap *</label>
             <input type="text" id="chat-name" placeholder="Contoh: Ahmad Fauzi" maxlength="40">
         </div>
-        <div>
-            <label>Provinsi Asal *</label>
-            <select id="chat-provinsi">
-                <option value="">Memuat daftar provinsi...</option>
-            </select>
-            <small id="chat-asal-detect-status" style="display:block; margin-top:3px; font-size:0.62rem; color:#94a3b8; font-weight:600;"></small>
-        </div>
-        <div>
+        <div style="position:relative;">
             <label>Kota / Kabupaten Asal *</label>
-            <select id="chat-kota" disabled>
-                <option value="">-- Pilih provinsi dulu --</option>
-            </select>
+            <input type="text" id="chat-kota" placeholder="Ketik min. 3 huruf, mis: Blitar" autocomplete="off">
+            <div id="chat-kota-suggestions" style="display:none; position:absolute; left:0; right:0; top:100%; z-index:50; background:#ffffff; border:1px solid #cbd5e1; border-top:none; border-radius:0 0 7px 7px; max-height:170px; overflow-y:auto; box-shadow:0 8px 18px rgba(0,0,0,0.14);"></div>
+            <small id="chat-asal-detect-status" style="display:block; margin-top:3px; font-size:0.62rem; color:#94a3b8; font-weight:600;">Ketik nama kota/kabupaten, lalu pilih dari saran atau tulis sendiri</small>
         </div>
         <button class="btn" id="login-submit-btn" disabled style="width:100%; padding:9px; margin-top:4px; font-size:0.82rem;" onclick="loginChat()">MASUK →</button>
         <div style="font-size:0.62rem; color:#94a3b8; text-align:center; line-height:1.4;">Data hanya disimpan di browser ini &amp; database saran (Firebase) khusus halaman ini.</div>
@@ -3079,14 +3072,14 @@ function updateChatNotifBadge() {
 function loadUserSession() {
     try {
         const u = JSON.parse(localStorage.getItem('ishaq_saran_user')||'null');
-        if (u && u.name && u.provinsi && u.kota) {
+        if (u && u.name && u.kota) {
             chatUser = u;
             document.getElementById('chat-login-form').style.display = 'none';
             document.getElementById('chat-guest-bar').style.display = 'none';
             document.getElementById('chat-main').style.display = 'flex';
             document.getElementById('chat-user-name').textContent = u.name;
             const asalEl = document.getElementById('chat-user-asal');
-            if (asalEl) asalEl.textContent = '📍 ' + u.kota + ', ' + u.provinsi;
+            if (asalEl) asalEl.textContent = '📍 ' + u.kota;
             const admBadge = document.getElementById('admin-badge');
             if (admBadge) admBadge.style.display = isAdminUser(u) ? 'inline-block' : 'none';
             if (isAdminUser(u)) {
@@ -3104,136 +3097,95 @@ function loadUserSession() {
     renderMessages();
 }
 
-// ===== PROVINSI & KOTA/KABUPATEN (cascading, wajib diisi) =====
+// ===== KOTA/KABUPATEN ASAL (autocomplete se-Indonesia, boleh diketik manual) =====
 // Sumber data: emsifa/api-wilayah-indonesia (API statis publik, gratis, tanpa key)
 const WILAYAH_API_BASE = 'https://emsifa.github.io/api-wilayah-indonesia/api';
-let wilayahProvinsiList = [];
-let wilayahProvinsiLoaded = false;
+const KOTA_CACHE_KEY = 'ishaq_kota_list_cache_v1';
+const KOTA_CACHE_MAX_AGE = 30 * 24 * 60 * 60 * 1000; // 30 hari
+let allKotaList = [];
+let kotaListLoadingPromise = null;
 function toTitleCaseWilayah(s) {
-    return String(s||'').toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+    return String(s || '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
 }
-async function loadProvinsiOptions() {
-    if (wilayahProvinsiLoaded) return;
-    const sel = document.getElementById('chat-provinsi');
-    if (!sel) return;
-    try {
-        const res = await fetch(WILAYAH_API_BASE + '/provinces.json');
-        const data = await res.json();
-        wilayahProvinsiList = data;
-        sel.innerHTML = '<option value="">-- Pilih Provinsi --</option>' +
-            data.map(p => `<option value="${p.id}">${toTitleCaseWilayah(p.name)}</option>`).join('');
-        wilayahProvinsiLoaded = true;
-    } catch (e) {
-        console.warn('Gagal memuat daftar provinsi', e);
-        sel.innerHTML = '<option value="">Gagal memuat, tap untuk coba lagi</option>';
-        sel.onclick = () => { wilayahProvinsiLoaded = false; loadProvinsiOptions(); };
-    }
+async function loadAllKotaList() {
+    if (allKotaList.length) return allKotaList;
+    if (kotaListLoadingPromise) return kotaListLoadingPromise;
+    kotaListLoadingPromise = (async () => {
+        try {
+            const cached = JSON.parse(localStorage.getItem(KOTA_CACHE_KEY) || 'null');
+            if (cached && Array.isArray(cached.list) && cached.list.length && (Date.now() - cached.ts) < KOTA_CACHE_MAX_AGE) {
+                allKotaList = cached.list;
+                return allKotaList;
+            }
+        } catch (e) {}
+        try {
+            const provRes = await fetch(WILAYAH_API_BASE + '/provinces.json');
+            const provinces = await provRes.json();
+            const results = await Promise.all(provinces.map(p =>
+                fetch(WILAYAH_API_BASE + '/regencies/' + p.id + '.json').then(r => r.json()).catch(() => [])
+            ));
+            const set = new Set();
+            results.forEach(list => (list || []).forEach(k => set.add(toTitleCaseWilayah(k.name))));
+            allKotaList = Array.from(set).sort((a, b) => a.localeCompare(b, 'id'));
+            try { localStorage.setItem(KOTA_CACHE_KEY, JSON.stringify({ ts: Date.now(), list: allKotaList })); } catch (e) {}
+        } catch (e) {
+            console.warn('Gagal memuat daftar kota/kabupaten', e);
+        }
+        return allKotaList;
+    })();
+    return kotaListLoadingPromise;
 }
-async function loadKotaOptions(provinceId) {
-    const kotaSel = document.getElementById('chat-kota');
-    if (!kotaSel) return;
-    if (!provinceId) {
-        kotaSel.innerHTML = '<option value="">-- Pilih provinsi dulu --</option>';
-        kotaSel.disabled = true;
-        updateLoginButtonState();
-        return;
-    }
-    kotaSel.disabled = true;
-    kotaSel.innerHTML = '<option value="">Memuat...</option>';
-    try {
-        const res = await fetch(WILAYAH_API_BASE + '/regencies/' + provinceId + '.json');
-        const data = await res.json();
-        kotaSel.innerHTML = '<option value="">-- Pilih Kota/Kabupaten --</option>' +
-            data.map(k => `<option value="${escapeHtml(toTitleCaseWilayah(k.name))}">${toTitleCaseWilayah(k.name)}</option>`).join('');
-        kotaSel.disabled = false;
-    } catch (e) {
-        console.warn('Gagal memuat daftar kota/kabupaten', e);
-        kotaSel.innerHTML = '<option value="">Gagal memuat, ganti provinsi utk coba lagi</option>';
-    }
+function renderKotaSuggestions(matches) {
+    const box = document.getElementById('chat-kota-suggestions');
+    if (!box) return;
+    box.innerHTML = '';
+    if (!matches.length) { box.style.display = 'none'; return; }
+    matches.slice(0, 8).forEach(name => {
+        const item = document.createElement('div');
+        item.textContent = name;
+        item.style.cssText = 'padding:7px 10px; font-size:0.78rem; cursor:pointer; border-bottom:1px solid #f1f5f9; color:#1e293b;';
+        item.addEventListener('mousedown', (e) => { e.preventDefault(); selectKotaSuggestion(name); });
+        item.addEventListener('mouseenter', () => { item.style.background = '#eff6ff'; });
+        item.addEventListener('mouseleave', () => { item.style.background = '#fff'; });
+        box.appendChild(item);
+    });
+    box.style.display = 'block';
+}
+function selectKotaSuggestion(name) {
+    const input = document.getElementById('chat-kota');
+    if (input) input.value = name;
+    const box = document.getElementById('chat-kota-suggestions');
+    if (box) { box.style.display = 'none'; box.innerHTML = ''; }
     updateLoginButtonState();
 }
-document.addEventListener('DOMContentLoaded', () => {
-    const provSel = document.getElementById('chat-provinsi');
-    if (provSel) {
-        loadProvinsiOptions();
-        provSel.addEventListener('change', () => {
-            loadKotaOptions(provSel.value);
-            const statusEl = document.getElementById('chat-asal-detect-status');
-            if (statusEl && statusEl.textContent.indexOf('terdeteksi otomatis') === -1) statusEl.textContent = '';
-        });
-    }
-    const kotaSel = document.getElementById('chat-kota');
-    if (kotaSel) kotaSel.addEventListener('change', updateLoginButtonState);
-});
-
-// ===== DETEKSI OTOMATIS PROVINSI ASAL (via GPS/geolocation browser) =====
-// Kota/kabupaten tetap WAJIB dipilih manual oleh pengguna setelah provinsi terdeteksi.
-let asalAutoDetectAttempted = false;
-function normalizeProvName(s) {
-    return String(s || '')
-        .toLowerCase()
-        .replace(/provinsi/g, '')
-        .replace(/daerah khusus ibukota/g, '')
-        .replace(/daerah istimewa/g, '')
-        .replace(/\bspecial region of\b/g, '')
-        .replace(/\bjakarta capital region\b/g, 'jakarta')
-        .replace(/^dki\s*/, '')
-        .replace(/^di\s+/, '')
-        .replace(/[^a-z]/g, '')
-        .trim();
-}
-function findProvinceMatch(detectedName) {
-    const norm = normalizeProvName(detectedName);
-    if (!norm || !wilayahProvinsiList.length) return null;
-    let match = wilayahProvinsiList.find(p => normalizeProvName(p.name) === norm);
-    if (match) return match;
-    match = wilayahProvinsiList.find(p => {
-        const pn = normalizeProvName(p.name);
-        return pn && (pn.includes(norm) || norm.includes(pn));
+function setupKotaAutocomplete() {
+    const input = document.getElementById('chat-kota');
+    const box = document.getElementById('chat-kota-suggestions');
+    if (!input || input.dataset.bound) return;
+    input.dataset.bound = '1';
+    input.addEventListener('focus', () => { loadAllKotaList(); });
+    input.addEventListener('input', async () => {
+        updateLoginButtonState();
+        const q = input.value.trim().toLowerCase();
+        if (q.length < 3) { if (box) { box.style.display = 'none'; box.innerHTML = ''; } return; }
+        const list = await loadAllKotaList();
+        const matches = list.filter(k => k.toLowerCase().includes(q));
+        renderKotaSuggestions(matches);
     });
-    return match || null;
+    input.addEventListener('blur', () => {
+        setTimeout(() => { if (box) box.style.display = 'none'; }, 150);
+    });
 }
-async function autoDetectAsal() {
-    if (asalAutoDetectAttempted || (chatUser && chatUser.provinsi)) return;
-    const provSel = document.getElementById('chat-provinsi');
-    const statusEl = document.getElementById('chat-asal-detect-status');
-    if (!provSel || (provSel.value && provSel.value !== '')) return;
-    if (!navigator.geolocation) {
-        if (statusEl) statusEl.textContent = 'Deteksi otomatis tidak didukung, pilih provinsi manual ya';
-        return;
-    }
-    asalAutoDetectAttempted = true;
-    if (statusEl) statusEl.textContent = '🔍 Mendeteksi provinsi asal otomatis...';
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-        try {
-            await loadProvinsiOptions();
-            const { latitude, longitude } = pos.coords;
-            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=5&addressdetails=1`);
-            const data = await res.json();
-            const stateName = data && data.address ? (data.address.state || data.address.province || '') : '';
-            const match = findProvinceMatch(stateName);
-            if (match && provSel && !provSel.value) {
-                provSel.value = String(match.id);
-                loadKotaOptions(match.id);
-                if (statusEl) statusEl.textContent = '📍 Provinsi terdeteksi otomatis: ' + toTitleCaseWilayah(match.name) + ' (bisa diganti jika salah)';
-            } else if (statusEl) {
-                statusEl.textContent = 'Provinsi tidak terdeteksi otomatis, silakan pilih manual';
-            }
-        } catch (e) {
-            console.warn('Gagal deteksi provinsi otomatis', e);
-            if (statusEl) statusEl.textContent = 'Gagal mendeteksi otomatis, silakan pilih provinsi manual';
-        }
-    }, (err) => {
-        console.warn('Izin lokasi ditolak/gagal', err);
-        if (statusEl) statusEl.textContent = 'Izin lokasi ditolak/gagal, silakan pilih provinsi manual';
-    }, { timeout: 8000, maximumAge: 600000 });
-}
+document.addEventListener('DOMContentLoaded', () => {
+    setupKotaAutocomplete();
+});
 function showLoginForm() {
     const guestBar = document.getElementById('chat-guest-bar');
     const form = document.getElementById('chat-login-form');
     if (guestBar) guestBar.style.display = 'none';
     if (form) form.style.display = 'flex';
-    loadProvinsiOptions().then(() => autoDetectAsal());
+    setupKotaAutocomplete();
+    loadAllKotaList();
 }
 function hideLoginForm() {
     pendingReplyId = null;
@@ -3246,18 +3198,15 @@ function loginChat() {
     const name = document.getElementById('chat-name').value.trim();
     const emailEl = document.getElementById('chat-email');
     const email = emailEl ? emailEl.value.trim() : '';
-    const provSel = document.getElementById('chat-provinsi');
-    const kotaSel = document.getElementById('chat-kota');
-    const provinsi = provSel ? (provSel.options[provSel.selectedIndex] ? provSel.options[provSel.selectedIndex].textContent : '') : '';
-    const kota = kotaSel ? kotaSel.value : '';
+    const kotaInput = document.getElementById('chat-kota');
+    const kota = kotaInput ? kotaInput.value.trim() : '';
     if (!name || name.length < 3) { alert('Nama minimal 3 huruf ya'); return; }
-    if (!provSel || !provSel.value) { alert('Pilih provinsi asal dulu ya'); return; }
-    if (!kota) { alert('Pilih kota/kabupaten asal dulu ya'); return; }
+    if (!kota || kota.length < 3) { alert('Isi kota/kabupaten asal minimal 3 huruf ya'); return; }
     if (name.toLowerCase() === 'mannixs-21' && email.toLowerCase() !== 'ayamkurin000@gmail.com') {
         alert('Untuk login sebagai MANNIXS-21 harus pakai email ayamkurin000@gmail.com');
         return;
     }
-    const user = { name, email: (email||name.toLowerCase().replace(/\s+/g,'_')+'@saran.local').toLowerCase(), provinsi, kota, loginAt: new Date().toISOString(), photoUrl: pendingProfilePhoto || null };
+    const user = { name, email: (email||name.toLowerCase().replace(/\s+/g,'_')+'@saran.local').toLowerCase(), kota, loginAt: new Date().toISOString(), photoUrl: pendingProfilePhoto || null };
     localStorage.setItem('ishaq_saran_user', JSON.stringify(user));
     chatUser = user;
     pendingProfilePhoto = null;
@@ -3266,7 +3215,7 @@ function loginChat() {
     document.getElementById('chat-main').style.display = 'flex';
     document.getElementById('chat-user-name').textContent = user.name;
     const asalEl = document.getElementById('chat-user-asal');
-    if (asalEl) asalEl.textContent = '📍 ' + kota + ', ' + provinsi;
+    if (asalEl) asalEl.textContent = '📍 ' + kota;
     const admBadge = document.getElementById('admin-badge');
     if (admBadge) admBadge.style.display = isAdminUser(user) ? 'inline-block' : 'none';
     if (isAdminUser(user)) {
@@ -3292,13 +3241,10 @@ function logoutChat() {
     document.getElementById('chat-guest-bar').style.display = 'block';
     document.getElementById('chat-name').value = '';
     document.getElementById('chat-email').value = '';
-    const provSel = document.getElementById('chat-provinsi');
-    const kotaSel = document.getElementById('chat-kota');
-    if (provSel) provSel.value = '';
-    if (kotaSel) { kotaSel.innerHTML = '<option value="">-- Pilih provinsi dulu --</option>'; kotaSel.disabled = true; }
-    asalAutoDetectAttempted = false;
-    const statusEl = document.getElementById('chat-asal-detect-status');
-    if (statusEl) statusEl.textContent = '';
+    const kotaInput = document.getElementById('chat-kota');
+    if (kotaInput) kotaInput.value = '';
+    const suggBox = document.getElementById('chat-kota-suggestions');
+    if (suggBox) { suggBox.style.display = 'none'; suggBox.innerHTML = ''; }
     pendingProfilePhoto = null;
     const photoPreview = document.getElementById('profile-photo-preview');
     if (photoPreview) photoPreview.innerHTML = '📷';
@@ -3551,14 +3497,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 function updateLoginButtonState() {
     const nameInput = document.getElementById('chat-name');
-    const provSel = document.getElementById('chat-provinsi');
-    const kotaSel = document.getElementById('chat-kota');
+    const kotaInput = document.getElementById('chat-kota');
     const btn = document.getElementById('login-submit-btn');
     if (!nameInput || !btn) return;
     const nameOk = nameInput.value.trim().length >= 3;
-    const provOk = !!(provSel && provSel.value);
-    const kotaOk = !!(kotaSel && kotaSel.value && !kotaSel.disabled);
-    btn.disabled = !(nameOk && provOk && kotaOk);
+    const kotaOk = !!(kotaInput && kotaInput.value.trim().length >= 3);
+    btn.disabled = !(nameOk && kotaOk);
 }
 
 async function sendMessage(fromInline) {
@@ -3575,7 +3519,6 @@ async function sendMessage(fromInline) {
         parentId: inline ? replyToId : null,
         name: chatUser.name,
         email: chatUser.email,
-        provinsi: chatUser.provinsi || '',
         kota: chatUser.kota || '',
         text,
         ts: Date.now()
@@ -3674,7 +3617,7 @@ function renderMessages() {
                         <span style="display:flex; align-items:baseline; gap:6px; min-width:0; flex:1; overflow:hidden;">
                             <span class="msg-name" style="font-weight:800; color:#0f172a; font-size:0.8rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;">${escapeHtml(m.name)}</span>
                         </span>
-                        ${m.kota ? `<span class="chat-asal-badge" title="${escapeHtml((m.kota||'')+', '+(m.provinsi||''))}">📍 ${escapeHtml(m.kota)}</span>` : ''}
+                        ${m.kota ? `<span class="chat-asal-badge" title="${escapeHtml(m.kota||'')}">📍 ${escapeHtml(m.kota)}</span>` : ''}
                     </div>
                     <div class="msg-text" style="color:#334155; font-size:0.82rem; line-height:1.4; white-space:pre-wrap; word-break:break-word;">${escapeHtml(m.text)}</div>${m.image ? `<div style="margin-top:8px;"><img src="${m.image}" style="max-width:220px; max-height:220px; border-radius:10px; border:1px solid #e2e8f0; cursor:pointer;" onclick="window.open(this.src, '_blank')"><div style="font-size:0.6rem; color:#64748b; margin-top:2px;">📎 ${escapeHtml(m.fileName||'file')}</div></div>` : ''}
                     <div class="msg-actions" style="margin-top:6px; display:flex; gap:10px; align-items:center;">
