@@ -1834,6 +1834,38 @@ function zoomAboutCenter(mult, dur) {
     applyTransform();
 }
 
+
+// Hitung transform agar kotak leluhur Dewi Sekardadu s/d kotak Syekh Maulana Ishaq
+// (badan kotak saja, tanpa nub) tepat berada di tengah layar dan sebesar mungkin.
+function sekardaduToIshaqTarget() {
+    const anc = document.getElementById('ancestor-chain');
+    const ishaq = document.getElementById('node-maulana-ishaq');
+    if (!anc || !ishaq) return null;
+    const body = ishaq.querySelector('.real-body') || ishaq;
+    let sc;
+    try { sc = new DOMMatrix(getComputedStyle(contEl).transform).a; } catch (e) { sc = tState.k; }
+    if (!sc) return null;
+    const cR = contEl.getBoundingClientRect();
+    const aR = anc.getBoundingClientRect(), bR = body.getBoundingClientRect();
+    const minX = Math.min(aR.left, bR.left), maxX = Math.max(aR.right, bR.right);
+    const minY = Math.min(aR.top, bR.top),  maxY = Math.max(aR.bottom, bR.bottom);
+    const lx = (minX - cR.left) / sc, ly = (minY - cR.top) / sc;
+    const w = (maxX - minX) / sc, h = (maxY - minY) / sc;
+
+    const headerEl = document.getElementById('header');
+    const topOff = (headerEl ? headerEl.offsetHeight : 90) + 10;
+    const botOff = 52;
+    const W = wrapEl.clientWidth, availH = wrapEl.clientHeight - topOff - botOff;
+    if (availH <= 0 || W <= 0) return null;
+    const NUB_ROOM = 60;   // ruang untuk nub/tombol (+) di sisi kanan, disisakan simetris
+    const k = Math.min(SCALE_MAX, Math.max(SCALE_MIN, Math.min((W - 20) / (w + NUB_ROOM), availH / h)));
+    return {
+        k,
+        x: W / 2 - (lx + w / 2) * k,
+        y: topOff + (availH - h * k) / 2 - ly * k
+    };
+}
+
 function startPinchDemo() {
     if (demoRunning || demoDone) return;
     demoDone = true; demoRunning = true; demoStartAt = Date.now();
@@ -1843,9 +1875,29 @@ function startPinchDemo() {
         clearTimeout(toastTimer2);
         toastTimer2 = setTimeout(() => toast.classList.remove('show'), 5200);
     }
-    // zoom out 1x, lalu zoom in 3x (tiap langkah dipicu mengikuti gerakan jari)
-    const plan = [ [700, 0.7, 550], [1650, 1.45, 600], [2450, 1.45, 600], [3250, 1.45, 600] ];
-    plan.forEach(([t, mult, dur]) => demoTimers.push(setTimeout(() => zoomAboutCenter(mult, dur), t)));
+    // zoom out 1x, lalu zoom in 3x. Posisi AKHIR: kotak "Leluhur Dewi Sekardadu" sampai
+    // kotak "Syekh Maulana Ishaq" tepat di tengah layar (horizontal & vertikal).
+    demoTimers.push(setTimeout(() => zoomAboutCenter(0.7, 550), 700));
+    demoTimers.push(setTimeout(() => {
+        const T = sekardaduToIshaqTarget();
+        const S = { x: tState.x, y: tState.y, k: tState.k };
+        const steps = [1 / 3, 2 / 3, 1];
+        steps.forEach((frac, i) => demoTimers.push(setTimeout(() => {
+            let nk, nx, ny;
+            if (!T || T.k <= S.k * 1.05) {          // cadangan: zoom in biasa
+                nk = Math.min(SCALE_MAX, S.k * Math.pow(1.45, i + 1));
+                const cx = wrapEl.clientWidth / 2, cy = wrapEl.clientHeight / 2;
+                nx = cx - (cx - S.x) / S.k * nk; ny = cy - (cy - S.y) / S.k * nk;
+            } else {
+                nk = S.k * Math.pow(T.k / S.k, frac);          // skala naik bertahap
+                const f = (nk - S.k) / (T.k - S.k);            // porsi gerak searah zoom
+                nx = S.x + (T.x - S.x) * f; ny = S.y + (T.y - S.y) * f;
+            }
+            tState.x = nx; tState.y = ny; tState.k = nk;
+            contEl.style.transition = 'transform 600ms ease-in-out';
+            applyTransform();
+        }, i * 800)));
+    }, 1650));
     demoTimers.push(setTimeout(() => { demoRunning = false; contEl.style.transition = ''; }, 3950));
 }
 function cancelPinchDemo() {
