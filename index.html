@@ -3703,8 +3703,8 @@ async function deleteMessage(id) {
         try {
             await fsFns.deleteDoc(fsFns.doc(db, 'saran_ishaq_chat', id));
         } catch (e) {
-            console.warn('Gagal hapus di Firebase', e);
-            alert('Gagal menghapus saran, coba lagi.');
+            console.error('Gagal hapus di Firebase:', e);
+            alert('Gagal menghapus saran.\nKode error: ' + (e && e.code ? e.code : 'tidak diketahui') + '\n' + (e && e.message ? e.message : e) + '\n\nKemungkinan besar Firestore Security Rules belum mengizinkan aksi "delete" pada koleksi saran_ishaq_chat.');
         }
     } else {
         let arr = getMessages();
