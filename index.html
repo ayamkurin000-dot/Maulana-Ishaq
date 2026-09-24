@@ -2856,14 +2856,14 @@ async function initFirebase() {
     if (typeof USE_FIREBASE === 'undefined' || !USE_FIREBASE) return false;
     try {
         const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-        const { getFirestore, collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, doc, deleteDoc, getDocs, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+        const { getFirestore, collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, doc, deleteDoc, updateDoc, getDocs, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
         const { getAuth, signInAnonymously } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
         firebaseApp = initializeApp(FIREBASE_CONFIG);
         db = getFirestore(firebaseApp);
         auth = getAuth(firebaseApp);
         await signInAnonymously(auth);
         useFirebase = true;
-        fsFns = { collection, addDoc, serverTimestamp, doc, deleteDoc, getDocs, setDoc };
+        fsFns = { collection, addDoc, serverTimestamp, doc, deleteDoc, updateDoc, getDocs, setDoc };
         const q = query(collection(db, 'saran_ishaq_chat'), orderBy('ts','asc'));
         onSnapshot(q, (snap)=>{
             const msgs = [];
@@ -2891,6 +2891,9 @@ let chatUser = null;
 let replyToId = null;
 let pendingReplyId = null;
 let replyDraft = '';
+let editingMessageId = null;
+let editDraft = '';
+const EDIT_WINDOW_MS = 10 * 60 * 1000; // batas waktu edit/hapus sendiri: 10 menit
 let profilePhotoMap = {};
 
 function getEffectivePhoto(email, fallbackPhoto) {
@@ -3606,11 +3609,30 @@ function renderMessages() {
 
     function itemHtml(m, isReply, rootId) {
         const isMe = chatUser && m.email && chatUser.email === m.email;
+        const withinEditWindow = (Date.now() - m.ts) < EDIT_WINDOW_MS;
+        const canEdit = isMe && withinEditWindow;
+        const canDelete = isAdmin || (isMe && withinEditWindow);
+        const isEditingThis = editingMessageId === m.id;
         let parentHtml = '';
         if (m.parentId && allMap[m.parentId] && (!isReply || m.parentId !== rootId)) {
             const p = allMap[m.parentId];
             parentHtml = `<div class="reply-preview">↳ ${escapeHtml(p.name)}: ${escapeHtml((p.text||'').slice(0,50))}</div>`;
         }
+        const bodyHtml = isEditingThis
+            ? `<div class="msg-text-edit-wrap" style="margin-top:2px;">
+                    <textarea id="edit-input-${m.id}" style="width:100%; min-height:56px; font-size:0.82rem; font-family:inherit; padding:6px 8px; border:1px solid #93c5fd; border-radius:8px; resize:vertical; box-sizing:border-box;"></textarea>
+                    <div style="display:flex; gap:8px; margin-top:6px;">
+                        <button onclick="saveEditedMessage('${m.id}')" style="background:#2563eb; color:#fff; border:none; padding:5px 12px; border-radius:6px; font-size:0.7rem; font-weight:700; cursor:pointer;">Simpan</button>
+                        <button onclick="cancelEditMessage()" style="background:#f1f5f9; color:#475569; border:none; padding:5px 12px; border-radius:6px; font-size:0.7rem; font-weight:700; cursor:pointer;">Batal</button>
+                    </div>
+                </div>`
+            : `<div class="msg-text" style="color:#334155; font-size:0.82rem; line-height:1.4; white-space:pre-wrap; word-break:break-word;">${escapeHtml(m.text)}${m.editedAt ? ' <span style="font-size:0.6rem; color:#94a3b8; font-weight:600;">(diedit)</span>' : ''}</div>${m.image ? `<div style="margin-top:8px;"><img src="${m.image}" style="max-width:220px; max-height:220px; border-radius:10px; border:1px solid #e2e8f0; cursor:pointer;" onclick="window.open(this.src, '_blank')"><div style="font-size:0.6rem; color:#64748b; margin-top:2px;">📎 ${escapeHtml(m.fileName||'file')}</div></div>` : ''}
+                <div class="msg-actions" style="margin-top:6px; display:flex; gap:10px; align-items:center;">
+                    <button onclick="replyMessage('${m.id}')" style="background:none; border:none; font-size:0.68rem; font-weight:700; color:#2563eb; cursor:pointer;">↩️ Balas</button>
+                    ${canEdit?`<button onclick="editMessageStart('${m.id}')" style="background:none; border:none; font-size:0.68rem; font-weight:700; color:#0891b2; cursor:pointer;">✏️ Edit</button>`:''}
+                    ${canDelete?`<button onclick="deleteMessage('${m.id}')" style="background:none; border:none; font-size:0.68rem; font-weight:700; color:${isAdmin && !isMe ? '#7c3aed' : '#dc2626'}; cursor:pointer;">${isAdmin && !isMe ? '🛡️ Hapus' : '🗑️ Hapus'}</button>`:''}
+                    <span class="msg-time-relative" data-ts="${m.ts}" title="${formatChatTime(m.ts)}" style="margin-left:auto; font-size:0.62rem; color:#94a3b8; font-weight:600; white-space:nowrap; flex-shrink:0; text-align:right;">${formatRelativeTime(m.ts)}</span>
+                </div>`;
         return `${parentHtml}
             <div style="display:flex; gap:8px; align-items:flex-start;">
                 ${renderAvatarHtml(m.name, m.email, getEffectivePhoto(m.email, m.photoUrl))}
@@ -3621,12 +3643,7 @@ function renderMessages() {
                         </span>
                         ${m.kota ? `<span class="chat-asal-badge" title="${escapeHtml(m.kota||'')}">📍 ${escapeHtml(m.kota)}</span>` : ''}
                     </div>
-                    <div class="msg-text" style="color:#334155; font-size:0.82rem; line-height:1.4; white-space:pre-wrap; word-break:break-word;">${escapeHtml(m.text)}</div>${m.image ? `<div style="margin-top:8px;"><img src="${m.image}" style="max-width:220px; max-height:220px; border-radius:10px; border:1px solid #e2e8f0; cursor:pointer;" onclick="window.open(this.src, '_blank')"><div style="font-size:0.6rem; color:#64748b; margin-top:2px;">📎 ${escapeHtml(m.fileName||'file')}</div></div>` : ''}
-                    <div class="msg-actions" style="margin-top:6px; display:flex; gap:10px; align-items:center;">
-                        <button onclick="replyMessage('${m.id}')" style="background:none; border:none; font-size:0.68rem; font-weight:700; color:#2563eb; cursor:pointer;">↩️ Balas</button>
-                        ${(isMe||isAdmin)?`<button onclick="deleteMessage('${m.id}')" style="background:none; border:none; font-size:0.68rem; font-weight:700; color:${isAdmin && !isMe ? '#7c3aed' : '#dc2626'}; cursor:pointer;">${isAdmin && !isMe ? '🛡️ Hapus' : '🗑️ Hapus'}</button>`:''}
-                        <span class="msg-time-relative" data-ts="${m.ts}" title="${formatChatTime(m.ts)}" style="margin-left:auto; font-size:0.62rem; color:#94a3b8; font-weight:600; white-space:nowrap; flex-shrink:0; text-align:right;">${formatRelativeTime(m.ts)}</span>
-                    </div>
+                    ${bodyHtml}
                 </div>
             </div>`;
     }
@@ -3675,6 +3692,21 @@ function renderMessages() {
             try { ta.setSelectionRange(selS, selE); } catch(_) {}
         }
     }
+    if (editingMessageId) {
+        const editTa = document.getElementById('edit-input-' + editingMessageId);
+        if (editTa) {
+            const original = (allMap[editingMessageId] || {}).text || '';
+            editTa.value = (editDraft !== null && editDraft !== undefined) ? editDraft : original;
+            editTa.addEventListener('input', ()=>{ editDraft = editTa.value; });
+            editTa.addEventListener('keydown', (e)=>{
+                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveEditedMessage(editingMessageId); }
+                else if (e.key === 'Escape') { cancelEditMessage(); }
+            });
+            editTa.focus({ preventScroll: true });
+            const len = editTa.value.length;
+            try { editTa.setSelectionRange(len, len); } catch(_) {}
+        }
+    }
     const ce = document.getElementById('chat-count');
     if (ce) ce.textContent = msgs.length + ' saran';
     syncInputArea();
@@ -3697,7 +3729,65 @@ function cancelReply() {
     replyDraft = '';
     if (typeof renderMessages === 'function') renderMessages();
 }
+function editMessageStart(id) {
+    const list = typeof getAllMessages === 'function' ? getAllMessages() : getMessages();
+    const m = list.find(x=>x.id===id);
+    if (!m) return;
+    const isMe = chatUser && m.email && chatUser.email === m.email;
+    if (!isMe) return;
+    if (Date.now() - m.ts >= EDIT_WINDOW_MS) { alert('Waktu edit (10 menit) untuk saran ini sudah habis.'); renderMessages(); return; }
+    editingMessageId = id;
+    editDraft = m.text || '';
+    renderMessages();
+}
+function cancelEditMessage() {
+    editingMessageId = null;
+    editDraft = '';
+    renderMessages();
+}
+async function saveEditedMessage(id) {
+    const ta = document.getElementById('edit-input-' + id);
+    const newText = ta ? ta.value.trim() : '';
+    if (!newText) { alert('Isi saran tidak boleh kosong'); return; }
+    const list = typeof getAllMessages === 'function' ? getAllMessages() : getMessages();
+    const m = list.find(x=>x.id===id);
+    if (!m) { editingMessageId = null; editDraft = ''; renderMessages(); return; }
+    const isMe = chatUser && m.email && chatUser.email === m.email;
+    if (!isMe || Date.now() - m.ts >= EDIT_WINDOW_MS) {
+        alert('Waktu edit (10 menit) untuk saran ini sudah habis.');
+        editingMessageId = null; editDraft = '';
+        renderMessages();
+        return;
+    }
+    if (typeof useFirebase !== 'undefined' && useFirebase && db && fsFns && fsFns.updateDoc) {
+        try {
+            await fsFns.updateDoc(fsFns.doc(db, 'saran_ishaq_chat', id), { text: newText, editedAt: Date.now() });
+        } catch (e) {
+            console.error('Gagal menyimpan perubahan saran:', e);
+            alert('Gagal menyimpan perubahan.\nKode error: ' + (e && e.code ? e.code : 'tidak diketahui') + '\n' + (e && e.message ? e.message : e));
+            return;
+        }
+    } else {
+        let arr = getMessages();
+        arr = arr.map(x => x.id === id ? { ...x, text: newText, editedAt: Date.now() } : x);
+        saveMessages(arr);
+    }
+    editingMessageId = null;
+    editDraft = '';
+    renderMessages();
+}
 async function deleteMessage(id) {
+    const list = typeof getAllMessages === 'function' ? getAllMessages() : getMessages();
+    const m = list.find(x=>x.id===id);
+    if (m) {
+        const isAdmin = typeof isAdminUser === 'function' ? isAdminUser(chatUser) : false;
+        const isMe = chatUser && m.email && chatUser.email === m.email;
+        const withinWindow = (Date.now() - m.ts) < EDIT_WINDOW_MS;
+        if (!isAdmin && !(isMe && withinWindow)) {
+            alert(isMe ? 'Waktu hapus sendiri (10 menit) sudah habis. Hubungi admin untuk menghapusnya.' : 'Kamu tidak punya izin menghapus saran ini.');
+            return;
+        }
+    }
     if (!confirm('Hapus saran ini?')) return;
     if (typeof useFirebase !== 'undefined' && useFirebase && db && fsFns) {
         try {
