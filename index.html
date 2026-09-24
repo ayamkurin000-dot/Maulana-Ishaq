@@ -1721,8 +1721,41 @@ function centeredTransform(k) {
     return { x: tx, y: ty, k: scale };
 }
 
+// ===== FIT AWAL: seluruh shape dari NABI MUHAMMAD SAW s/d SYEKH MAULANA ISHAQ
+// dipas ke layar (tidak terpotong), termasuk di layar HP. Skala otomatis
+// diperkecil sesuai kebutuhan (min SCALE_MIN, maks 1x). =====
+function fitToIshaqTransform() {
+    const target = document.getElementById('node-maulana-ishaq');
+    if (!target || !descOpen) return null;
+    const cRect = contEl.getBoundingClientRect();
+    const tRect = target.getBoundingClientRect();
+    const s = tState.k || 1;
+    if (!tRect.width || !cRect.width) return null;
+
+    // kotak pembatas (koordinat lokal container, skala 1)
+    const minX = 0, minY = 0;
+    const maxX = Math.max(contEl.offsetWidth, (tRect.right - cRect.left) / s);
+    const maxY = Math.max(contEl.offsetHeight, (tRect.bottom - cRect.top) / s);
+    const w = maxX - minX, h = maxY - minY;
+
+    const headerEl = document.getElementById('header');
+    const topOffset = (headerEl ? headerEl.offsetHeight : 90) + 10;
+    const bottomOffset = 52;   // ruang tombol RUJUKAN / CHAT BANI & kredit
+    const sidePad = 10;
+    const availW = wrapEl.clientWidth - sidePad * 2;
+    const availH = wrapEl.clientHeight - topOffset - bottomOffset;
+    if (availW <= 0 || availH <= 0) return null;
+
+    const k = Math.min(1, Math.max(SCALE_MIN, Math.min(availW / w, availH / h)));
+    return {
+        x: (wrapEl.clientWidth - w * k) / 2 - minX * k,
+        y: topOffset + Math.max(0, (availH - h * k) / 2) - minY * k,
+        k
+    };
+}
+
 function centerChart(animate) {
-    const t = centeredTransform(1);
+    const t = fitToIshaqTransform() || centeredTransform(1);
     if (animate) {
         contEl.style.transition = 'transform 0.5s ease';
         setTimeout(() => { contEl.style.transition = ''; }, 520);
@@ -2143,6 +2176,11 @@ toggleDescTree();
 setTimeout(() => {
     buildAncestorChain(document.getElementById('node-maulana-ishaq'));
 }, 50);
+
+// Setelah cabang terbuka & animasinya selesai, pas-kan tampilan awal supaya
+// Nabi Muhammad SAW s/d Syekh Maulana Ishaq terlihat utuh di layar (termasuk HP).
+setTimeout(() => centerChart(false), 450);
+setTimeout(() => centerChart(false), 900);
 </script>
 </body>
 </html>
