@@ -178,6 +178,43 @@
     /* ===== Efek MENGAMBANG untuk kotak Nabi Muhammad SAW s/d Syekh Jumadil Qubro =====
        svg dibiarkan overflow: visible supaya bayangan tidak terpotong batas viewBox. */
     .node-block > svg { overflow: visible; }
+
+    /* ===== Petunjuk "Ketuk disini": tangan menunjuk shape Syekh Jumadil Qubro ===== */
+    .tap-hint {
+        display: flex; flex-direction: column; align-items: center;
+        margin-top: 6px; cursor: pointer; user-select: none; -webkit-user-select: none;
+    }
+    .tap-hand {
+        width: 52px; height: 60px; overflow: visible;
+        margin-left: 9px; /* ujung jari telunjuk tepat di tengah shape */
+        filter: drop-shadow(0 4px 3px rgba(0,0,0,0.35));
+        animation: tapBob 1.2s ease-in-out infinite;
+    }
+    .tap-ring {
+        fill: none; stroke: #2563eb; stroke-width: 3; opacity: 0;
+        transform-box: fill-box; transform-origin: center;
+        animation: tapRing 1.2s ease-out infinite;
+    }
+    .tap-label {
+        margin-top: 4px; font-size: 12px; font-weight: 800; color: #0f172a;
+        background: #ffffff; border: 1px solid #cbd5e1; border-radius: 999px;
+        padding: 3px 12px; white-space: nowrap;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+        animation: tapPulse 1.2s ease-in-out infinite;
+    }
+    @keyframes tapBob {
+        0%, 100% { transform: translateY(10px); }
+        45%, 55% { transform: translateY(-4px); }
+    }
+    @keyframes tapRing {
+        0%, 35% { opacity: 0; transform: scale(0.4); }
+        50%     { opacity: 0.9; transform: scale(1); }
+        100%    { opacity: 0; transform: scale(2); }
+    }
+    @keyframes tapPulse {
+        0%, 100% { transform: scale(1); }
+        50%      { transform: scale(1.06); }
+    }
     .node-block > svg .real-body {
         filter: drop-shadow(0 10px 9px rgba(0,0,0,0.38)) drop-shadow(0 3px 3px rgba(0,0,0,0.28));
     }
@@ -796,8 +833,8 @@ function renderChain() {
             badgeDiv.id = 'desc-badge';
             badgeDiv.title = 'Tampilkan keturunan Syekh Jumadil Qubro';
             badgeDiv.innerHTML = plusIconSVG();
-            badgeDiv.addEventListener('click', (e) => { e.stopPropagation(); toggleDescTree(); });
-            svg.addEventListener('click', () => toggleDescTree());
+            badgeDiv.addEventListener('click', (e) => { e.stopPropagation(); userToggleDesc(); });
+            svg.addEventListener('click', () => userToggleDesc());
 
             // ----- Hitung titik tengah NUB baterai secara presisi -----
             // Nub digambar drawBatteryShape() di x = w (badan shape) + nubBaseW + nubW,
@@ -820,6 +857,29 @@ function renderChain() {
             // supaya garis lengkung penghubung ke keturunan benar-benar center terhadap nub.
             anchorDiv.style.top = nubCenterY + 'px';
             block.appendChild(anchorDiv);
+
+            // ----- Petunjuk tangan + teks "Ketuk disini" di BAWAH shape Jumadil Qubro -----
+            const hint = document.createElement('div');
+            hint.id = 'tap-hint';
+            hint.className = 'tap-hint';
+            hint.style.transform = `translateX(-${CONNECTOR_CENTER_SHIFT}px)`;
+            const handShapes = [
+                '<rect x="5" y="36" width="18" height="10" rx="5" transform="rotate(-28 14 41)"/>',
+                '<rect x="14" y="30" width="39" height="30" rx="13"/>',
+                '<rect x="18" y="2" width="11" height="40" rx="5.5"/>',
+                '<rect x="28" y="22" width="10" height="26" rx="5"/>',
+                '<rect x="37" y="25" width="9" height="24" rx="4.5"/>',
+                '<rect x="45" y="29" width="8" height="20" rx="4"/>'
+            ].join('');
+            hint.innerHTML =
+                '<svg class="tap-hand" viewBox="0 0 56 64" aria-hidden="true">' +
+                    '<circle class="tap-ring" cx="23.5" cy="2" r="6"/>' +
+                    '<g fill="#1e293b" stroke="#1e293b" stroke-width="4" stroke-linejoin="round">' + handShapes + '</g>' +
+                    '<g fill="#ffe0bd" stroke="none">' + handShapes + '</g>' +
+                '</svg>' +
+                '<div class="tap-label">Ketuk disini</div>';
+            hint.addEventListener('click', () => userToggleDesc());
+            block.appendChild(hint);
         }
 
         container.appendChild(block);
@@ -1567,6 +1627,11 @@ function buildDescTree() {
 }
 
 let descOpen = false;
+// dipakai untuk KLIK pengguna: buka/tutup lalu pas-kan ulang tampilan dgn animasi halus
+function userToggleDesc() {
+    toggleDescTree();
+    setTimeout(() => centerChart(true), 450);
+}
 function toggleDescTree() {
     buildDescTree();
     const anchor = document.getElementById('desc-anchor');
@@ -1580,6 +1645,21 @@ function toggleDescTree() {
     if (badge) {
         badge.innerHTML = descOpen ? minusIconSVG() : plusIconSVG();
         badge.title = descOpen ? 'Tutup keturunan Syekh Jumadil Qubro' : 'Tampilkan keturunan Syekh Jumadil Qubro';
+    }
+    // petunjuk tangan hilang begitu cabang dibuka pertama kali
+    const hintEl = document.getElementById('tap-hint');
+    if (descOpen && hintEl) hintEl.style.display = 'none';
+    // kotak leluhur Dewi Sekardadu ikut muncul/hilang bersama cabang keturunan
+    const anc = document.getElementById('ancestor-chain');
+    if (descOpen) {
+        if (!anc) {
+            setTimeout(() => buildAncestorChain(document.getElementById('node-maulana-ishaq')), 50);
+        } else {
+            anc.style.display = '';
+            setTimeout(() => anc._reposition && anc._reposition(), 350);
+        }
+    } else if (anc) {
+        anc.style.display = 'none';
     }
     showToast(descOpen
         ? 'Menampilkan 3 putra Syekh Jumadil Qubro di sebelah kanan.'
@@ -1611,6 +1691,7 @@ function buildAncestorChain(targetEl) {
     wrap.id = 'ancestor-chain';
     wrap.style.position = 'absolute';
     wrap.style.zIndex = 3;
+    wrap.style.visibility = 'hidden'; // ditampilkan setelah posisinya dihitung
     wrap.style.width = ancestorWidth + 'px';
     wrap.style.boxSizing = 'border-box';
     wrap.style.background = '#9ccb6b';
@@ -1670,6 +1751,7 @@ function buildAncestorChain(targetEl) {
     // dengan garis lengkung menuju shape Syekh Maulana Ishaq & Dewi
     // Sekardadu. =====
     function positionAndConnect() {
+        if (wrap.style.display === 'none') return;
         const containerRect = container.getBoundingClientRect();
         const targetRect = targetEl.getBoundingClientRect();
         const ibrahimEl = document.getElementById('node-ibrahim-asmoro-qondi');
@@ -1704,6 +1786,7 @@ function buildAncestorChain(targetEl) {
 
         wrap.style.left = leftPx + 'px';
         wrap.style.top = topPx + 'px';
+        wrap.style.visibility = 'visible';
 
         // garis penghubung ke kotak Syekh Maulana Ishaq dihapus atas permintaan
         let overlay = document.getElementById('ancestor-link-overlay');
@@ -1711,6 +1794,7 @@ function buildAncestorChain(targetEl) {
     }
 
     // tunggu transisi buka anchor (0.25s) selesai supaya ukuran/posisi terukur akurat
+    wrap._reposition = positionAndConnect;
     setTimeout(positionAndConnect, 350);
     window.addEventListener('resize', () => setTimeout(positionAndConnect, 60));
 }
@@ -1740,18 +1824,24 @@ function centeredTransform(k) {
 // dipas ke layar (tidak terpotong), termasuk di layar HP. Skala otomatis
 // diperkecil sesuai kebutuhan (min SCALE_MIN, maks 1x). =====
 function fitToIshaqTransform() {
-    const target = document.getElementById('node-maulana-ishaq');
-    if (!target || !descOpen) return null;
-    const cRect = contEl.getBoundingClientRect();
-    const tRect = target.getBoundingClientRect();
-    const s = tState.k || 1;
-    if (!tRect.width || !cRect.width) return null;
-
-    // kotak pembatas (koordinat lokal container, skala 1)
+    let w, h;
     const minX = 0, minY = 0;
-    const maxX = Math.max(contEl.offsetWidth, (tRect.right - cRect.left) / s);
-    const maxY = Math.max(contEl.offsetHeight, (tRect.bottom - cRect.top) / s);
-    const w = maxX - minX, h = maxY - minY;
+    if (descOpen) {
+        // cabang terbuka: pas-kan Nabi Muhammad SAW s/d Syekh Maulana Ishaq
+        const target = document.getElementById('node-maulana-ishaq');
+        if (!target) return null;
+        const cRect = contEl.getBoundingClientRect();
+        const tRect = target.getBoundingClientRect();
+        const s = tState.k || 1;
+        if (!tRect.width || !cRect.width) return null;
+        const maxX = Math.max(contEl.offsetWidth, (tRect.right - cRect.left) / s);
+        const maxY = Math.max(contEl.offsetHeight, (tRect.bottom - cRect.top) / s);
+        w = maxX - minX; h = maxY - minY;
+    } else {
+        // tampilan awal (collapse): pas-kan Nabi s/d Jumadil Qubro + petunjuk tangan
+        w = contEl.offsetWidth + 6; h = contEl.offsetHeight;
+        if (!w || !h) return null;
+    }
 
     const headerEl = document.getElementById('header');
     const topOffset = (headerEl ? headerEl.offsetHeight : 90) + 10;
@@ -2187,15 +2277,13 @@ function showToast(msg) {
 // SAMA-SAMA langsung terlihat tanpa perlu mengklik tombol apapun.
 // Ditaruh di AKHIR skrip (bukan di tengah) supaya semua fungsi & variabel yang
 // dipakainya (showToast, toastTimer, dst.) sudah pasti siap terlebih dahulu. =====
-toggleDescTree();
-setTimeout(() => {
-    buildAncestorChain(document.getElementById('node-maulana-ishaq'));
-}, 50);
+// Tampilan awal: cabang Jumadil Qubro dalam posisi COLLAPSE (tertutup). Tangan
+// "Ketuk disini" menunjuk shape Jumadil Qubro; ketuk untuk membuka cabang.
 
 // Setelah cabang terbuka & animasinya selesai, pas-kan tampilan awal supaya
 // Nabi Muhammad SAW s/d Syekh Maulana Ishaq terlihat utuh di layar (termasuk HP).
-setTimeout(() => centerChart(false), 450);
-setTimeout(() => centerChart(false), 900);
+setTimeout(() => centerChart(false), 100);
+setTimeout(() => centerChart(false), 500);
 </script>
 </body>
 </html>
