@@ -62,7 +62,7 @@
 
     #panel-switcher {
         position: fixed; bottom: 10px; left: 14px; z-index: 9999;
-        display: flex; border-radius: 6px; overflow: hidden;
+        display: flex; border-radius: 6px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.12); border: 1px solid #e2e8f0;
     }
     /* ukuran tombol disamakan dengan kotak "DIBUAT OLEH" (#credit-tag) */
@@ -71,6 +71,8 @@
         font-family: inherit; font-size: 0.6rem; line-height: 1.25;
         padding: 5px 10px; cursor: pointer; letter-spacing: 0.2px;
     }
+    #panel-switcher button:first-child { border-radius: 6px 0 0 6px; }
+    #panel-switcher button:last-child { border-radius: 0 6px 6px 0; }
     #panel-switcher button.active { background: #2563eb; color: #fff; }
     #panel-switcher button:hover:not(.active) { background: #f1f5f9; }
 
