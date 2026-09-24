@@ -173,6 +173,12 @@
         font-style: italic;
     }
     .node-shape .real-body { filter: drop-shadow(0 3px 6px rgba(0,0,0,0.18)); }
+    /* ===== Efek MENGAMBANG untuk kotak Nabi Muhammad SAW s/d Syekh Jumadil Qubro =====
+       svg dibiarkan overflow: visible supaya bayangan tidak terpotong batas viewBox. */
+    .node-block > svg { overflow: visible; }
+    .node-block > svg .real-body {
+        filter: drop-shadow(0 10px 9px rgba(0,0,0,0.38)) drop-shadow(0 3px 3px rgba(0,0,0,0.28));
+    }
 
     /* ===== SEARCH BOX - 1 BARIS NAMA SAJA ===== */
     #search-wrap {
@@ -1665,7 +1671,11 @@ function buildAncestorChain(targetEl) {
         const containerRect = container.getBoundingClientRect();
         const targetRect = targetEl.getBoundingClientRect();
         const ibrahimEl = document.getElementById('node-ibrahim-asmoro-qondi');
-        const ibrahimRect = ibrahimEl ? ibrahimEl.getBoundingClientRect() : targetRect;
+        // pakai BADAN shape (path .real-body) saja, tanpa nub baterai, supaya
+        // lebar & titik tengah kotak leluhur persis sama dengan badan kotak Ibrahim.
+        const ibrahimBody = ibrahimEl ? ibrahimEl.querySelector('.real-body') : null;
+        const ibrahimRect = ibrahimBody ? ibrahimBody.getBoundingClientRect()
+            : (ibrahimEl ? ibrahimEl.getBoundingClientRect() : targetRect);
         const scale = (tState && tState.k) || 1;
 
         const targetLocalX = (targetRect.left - containerRect.left) / scale;
@@ -1676,6 +1686,9 @@ function buildAncestorChain(targetEl) {
         // (bukan sisi kiri), supaya mata panah tidak tertutup/menabrak shape.
         const targetBottomX = targetLocalX + targetW / 2;
         const targetBottomY = targetLocalY + targetH / 2;
+        // samakan lebar kotak leluhur dengan lebar badan kotak Ibrahim (tanpa nub)
+        const bodyW = ibrahimRect.width / scale;
+        if (ibrahimBody && bodyW > 0) wrap.style.width = bodyW + 'px';
         const wrapW = wrap.offsetWidth;
         const wrapH = wrap.offsetHeight;
 
