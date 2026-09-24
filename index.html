@@ -1813,9 +1813,54 @@ function showPanHint() {
     requestAnimationFrame(() => el.classList.add('show'));
     // jaga-jaga: bila tidak ada interaksi, lanjut sendiri ke petunjuk cubit setelah 6 detik
     clearTimeout(panHintTimer);
-    panHintTimer = setTimeout(() => { if (hintStage === 1) { endPanHint(); startPinchDemo(); } }, 6000);
+    panHintTimer = setTimeout(() => { if (hintStage === 1) { endPanHint('return'); startPinchDemo(); } }, 7800);
+    // animasi geser NYATA pada silsilah (kanan, bawah, kiri, atas) mengikuti gerak panah;
+    // dimulai setelah pas-layar awal selesai supaya posisi dasarnya sudah benar
+    setTimeout(() => { if (hintStage === 1) startPanDemo(); }, 1000);
 }
-function endPanHint() {
+
+// ----- Demo geser: silsilah ikut bergerak kanan -> bawah -> kiri -> atas (siklus 2,2 dtk,
+//       sama persis dengan animasi ikon panah 4 arah) -----
+let panDemoTimers = [], panDemoBase = null;
+function startPanDemo() {
+    stopPanDemo();
+    panDemoBase = { x: tState.x, y: tState.y };
+    const badge = document.querySelector('#pan-hint .pan-hint-badge');
+    if (badge) { badge.style.animation = 'none'; void badge.offsetWidth; badge.style.animation = ''; } // sinkron
+    const D = 36;                                              // jarak geser (px)
+    const seq = [[D, 0], [0, D], [-D, 0], [0, -D], [0, 0]];   // kanan, bawah, kiri, atas, kembali
+    function cycle() {
+        seq.forEach(([dx, dy], i) => panDemoTimers.push(setTimeout(() => {
+            if (!panDemoBase) return;
+            contEl.style.transition = 'transform 440ms ease-in-out';
+            tState.x = panDemoBase.x + dx; tState.y = panDemoBase.y + dy;
+            applyTransform();
+        }, i * 440)));
+        panDemoTimers.push(setTimeout(cycle, 2200));
+    }
+    cycle();
+}
+function stopPanDemo(mode) {
+    panDemoTimers.forEach(clearTimeout); panDemoTimers = [];
+    if (!panDemoBase) return;
+    if (mode === 'return') {                       // kembali mulus ke posisi dasar
+        contEl.style.transition = 'transform 350ms ease-in-out';
+        tState.x = panDemoBase.x; tState.y = panDemoBase.y;
+        applyTransform();
+        setTimeout(() => { contEl.style.transition = ''; }, 380);
+    } else {                                       // dibekukan di posisi saat ini (pengguna mulai menggeser)
+        try {
+            const m = new DOMMatrix(getComputedStyle(contEl).transform);
+            tState.x = m.e; tState.y = m.f; tState.k = m.a;
+        } catch (e) {}
+        contEl.style.transition = 'none';
+        applyTransform();
+        requestAnimationFrame(() => { contEl.style.transition = ''; });
+    }
+    panDemoBase = null;
+}
+function endPanHint(mode) {
+    stopPanDemo(mode);
     hintStage = 2;
     clearTimeout(panHintTimer);
     const el = document.getElementById('pan-hint');
