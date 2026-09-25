@@ -22,9 +22,9 @@
         content: "";
         position: fixed; top: 50%; left: 50%;
         width: 200vw; height: 200vh;
-        transform: translate(-50%, -50%) rotate(45deg);
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg stroke='%23a08760' stroke-width='1.5' stroke-linejoin='round'%3E%3Crect x='4' y='2' width='13' height='36' fill='%23f3e2c8'/%3E%3Crect x='23' y='2' width='13' height='36' fill='%23ead0ac'/%3E%3Crect x='44' y='4' width='34' height='13' fill='%23f3e2c8'/%3E%3Crect x='44' y='23' width='34' height='13' fill='%23ead0ac'/%3E%3Crect x='2' y='44' width='34' height='13' fill='%23ead0ac'/%3E%3Crect x='2' y='63' width='34' height='13' fill='%23f3e2c8'/%3E%3Crect x='44' y='42' width='13' height='36' fill='%23ead0ac'/%3E%3Crect x='63' y='42' width='13' height='36' fill='%23f3e2c8'/%3E%3C/g%3E%3C/svg%3E");
-        background-size: 80px 80px;
+        transform: translate(-50%, -50%) rotate(8deg);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='none' stroke='%23e7cfa8' stroke-width='1' opacity='0.55'%3E%3Ccircle cx='35' cy='35' r='16'/%3E%3Ccircle cx='105' cy='35' r='16'/%3E%3Ccircle cx='35' cy='105' r='16'/%3E%3Ccircle cx='105' cy='105' r='16'/%3E%3Ccircle cx='70' cy='70' r='16'/%3E%3C/g%3E%3Cg opacity='0.5'%3E%3Ccircle cx='35' cy='35' r='4.5' fill='%23f7cfe0'/%3E%3Ccircle cx='105' cy='35' r='4.5' fill='%23bdead2'/%3E%3Ccircle cx='35' cy='105' r='4.5' fill='%23bdead2'/%3E%3Ccircle cx='105' cy='105' r='4.5' fill='%23f7cfe0'/%3E%3Ccircle cx='70' cy='70' r='4.5' fill='%23fdf1c7'/%3E%3C/g%3E%3C/svg%3E");
+        background-size: 140px 140px;
         z-index: -1;
     }
     #header {
@@ -210,8 +210,8 @@
         background: #eef2f7;
     }
     .w9-box.w9-member {
-        background: linear-gradient(to bottom, #dc2626 0%, #dc2626 33.33%, #16a34a 33.33%, #16a34a 66.66%, #ffffff 66.66%, #ffffff 100%);
-        text-shadow: 0 1px 2px rgba(255,255,255,0.55);
+        background: linear-gradient(to bottom, #fbcfe8 0%, #f6d9de 22%, #c7f0d8 50%, #e6f8ee 78%, #ffffff 100%);
+        text-shadow: 0 1px 2px rgba(255,255,255,0.65);
     }
     /* kotak relasi non-garis-darah (mis. menantu/besan/guru-murid): border putus, isi beda */
     .w9-box.w9-related {
@@ -593,6 +593,7 @@
     #dispute-card .dc-note {
         font-size: 0.78rem; line-height: 1.55; color: #422006;
         background: #fffefb; border: 1px solid #e7d6ab; border-radius: 8px; padding: 10px 12px;
+        white-space: pre-line;
     }
     #dispute-close {
         position: absolute; top: 12px; right: 12px; background: #fff;
@@ -672,7 +673,7 @@
             <button class="btn" onclick="expandAllBranches()">BUKA SEMUA</button>
             <button class="btn" onclick="collapseAllBranches()">TUTUP SEMUA</button>
             <button class="btn" id="lock-btn" onclick="toggleLock()" style="background:#64748b;">🔓 KUNCI: OFF</button>
-            <button class="btn" id="wali9-btn" onclick="openWali9Panel()" style="background:linear-gradient(135deg,#dc2626,#16a34a);">⭐ WALI-9</button>
+            <button class="btn" id="wali9-btn" onclick="openWali9Panel()" style="background:linear-gradient(135deg,#f472b6,#4ade80);">⭐ WALI-9</button>
             <div id="search-wrap">
                 <span style="font-size:13px;">🔍</span>
                 <input id="search-input" type="text" placeholder="Cari nama (min. 3 huruf)..." oninput="searchNames(this.value)" autocomplete="off" />
@@ -708,12 +709,15 @@
             <div class="w9-divider"></div>
         </div>
         <div id="wali9-body">
-            <div id="wali9-legend"><span class="dot" style="background:linear-gradient(to bottom,#dc2626 33%,#16a34a 33% 66%,#ffffff 66%);border:1px solid #94a3b8;"></span> Kotak Anggota Wali Songo &nbsp;&nbsp; <span class="dot" style="background:#eef2f7;border:1px solid #94a3b8;"></span> Jalur Keturunan (bukan Wali Songo) &nbsp;&nbsp; <span class="dot" style="background:repeating-linear-gradient(135deg,#fdf6e3,#fdf6e3 3px,#f3e2c0 3px,#f3e2c0 6px);border:1.5px dashed #a97c1f;"></span> Anggota Wali Songo — terhubung lewat pernikahan/relasi (bukan garis darah)</div>
+            <div id="wali9-legend"><span class="dot" style="background:linear-gradient(to bottom,#fbcfe8,#c7f0d8,#ffffff);border:1px solid #94a3b8;"></span> Kotak Anggota Wali Songo &nbsp;&nbsp; <span class="dot" style="background:#eef2f7;border:1px solid #94a3b8;"></span> Jalur Keturunan (bukan Wali Songo) &nbsp;&nbsp; <span class="dot" style="background:repeating-linear-gradient(135deg,#fdf6e3,#fdf6e3 3px,#f3e2c0 3px,#f3e2c0 6px);border:1.5px dashed #a97c1f;"></span> Anggota Wali Songo — terhubung lewat pernikahan/relasi (bukan garis darah)</div>
             <ul class="w9-tree" id="wali9-tree"></ul>
             <div id="wali9-standalone">
                 <div class="w9-standalone-title">Anggota Wali Songo Lain (garis keturunan belum pasti)</div>
                 <div class="w9-box w9-member w9-standalone-box" data-name="SUNAN GRESIK / MAULANA MALIK IBRAHIM (13XX-1419)">SUNAN GRESIK / MAULANA MALIK IBRAHIM (13XX-1419)
-                    <small class="w9-note">Wali senior, dianggap wali pertama yang berdakwah di Jawa. Sebagian riwayat menyebutnya bersaudara dengan Maulana Ishaq &amp; ayah Sunan Ampel — beliau sudah ditampilkan di pohon utama dengan garis putus-putus (❓) untuk menandai status ini masih diperdebatkan. Sebagian riwayat lain meyakini beliau tokoh yang berbeda dari "Syekh Ibrahim Asmoro Qondi" di pohon ini (makam terpisah: Gresik vs Tuban). Karena belum ada kepastian, kotak ini sengaja tidak diberi garis keturunan (anak/cucu) sendiri.</small>
+                    <small class="w9-note">VERSI SILSILAH TRADISIONAL & LITERATUR NASAB NUSANTARA: menempatkan Syekh Maulana Malik Ibrahim (Sunan Gresik) dan Syekh Maulana Ibrahim Asmoro Qondi sebagai saudara kandung atau saudara sepupu — karena itu beliau ditampilkan di pohon utama dengan garis putus-putus (❓), menandai hubungan ini masih diperdebatkan.<br><br>
+                    <b>Dasar versi tersebut:</b> sama-sama Putra/Keturunan Syekh Jumadil Kubro (Syekh Jamaluddin Akbar al-Husain) yang datang bersama-sama/bergelombang ke Nusantara untuk berdakwah, sehingga dalam tradisi lisan sering disebut saudara seperjuangan atau saudara kandung/kerabat dekat.<br><br>
+                    <b>Versi lain:</b> Syekh Maulana Malik Ibrahim terkadang diletakkan sebagai paman atau kakek buyut, sementara Maulana Ibrahim Asmoro Qondi diposisikan khusus sebagai ayah dari Sunan Ampel.<br><br>
+                    Karena belum ada kepastian sejarah, kotak ini sengaja tidak diberi garis keturunan (anak/cucu) sendiri.</small>
                 </div>
             </div>
         </div>
@@ -1184,13 +1188,13 @@ function buildDefs(svg) {
         .forEach(([off,col]) => metalNub.appendChild(el('stop', { offset: off, 'stop-color': col })));
     defs.appendChild(metalNub);
 
-    // ===== Gradient khusus shape anggota WALI SONGO: 3 pita horizontal
-    // (atas merah, tengah hijau, bawah putih), batas TEGAS (tanpa gradasi blur). =====
+    // ===== Gradient khusus shape anggota WALI SONGO: gradasi SOFT & MENYATU
+    // dari merah muda (atas) → hijau muda (tengah) → putih (bawah), tanpa batas tegas. =====
     const waliGrad = el('linearGradient', { id: 'grad-wali9', x1:'0%', y1:'0%', x2:'0%', y2:'100%' });
     [
-        ['0%', '#dc2626'], ['33.33%', '#dc2626'],
-        ['33.33%', '#16a34a'], ['66.66%', '#16a34a'],
-        ['66.66%', '#ffffff'], ['100%', '#ffffff']
+        ['0%', '#fbcfe8'], ['22%', '#f6d9de'],
+        ['50%', '#c7f0d8'], ['78%', '#e6f8ee'],
+        ['100%', '#ffffff']
     ].forEach(([off, col]) => waliGrad.appendChild(el('stop', { offset: off, 'stop-color': col })));
     defs.appendChild(waliGrad);
 
@@ -1657,7 +1661,7 @@ const descChildren = [
         wali9: true,
         markId: "node-sunan-gresik",
         disputed: true,
-        disputedNote: "Wali senior, dianggap wali pertama yang berdakwah di Jawa. Sebagian riwayat/babad menyebutnya bersaudara dengan Syekh Maulana Ishaq (dan ayah Sunan Ampel), sehingga kotak ini ditempatkan sejajar di sini — DENGAN GARIS PUTUS-PUTUS (bukan garis tegas) untuk menandai hubungan ini masih diperdebatkan. Sebagian riwayat lain bahkan meyakini beliau tokoh yang BERBEDA dari \"Syekh Ibrahim Asmoro Qondi\" di pohon ini — makamnya terpisah (Gresik, wafat 1419) dari makam Syekh Ibrahim Asmoro Qondi (Tuban). Karena belum ada kepastian sejarah, kotak ini SENGAJA tidak diberi garis keturunan (anak/cucu) sendiri. Rujukan: babad & riwayat lisan Wali Songo — lihat juga panel ⭐ WALI-9 dan 📖 RUJUKAN."
+        disputedNote: "VERSI SILSILAH TRADISIONAL & LITERATUR NASAB NUSANTARA:\nMenempatkan Syekh Maulana Malik Ibrahim (Sunan Gresik) dan Syekh Maulana Ibrahim Asmoro Qondi sebagai saudara kandung atau saudara sepupu — karena itu kotak ini ditempatkan sejajar di sini, dengan GARIS PUTUS-PUTUS (bukan garis tegas) untuk menandai hubungan ini masih diperdebatkan.\n\nDASAR VERSI TERSEBUT:\nSama-sama Putra/Keturunan Syekh Jumadil Kubro (Syekh Jamaluddin Akbar al-Husain) yang datang secara bersama-sama atau bergelombang ke Nusantara untuk berdakwah. Karena sama-sama bernasab kepada Syekh Jumadil Kubro, mereka sering kali disebut dalam tradisi lisan sebagai saudara seperjuangan atau saudara kandung/kerabat dekat.\n\nVERSI LAIN:\nSyekh Maulana Malik Ibrahim terkadang diletakkan sebagai paman atau kakek buyut, sementara Maulana Ibrahim Asmoro Qondi diposisikan secara khusus sebagai ayah dari Sunan Ampel.\n\nKarena belum ada kepastian sejarah, kotak ini SENGAJA tidak diberi garis keturunan (anak/cucu) sendiri. Lihat juga panel ⭐ WALI-9 dan 📖 RUJUKAN."
     }
 ];
 // FIXED BEHAVIOR: jarak antar shape dibuat FIX secara vertikal, dan LEBAR secara horizontal.
