@@ -636,6 +636,47 @@
     }
     #dispute-close:hover { background: #fef3c7; }
 
+    /* ===== Penanda kotak "INFO KELUARGA LENGKAP" (mis. Sunan Gunung Jati: daftar
+       istri, anak & garis keturunan) — memakai skema warna biru supaya berbeda
+       secara visual dari flag kuning "status diperdebatkan". ===== */
+    .info-flag {
+        background: linear-gradient(145deg, #bae6fd, #0284c7); color: #082f49;
+        border: 1.5px solid #0369a1; border-style: solid;
+    }
+    #info-overlay {
+        position: fixed; inset: 0; background: rgba(15,23,42,0.55);
+        z-index: 26000; display: none; align-items: center; justify-content: center; padding: 16px;
+    }
+    #info-overlay.open { display: flex; }
+    #info-card {
+        background: #ffffff; border: 2px solid #0369a1; border-radius: 14px;
+        width: 460px; max-width: 94vw; max-height: 88vh; overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.4); padding: 20px 22px 22px; position: relative;
+    }
+    #info-card .ic-icon { font-size: 1.5rem; display: block; text-align: center; margin-bottom: 4px; }
+    #info-card .ic-name {
+        text-align: center; font-weight: 800; color: #0c4a6e; font-size: 0.95rem;
+        margin-bottom: 14px; line-height: 1.35; font-family: 'Georgia','Times New Roman',serif;
+    }
+    #info-card .ic-body { font-size: 0.8rem; line-height: 1.6; color: #0f172a; }
+    #info-card .ic-body h5 {
+        font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 800;
+        color: #0369a1; margin: 16px 0 8px; border-bottom: 1px solid #bae6fd; padding-bottom: 4px;
+    }
+    #info-card .ic-body h5:first-child { margin-top: 0; }
+    #info-card .ic-body ol, #info-card .ic-body ul { margin: 0 0 4px; padding-left: 20px; }
+    #info-card .ic-body li { margin-bottom: 10px; }
+    #info-card .ic-body li > b { color: #0c4a6e; }
+    #info-card .ic-body ul.ic-sub { margin-top: 4px; margin-bottom: 0; padding-left: 18px; }
+    #info-card .ic-body ul.ic-sub li { margin-bottom: 3px; }
+    #info-card .ic-body p { margin: 0 0 8px; }
+    #info-close {
+        position: absolute; top: 12px; right: 12px; background: #f0f9ff;
+        border: 1.5px solid #0369a1; border-radius: 8px; width: 26px; height: 26px;
+        cursor: pointer; font-weight: 800; color: #0369a1;
+    }
+    #info-close:hover { background: #e0f2fe; }
+
     /* ===== PANEL SARAN (diadaptasi dari sistem "Chat Bani" di silsilah Mbah Kung) ===== */
     .chat-notif-badge {
         position: absolute; top: -6px; right: -6px; min-width: 15px; height: 15px;
@@ -757,6 +798,15 @@
         <div class="dc-name" id="dispute-name"></div>
         <span class="dc-label">Keterangan &amp; Sumber</span>
         <div class="dc-note" id="dispute-text"></div>
+    </div>
+</div>
+
+<div id="info-overlay" onclick="if(event.target===this) closeInfoNote();">
+    <div id="info-card">
+        <button id="info-close" onclick="closeInfoNote()">✕</button>
+        <span class="ic-icon">📖</span>
+        <div class="ic-name" id="info-name"></div>
+        <div class="ic-body" id="info-body"></div>
     </div>
 </div>
 
@@ -1497,6 +1547,60 @@ const SUNAN_GIRI_TITLE_LINES = [
     (() => { const f = fitSingleLineFontSize("RADEN PAKU / JOKO SAMUDRO / PRABU SATMOTO", SUNAN_GIRI_TITLE_MAXW, 12.5, 700, 8.5); return { text: f.text, fontSize: f.fontSize, weight: 700, lineHeight: 15 }; })(),
     (() => { const f = fitSingleLineFontSize("(1442-1506)", SUNAN_GIRI_TITLE_MAXW, 11.5, 700, 8); return { text: f.text, fontSize: f.fontSize, weight: 700, lineHeight: 13 }; })()
 ];
+// ===== Isi kotak "Info Keluarga Lengkap" utk SUNAN GUNUNG JATI (dibuka lewat
+// badge ℹ️ terpisah dari toggle buka/tutup keturunan pada shape-nya). =====
+const SUNAN_GUNUNG_JATI_INFO_HTML = `
+<h5>I. Daftar Istri Sunan Gunung Jati</h5>
+<ol>
+<li><b>Nyai Mas Babadan (Nyi Gedeng Babadan)</b>
+    <p><i>Latar Belakang:</i> Putri Ki Gedeng Babadan (sebagian sumber menyebut dari daerah Banten/Indramayu).</p>
+    <p><i>Keturunan:</i> Tidak memiliki anak dari pernikahan ini.</p>
+</li>
+<li><b>Nyai Ratu Dewi Pakungwati</b>
+    <p><i>Latar Belakang:</i> Putri Pangeran Cakrabuana (Walangsungsang), pamannya sendiri yang juga pendiri awal Cirebon. Beliau berkedudukan sebagai permaisuri utama di Kesultanan Cirebon.</p>
+    <p><i>Keturunan:</i> Tidak dikaruniai anak kandung, namun beliau ikut mengasuh anak-anak dari istri lainnya.</p>
+</li>
+<li><b>Nyai Rara Jati (Nyi Mas Tepasari / versi lain Nyi Mas Rara Jati)</b>
+    <p><i>Latar Belakang:</i> Putri dari Ki Gedeng Jati (Syekh Nurjati, ulama asal Timur Tengah yang menjadi guru awal di Cirebon).</p>
+    <p><i>Keturunan:</i> Memiliki beberapa anak, di antaranya Pangeran Jayakalana dan Pangeran Bratakalana.</p>
+</li>
+<li><b>Nyai Syarifah Bagdad (Nyi Lara Baghdad)</b>
+    <p><i>Latar Belakang:</i> Adik dari Syekh Maulana Abdurrahman (Pangeran Panjunan), seorang ulama migran berdarah Timur Tengah. Dinikahi sekitar tahun 1484 M.</p>
+    <p><i>Keturunan:</i></p>
+    <ul class="ic-sub">
+        <li>Pangeran Jaya Kelana (lahir sekitar 1486 M)</li>
+        <li>Pangeran Brata Kelana (lahir sekitar 1489 M)</li>
+    </ul>
+</li>
+<li><b>Nyai Ratu Kawunganten</b>
+    <p><i>Latar Belakang:</i> Putri Prabu Surawisesa / penguasa lokal di Banten Girang (adik Pucuk Umun). Dinikahi sekitar tahun 1475 M saat Sunan Gunung Jati memperluas dakwah ke Banten.</p>
+    <p><i>Keturunan:</i></p>
+    <ul class="ic-sub">
+        <li>Ratu Winaon (lahir 1477 M)</li>
+        <li>Pangeran Saba Kingkin / Maulana Hasanuddin (lahir 1479 M) — kelak menjadi Sultan Banten pertama.</li>
+    </ul>
+</li>
+<li><b>Nyai Ageng Tepasari (Nyimas Rara Tepasan)</b>
+    <p><i>Latar Belakang:</i> Putri Ki Gedeng Tepasan dari Majapahit (putra dari Prabu Brawijaya V). Dibawa ke Cirebon sebagai bagian dari hubungan diplomatik Majapahit-Cirebon.</p>
+    <p><i>Keturunan:</i></p>
+    <ul class="ic-sub">
+        <li>Pangeran Pasarean (Muhammad Arifin)</li>
+        <li>Ratu Ayu Wangunan / Ratu Wulung Ayu (lahir 1493 M, kelak dinikahi oleh Sultan Trenggana dari Demak).</li>
+    </ul>
+</li>
+<li><b>Putri Ong Tien Nio (Nyimas Rara Sumanding)</b>
+    <p><i>Latar Belakang:</i> Putri Kaisar Hong Gie dari Dinasti Ming, Tiongkok. Menurut legenda, beliau datang ke Jawa menyusul Sunan Gunung Jati, lalu masuk Islam dan berganti nama menjadi Nyimas Rara Sumanding.</p>
+    <p><i>Keterangan:</i> Wafat dalam usia muda tidak lama setelah kedatangan dan pernikahannya di Cirebon karena sakit. Makamnya di Astana Gunung Jati sering diziarahi, dengan corak porselen Tiongkok kuno di kompleks makam.</p>
+</li>
+</ol>
+<h5>II. Garis Keturunan Utama &amp; Penerus</h5>
+<p>Dari anak-cucu Sunan Gunung Jati, garis keturunannya terbagi menjadi dua dinasti besar kekuasaan Islam di Jawa Barat:</p>
+<ol>
+<li><b>Kesultanan Banten</b>: Melalui jalur Maulana Hasanuddin (Pangeran Saba Kingkin), menurunkan raja-raja Banten hingga akhir abad ke-19.</li>
+<li><b>Kesultanan Cirebon</b>: Melalui jalur Pangeran Pasarean dan kerabat istana lainnya, yang kemudian bercabang menjadi Keraton Kasepuhan, Kanoman, Kacirebonan, dan Keprabonan.</li>
+</ol>
+<p>Banyak keturunan langsung beliau (yang biasa menggunakan gelar Syarif, Raden, Ratu, atau Tubagus) kemudian menyebar sebagai ulama dan tokoh masyarakat yang memimpin pondok pesantren di berbagai wilayah Nusantara.</p>
+`;
 const descChildren = [
     { name: "SYEKH MAULANA IBRAHIM ASMORO QONDI", type: "gen7", markId: "node-ibrahim-asmoro-qondi", children: [
         { name: "Raden Santri / Raja Pandito Wungkal / Sayyid Ali Murtadho", type: "gen8", combined: true, spouseName: "Putri Arya Baribin", children: [
@@ -1703,7 +1807,41 @@ const descChildren = [
     {
         name: "SYEKH ALI NURUL ALAM", type: "gen7", children: [
             { name: "SYARIF ABDULLAH", type: "gen8", children: [
-                { name: "SUNAN GUNUNG JATI / SYARIF HIDAYATULLAH", type: "gen9", wali9: true, markId: "node-sunan-gunung-jati" }
+                { name: "SUNAN GUNUNG JATI / SYARIF HIDAYATULLAH (1448-1568)", type: "gen9", wali9: true, markId: "node-sunan-gunung-jati",
+                    infoNote: SUNAN_GUNUNG_JATI_INFO_HTML,
+                    children: [
+                        { name: "ISTERI 1", type: "gen10", combined: true,
+                          spouseName: "NYI GEDENG BABADAN (m. 1471)"
+                        },
+                        { name: "ISTERI 2", type: "gen10", combined: true,
+                          spouseName: "NYI MAS KAWUNGANTEN (m. 1475)",
+                          children: [
+                              { name: "RATU WINAON (1477)", type: "gen11" },
+                              { name: "PANGERAN SABAKINGKIN / SULTAN HASANUDDIN (1479)", type: "gen11" }
+                          ]
+                        },
+                        { name: "ISTERI 3", type: "gen10", combined: true,
+                          spouseName: "NYI MAS PAKUNGWATI (m. 1479)"
+                        },
+                        { name: "ISTERI 4", type: "gen10", combined: true,
+                          spouseName: "SYARIFAH BAGHDAD (m. 1484)",
+                          children: [
+                              { name: "PANGERAN JAYA KELANA (1486)", type: "gen11" },
+                              { name: "PANGERAN BRATA KELANA (1489)", type: "gen11" }
+                          ]
+                        },
+                        { name: "ISTERI 5", type: "gen10", combined: true,
+                          spouseName: "ONG TIEN NIO / NYI MAS RARA SUMANDING (m. 1485)"
+                        },
+                        { name: "ISTERI 6", type: "gen10", combined: true,
+                          spouseName: "RARA TEPASAN",
+                          children: [
+                              { name: "RATU AYU WANGURAN", type: "gen11" },
+                              { name: "PANGERAN PASAREAN", type: "gen11" }
+                          ]
+                        }
+                    ]
+                }
             ] }
         ]
     },
@@ -2173,6 +2311,21 @@ function renderSiblingGroup(nodes, hostDiv, onResize, parentController) {
             flag.addEventListener('click', (e) => {
                 e.stopPropagation();
                 openDisputeNote(d.name, d.disputedNote);
+            });
+            hostDiv.appendChild(flag);
+            disputeFlagEls.push(flag);
+        } else if (d.infoNote) {
+            // ===== kotak "info keluarga lengkap" (mis. Sunan Gunung Jati: daftar
+            // istri, anak & garis keturunan): ditandai badge ℹ️ terpisah di pojok,
+            // KLIK badge ini membuka kotak info di LUAR shape, terpisah dari toggle
+            // buka/tutup keturunan pada shape itu sendiri. =====
+            const flag = document.createElement('div');
+            flag.className = 'dispute-flag info-flag';
+            flag.innerHTML = 'ℹ️';
+            flag.title = `Klik untuk info keluarga lengkap (${d.name})`;
+            flag.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openInfoNote(d.name, d.infoNote);
             });
             hostDiv.appendChild(flag);
             disputeFlagEls.push(flag);
@@ -2905,6 +3058,17 @@ function openDisputeNote(name, note) {
 }
 function closeDisputeNote(){ document.getElementById('dispute-overlay').classList.remove('open'); }
 
+// ===== Kotak "Info Keluarga Lengkap" (mis. daftar istri & anak Sunan Gunung Jati):
+// mirip dgn kotak dispute-note di atas, tapi memakai overlay & tema warna terpisah
+// karena isinya info tambahan/silsilah, bukan status riwayat yang diperdebatkan.
+// infoHtml BERISI markup HTML yang sudah disiapkan di data (bukan input pengguna). =====
+function openInfoNote(name, infoHtml) {
+    document.getElementById('info-name').textContent = name;
+    document.getElementById('info-body').innerHTML = infoHtml || '';
+    document.getElementById('info-overlay').classList.add('open');
+}
+function closeInfoNote(){ document.getElementById('info-overlay').classList.remove('open'); }
+
 // ===== Panel "JALUR WALI SONGO" (tombol WALI-9): hanya menampilkan kotak
 // anggota Wali Songo beserta jalur/garis keturunan yang menghubungkannya,
 // ditampilkan terpisah sbg diagram statis (tidak mengubah tampilan pohon utama). =====
@@ -2941,7 +3105,7 @@ const wali9PathTree = {
                                 ] },
                                 { name: "SYEKH ALI NURUL ALAM", children: [
                                     { name: "SYARIF ABDULLAH", children: [
-                                        { name: "SUNAN GUNUNG JATI / SYARIF HIDAYATULLAH", wali9: true,
+                                        { name: "SUNAN GUNUNG JATI / SYARIF HIDAYATULLAH (1448-1568)", wali9: true,
                                           note: "Keturunan Syekh Jumadil Qubro lewat jalur Syekh Ali Nurul Alam (bukan lewat Asmoro Qondi/Maulana Ishaq). Juga besan & sahabat karib Sunan Kalijaga — putrinya (Dewi Sarokah/Siti Zainap) adalah istri kedua Sunan Kalijaga." }
                                     ] }
                                 ] },
