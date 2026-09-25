@@ -210,8 +210,19 @@
         background: #eef2f7;
     }
     .w9-box.w9-member {
+        position: relative;
         background: linear-gradient(to bottom, #fbcfe8 0%, #f6d9de 22%, #c7f0d8 50%, #e6f8ee 78%, #ffffff 100%);
         text-shadow: 0 1px 2px rgba(255,255,255,0.65);
+    }
+    .w9-box.w9-member::after {
+        content: '9';
+        position: absolute; top: -12px; right: -12px;
+        width: 20px; height: 20px; border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #fde68a, #f59e0b 55%, #b45309 100%);
+        color: #7c2d12; font-size: 0.68rem; font-weight: 900;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.35), 0 0 0 2px #ffffff;
+        text-shadow: none;
     }
     /* kotak relasi non-garis-darah (mis. menantu/besan/guru-murid): border putus, isi beda */
     .w9-box.w9-related {
@@ -1204,6 +1215,12 @@ function buildDefs(svg) {
     waliGloss.appendChild(el('stop', { offset:'68%', 'stop-color':'#ffffff', 'stop-opacity':0 }));
     defs.appendChild(waliGloss);
 
+    // ===== Gradient emas untuk BADGE bulat angka "9" penanda anggota Wali Songo =====
+    const coinGrad = el('radialGradient', { id: 'grad-coin9', cx:'35%', cy:'30%', r:'75%' });
+    [['0%','#fde68a'], ['55%','#f59e0b'], ['100%','#b45309']]
+        .forEach(([off, col]) => coinGrad.appendChild(el('stop', { offset: off, 'stop-color': col })));
+    defs.appendChild(coinGrad);
+
     svg.appendChild(defs);
 }
 
@@ -1217,6 +1234,25 @@ function buildDefs(svg) {
 const SEKARDADU_STYLE_TYPES = new Set(['root','gen1','gen2','gen3','gen4','gen5','gen6']);
 const NO_NUB_TYPES = new Set(['root','gen1','gen2','gen3','gen4','gen5']);
 const SEKARDADU_FILL = '#9ccb6b';
+
+// ===== Badge bulat emas berisi angka "9" di pojok kanan-atas shape, penanda
+// TEGAS bahwa kotak ini adalah salah satu dari sembilan (9) Wali Songo. =====
+function drawWali9Badge(g, w, h) {
+    const bR = 11.5;
+    const bx = w - bR * 0.5;
+    const by = -h/2 + bR * 0.5;
+    const badgeG = el('g', { class:'wali9-badge', 'pointer-events':'none' });
+    badgeG.appendChild(el('circle', { cx:bx, cy:by, r:bR+2, fill:'#ffffff' }));
+    badgeG.appendChild(el('circle', { cx:bx, cy:by, r:bR, fill:'url(#grad-coin9)', stroke:'#7c2d12', 'stroke-width':1.2 }));
+    const t = el('text', {
+        x:bx, y:by+0.5, 'text-anchor':'middle', 'dominant-baseline':'middle',
+        fill:'#7c2d12', 'font-size':13, 'font-weight':900,
+        'font-family':"'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+    });
+    t.textContent = '9';
+    badgeG.appendChild(t);
+    g.appendChild(badgeG);
+}
 
 function drawBatteryShape(g, w, h, type, overrideColorKey) {
     const colorKey = overrideColorKey || type;
@@ -1755,6 +1791,8 @@ function drawCombinedShape(g, dims) {
     nubG.appendChild(el('rect', { x:2, y:-nubH/2+2, width:nubW-4, height:nubH*0.38, rx:2, fill:'#ffffff', opacity:0.55, 'pointer-events':'none' }));
     g.appendChild(nubG);
 
+    if (dims.wali9) drawWali9Badge(g, w, h);
+
     // --- nama suami (bagian atas) ---
     const husbandText = el('text', { x:w/2, y:0, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:'#0f172a' });
     const hCenterY = -h/2 + topH/2;
@@ -1980,6 +2018,7 @@ function buildAttachedDescendantChain(anchorEl, names, visibilityHost) {
 
 function drawLeafShape(g, dims) {
     drawBatteryShape(g, dims.w, dims.h, dims.type, dims.wali9 ? 'wali9' : null);
+    if (dims.wali9) drawWali9Badge(g, dims.w, dims.h);
     // ===== kotak "status diperdebatkan/belum pasti": tambahkan garis tepi putus-putus
     // emas DI ATAS shape biasa, supaya beda kasat-mata dari kotak silsilah yang solid/pasti. =====
     if (dims.disputed) {
@@ -2080,7 +2119,10 @@ function renderSiblingGroup(nodes, hostDiv, onResize, parentController) {
             if (disputeFlagEls[i]) {
                 // ditempel di pojok kanan-atas kotak (bukan di dalam shape), supaya jelas
                 // ini "keterangan tempel" terpisah dari shape silsilah itu sendiri.
-                const flagXinSvg = childX + d.w - 6;
+                // Digeser lebih ke KIRI (menjauhi pojok kanan) supaya tidak menumpuk
+                // dengan badge bulat emas angka "9" (penanda anggota Wali Songo) yang
+                // menonjol di pojok kanan-atas shape.
+                const flagXinSvg = childX + d.w - 40;
                 const flagYinSvg = (cy - d.h/2) + 6; // +6 mengikuti translate(0,6) pada g
                 disputeFlagEls[i].style.left = (flagXinSvg - 11) + 'px';
                 disputeFlagEls[i].style.top = (flagYinSvg - 11) + 'px';
