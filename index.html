@@ -727,7 +727,7 @@ const treeData = {
                 { "name": "ZAINAL ALIM", "type": "gen3", "children": [
                     { "name": "ZAINAL QUBRO", "type": "gen4", "children": [
                         { "name": "ZAINAL HUSAIN", "type": "gen5", "children": [
-                            { "name": "SYEKH JUMADIL QUBRO", "type": "gen6", "children": [] }
+                            { "name": "SYEKH JUMADIL QUBRO / SYEKH JAMALUDDIN AKBAR AL-HUSAIN", "type": "gen6", "children": [] }
                         ] }
                     ] }
                 ] }
@@ -826,6 +826,31 @@ const measureCtx = measureCanvas.getContext('2d');
 function textWidth(text, fontSize, weight) {
     measureCtx.font = `${weight} ${fontSize}px ${FONT_FAMILY}`;
     return measureCtx.measureText(text).width;
+}
+// cari ukuran huruf terbesar (turun bertahap) supaya SATU baris teks (tanpa dipecah)
+// tetap muat di lebar maxWidth. Dipakai utk baris judul kustom (3 baris manual).
+function fitSingleLineFontSize(text, maxWidth, baseFontSize, weight, minFontSize) {
+    const upper = text.toUpperCase();
+    let size = baseFontSize;
+    while (size > minFontSize && textWidth(upper, size, weight) > maxWidth) size -= 0.5;
+    return { text: upper, fontSize: size };
+}
+// gambar blok teks multi-baris dengan ukuran & tebal huruf BERBEDA per baris
+// (dipakai utk judul kustom 3 baris: nama besar, nama alias, tahun), rata tengah
+// vertikal terhadap centerY.
+function drawCustomTitleLines(g, titleLines, w, centerY) {
+    const totalH = titleLines.reduce((s, l) => s + l.lineHeight, 0);
+    let cursorY = centerY - totalH / 2;
+    titleLines.forEach((l) => {
+        cursorY += l.lineHeight / 2;
+        const t = el('text', {
+            x: w / 2, y: cursorY, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
+            fill: '#0f172a', 'font-weight': l.weight, 'font-size': l.fontSize
+        });
+        t.textContent = l.text;
+        g.appendChild(t);
+        cursorY += l.lineHeight / 2;
+    });
 }
 // cari titik pecah 2 baris terbaik (paling seimbang) dari sebuah nama
 function bestTwoLineSplit(words, fontSize, weight) {
@@ -989,6 +1014,22 @@ function buildDefs(svg) {
         .forEach(([off,col]) => metalNub.appendChild(el('stop', { offset: off, 'stop-color': col })));
     defs.appendChild(metalNub);
 
+    // ===== Gradient khusus shape anggota WALI SONGO: 3 pita horizontal
+    // (atas merah, tengah hijau, bawah putih), batas TEGAS (tanpa gradasi blur). =====
+    const waliGrad = el('linearGradient', { id: 'grad-wali9', x1:'0%', y1:'0%', x2:'0%', y2:'100%' });
+    [
+        ['0%', '#dc2626'], ['33.33%', '#dc2626'],
+        ['33.33%', '#16a34a'], ['66.66%', '#16a34a'],
+        ['66.66%', '#ffffff'], ['100%', '#ffffff']
+    ].forEach(([off, col]) => waliGrad.appendChild(el('stop', { offset: off, 'stop-color': col })));
+    defs.appendChild(waliGrad);
+
+    const waliGloss = el('linearGradient', { id: 'gloss-wali9', x1:'0%', y1:'0%', x2:'0%', y2:'100%' });
+    waliGloss.appendChild(el('stop', { offset:'0%', 'stop-color':'#ffffff', 'stop-opacity':0.5 }));
+    waliGloss.appendChild(el('stop', { offset:'32%', 'stop-color':'#ffffff', 'stop-opacity':0.15 }));
+    waliGloss.appendChild(el('stop', { offset:'68%', 'stop-color':'#ffffff', 'stop-opacity':0 }));
+    defs.appendChild(waliGloss);
+
     svg.appendChild(defs);
 }
 
@@ -1003,7 +1044,8 @@ const SEKARDADU_STYLE_TYPES = new Set(['root','gen1','gen2','gen3','gen4','gen5'
 const NO_NUB_TYPES = new Set(['root','gen1','gen2','gen3','gen4','gen5']);
 const SEKARDADU_FILL = '#9ccb6b';
 
-function drawBatteryShape(g, w, h, type) {
+function drawBatteryShape(g, w, h, type, overrideColorKey) {
+    const colorKey = overrideColorKey || type;
     const plain = SEKARDADU_STYLE_TYPES.has(type);
     const skipNub = NO_NUB_TYPES.has(type);
     const r = Math.min(22, Math.round(h*0.42));
@@ -1017,7 +1059,7 @@ function drawBatteryShape(g, w, h, type) {
     }
     g.appendChild(el('path', {
         class:'real-body', d: shapeBodyPath(w,h,r,rLeft),
-        fill: plain ? SEKARDADU_FILL : `url(#grad-${type})`,
+        fill: plain ? SEKARDADU_FILL : `url(#grad-${colorKey})`,
         stroke: plain ? '#000000' : '#1e293b',
         'stroke-width': plain ? 4 : 0.9,
         'stroke-opacity': plain ? 1 : 0.18
@@ -1025,7 +1067,7 @@ function drawBatteryShape(g, w, h, type) {
     if (!plain) {
         g.appendChild(el('rect', {
             x: r*0.6, y: -h/2+2.5, width: w-r*1.2, height: h*0.36, rx: r*0.5,
-            fill:`url(#gloss-${type})`, 'pointer-events':'none'
+            fill:`url(#gloss-${colorKey})`, 'pointer-events':'none'
         }));
     }
     if (!skipNub) {
@@ -1223,19 +1265,29 @@ renderChain();
 // (mengikuti model interaksi yang sama dengan silsilah Bani Isbadar)
 // =====================================================================
 const SUNAN_GIRI_NAME = "SUNAN GIRI / RADEN PAKU / JOKO SAMUDRO / MUHAMMAD AINUL YAQIN / PRABU SATMOTO (1442-1506)";
+// ===== Format khusus 3 baris manual untuk kotak SUNAN GIRI (baris 1 besar+bold,
+// baris 2 lebih kecil, baris 3 tahun paling kecil) — dipakai via field `titleLines`. =====
+const SUNAN_GIRI_TITLE_MAXW = 260 - 24; // sama dgn (descChildWidth/descCombinedWidth) - 24
+const SUNAN_GIRI_TITLE_LINES = [
+    (() => { const f = fitSingleLineFontSize("SUNAN GIRI / MUHAMMAD 'AINUL YAKIN", SUNAN_GIRI_TITLE_MAXW, 15.5, 800, 9.5); return { text: f.text, fontSize: f.fontSize, weight: 800, lineHeight: 19 }; })(),
+    (() => { const f = fitSingleLineFontSize("RADEN PAKU / JOKO SAMUDRO / PRABU SATMOTO", SUNAN_GIRI_TITLE_MAXW, 12.5, 700, 8.5); return { text: f.text, fontSize: f.fontSize, weight: 700, lineHeight: 15 }; })(),
+    (() => { const f = fitSingleLineFontSize("(1442-1506)", SUNAN_GIRI_TITLE_MAXW, 11.5, 700, 8); return { text: f.text, fontSize: f.fontSize, weight: 700, lineHeight: 13 }; })()
+];
 const descChildren = [
     { name: "SYEKH MAULANA IBRAHIM ASMORO QONDI", type: "gen7", markId: "node-ibrahim-asmoro-qondi", children: [
         { name: "Raden Santri / Raja Pandito Wungkal / Sayyid Ali Murtadho", type: "gen8", combined: true, spouseName: "Putri Arya Baribin", children: [
-            { name: "Usman Haji / Sunan Ngudung", type: "gen9" },
+            { name: "Sunan Ngudung / Raden Usman Haji", type: "gen9", children: [
+                { name: "SUNAN KUDUS (JA'FAR SHODIQ)", type: "gen10", wali9: true }
+            ] },
             { name: "Haji Usman", type: "gen9" },
             { name: "Nyai Ageng Tanda", type: "gen9" }
         ] },
-        { name: "SUNAN AMPEL (1401-1481)", type: "gen8", combined: true, spouseName: "Dewi Condrowati (Nyai Ageng Manila)", children: [
+        { name: "SUNAN AMPEL / RADEN RAHMAT (1401-1481)", type: "gen8", combined: true, wali9: true, spouseName: "Dewi Condrowati (Nyai Ageng Manila)", children: [
             { name: "NYAI AGUNG MANYURAN", type: "gen9" },
             { name: "NYAI AGENG MALOKA", type: "gen9" },
             { name: "NYAI AGUNG WILIS", type: "gen9" },
-            { name: "SUNAN BONANG", type: "gen9" },
-            { name: "SUNAN DRAJAT", type: "gen9" },
+            { name: "SUNAN BONANG / RADEN MAKDUM IBRAHIM", type: "gen9", wali9: true },
+            { name: "SUNAN DRAJAT / RADEN QASIM / SUNAN MAYANG MADU", type: "gen9", wali9: true },
             { name: "DEWI MURTOSIYAH", type: "gen9" },
             { name: "DEWI MURTHASIMAH", type: "gen9" }
         ] }
@@ -1247,11 +1299,11 @@ const descChildren = [
         markId: "node-maulana-ishaq",
         children: [
             {
-                name: SUNAN_GIRI_NAME, type: "gen8",
+                name: SUNAN_GIRI_NAME, type: "gen8", titleLines: SUNAN_GIRI_TITLE_LINES, wali9: true,
                 // 3 isteri Sunan Giri, MASING-MASING dibuat shape gabungan terpisah
                 children: [
                     {
-                        name: SUNAN_GIRI_NAME, type: "gen9", combined: true,
+                        name: "ISTERI 1", type: "gen9", combined: true,
                         spouseName: "DEWI MURTOSIYAH BINTI SUNAN AMPEL",
                         children: [
                             { name: "NYAI GEDE KUKUSAN", type: "gen10" },
@@ -1398,14 +1450,14 @@ const descChildren = [
                         ]
                     },
                     {
-                        name: SUNAN_GIRI_NAME, type: "gen9", combined: true,
+                        name: "ISTERI 2", type: "gen9", combined: true,
                         spouseName: "DEWI WARDAH BINTI SUNAN BUNGKUL",
                         children: [
                             { name: "PANGERAN PASIR BATANG", type: "gen10" }
                         ]
                     },
                     {
-                        name: SUNAN_GIRI_NAME, type: "gen9", combined: true,
+                        name: "ISTERI 3", type: "gen9", combined: true,
                         spouseName: "DEWI UTSAMI BINTI RAJA MAJAPAHIT",
                         children: [
                             { name: "YUGO PUTRI (WAFAT WAKTU KECIL)", type: "gen10" }
@@ -1477,6 +1529,10 @@ function computeChildDims(nd) {
         }
         return Object.assign({}, nd, { w, boxW, h, itemFits, itemHeights, spouseFit, spouseBoxW, spouseBoxH });
     }
+    if (nd.titleLines) {
+        // baris judul kustom manual (mis. kotak SUNAN GIRI: nama besar/bold, alias, tahun)
+        return Object.assign({}, nd, { w: descChildWidth, h: STANDARD_H });
+    }
     const fit = fitNameToBox(nd.name, descChildWidth - 24, 13.5, 700);
     const h = STANDARD_H;
     return Object.assign({}, nd, { w: descChildWidth, h, lines: fit.lines, fontSize: fit.fontSize });
@@ -1485,10 +1541,11 @@ function computeChildDims(nd) {
 // Shape gabungan suami-isteri: satu body besar + garis pemisah horizontal di tengah.
 function drawCombinedShape(g, dims) {
     const { w, h, topH, nameLines, spouseLines, aliasLines, bottomH } = dims;
+    const colorKey = dims.wali9 ? 'wali9' : dims.type;
     const r = 20;
     g.appendChild(el('path', { transform: 'translate(1.5,2)', d: shapeBodyPath(w, h, r, r/3), fill:'#000', opacity:0.1 }));
-    g.appendChild(el('path', { class:'real-body', d: shapeBodyPath(w, h, r, r/3), fill:`url(#grad-${dims.type})`, stroke:'#1e293b', 'stroke-width':1, 'stroke-opacity':0.22 }));
-    g.appendChild(el('rect', { x:r*0.5, y:-h/2+2.5, width:w-r, height:h*0.26, rx:r*0.5, fill:`url(#gloss-${dims.type})`, 'pointer-events':'none' }));
+    g.appendChild(el('path', { class:'real-body', d: shapeBodyPath(w, h, r, r/3), fill:`url(#grad-${colorKey})`, stroke:'#1e293b', 'stroke-width':1, 'stroke-opacity':0.22 }));
+    g.appendChild(el('rect', { x:r*0.5, y:-h/2+2.5, width:w-r, height:h*0.26, rx:r*0.5, fill:`url(#gloss-${colorKey})`, 'pointer-events':'none' }));
 
     // --- nub baterai (sama seperti drawBatteryShape, supaya shape gabungan
     //     Maulana Ishaq & Dewi Sekardadu juga punya nub seperti shape lainnya) ---
@@ -1726,7 +1783,11 @@ function buildAttachedDescendantChain(anchorEl, names, visibilityHost) {
 }
 
 function drawLeafShape(g, dims) {
-    drawBatteryShape(g, dims.w, dims.h, dims.type);
+    drawBatteryShape(g, dims.w, dims.h, dims.type, dims.wali9 ? 'wali9' : null);
+    if (dims.titleLines) {
+        drawCustomTitleLines(g, dims.titleLines, dims.w, 0);
+        return;
+    }
     const textEl = el('text', { x: dims.w/2, y:0, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:'#0f172a', 'font-weight':700, 'font-size':dims.fontSize });
     const startY = -((dims.lines.length - 1) * NAME_LINE_HEIGHT) / 2;
     dims.lines.forEach((ln, li) => {
