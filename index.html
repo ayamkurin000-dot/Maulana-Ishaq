@@ -149,10 +149,11 @@
         letter-spacing: 0.2px;
     }
     #rincian-close {
-        position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.12);
+        position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.12);
         border: 1px solid rgba(212,175,55,0.6);
-        border-radius: 8px; width: 28px; height: 28px; cursor: pointer; font-weight: 800; color: #f4e4bc;
-        z-index: 3;
+        border-radius: 8px; width: 40px; height: 40px; cursor: pointer; font-weight: 800; color: #f4e4bc;
+        font-size: 1rem; display: flex; align-items: center; justify-content: center; line-height: 1;
+        touch-action: manipulation; z-index: 5;
     }
     #rincian-close:hover { background: rgba(255,255,255,0.22); }
 
@@ -180,9 +181,11 @@
     }
     #wali9-card-head .w9-divider { width: 64px; height: 2px; margin: 10px auto 0; background: linear-gradient(90deg, transparent, #d4af37, transparent); }
     #wali9-close-btn {
-        position: absolute; top: 14px; right: 14px; background: rgba(255,255,255,0.12);
-        border: 1px solid rgba(212,175,55,0.6); border-radius: 8px; width: 28px; height: 28px;
-        cursor: pointer; font-weight: 800; color: #f4e4bc;
+        position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(212,175,55,0.6); border-radius: 8px; width: 40px; height: 40px;
+        cursor: pointer; font-weight: 800; color: #f4e4bc; font-size: 1rem;
+        display: flex; align-items: center; justify-content: center; line-height: 1;
+        z-index: 5; touch-action: manipulation;
     }
     #wali9-close-btn:hover { background: rgba(255,255,255,0.22); }
     #wali9-body { overflow: auto; padding: 22px 18px 32px; flex: 1 1 auto; }
@@ -221,7 +224,7 @@
         display: inline-block; min-width: 150px; max-width: 230px; padding: 8px 12px;
         border-radius: 9px; border: 1.5px solid #1e293b; font-size: 0.66rem; font-weight: 800;
         line-height: 1.3; color: #0f172a; box-shadow: 0 2px 6px rgba(0,0,0,0.16);
-        background: #eef2f7;
+        background: #eef2f7; text-align: center;
     }
     .w9-box.w9-member {
         position: relative;
@@ -736,9 +739,14 @@
         <div id="wali9-body">
             <div id="wali9-legend"><span class="dot" style="background:linear-gradient(to bottom,#fbcfe8,#c7f0d8,#ffffff);border:1px solid #94a3b8;"></span> Kotak Anggota Wali Songo &nbsp;&nbsp; <span class="dot" style="background:#eef2f7;border:1px solid #94a3b8;"></span> Jalur Keturunan (bukan Wali Songo) &nbsp;&nbsp; <span class="dot" style="background:repeating-linear-gradient(135deg,#fdf6e3,#fdf6e3 3px,#f3e2c0 3px,#f3e2c0 6px);border:1.5px dashed #a97c1f;"></span> Anggota Wali Songo — terhubung lewat pernikahan/relasi (bukan garis darah)</div>
             <ul class="w9-tree" id="wali9-tree"></ul>
-            <div id="wali9-standalone" style="display:none;">
-                <!-- SUDAH DIGABUNGKAN DI ATAS: Sunan Gresik sekarang menjadi anak Syekh Jumadil Qubro di wali9-tree, karena memang keturunan Jumadil Qubro. Silsilah utama (descChildren) tetap tidak diubah. -->
-                <div class="w9-standalone-title">Sudah digabungkan di atas — lihat di pohon Wali 9</div>
+            <div id="wali9-standalone">
+                <div class="w9-standalone-title">Anggota Wali Songo Lain (garis keturunan belum pasti)</div>
+                <div class="w9-box w9-member w9-standalone-box" data-name="SUNAN GRESIK / MAULANA MALIK IBRAHIM (13XX-1419)">SUNAN GRESIK / MAULANA MALIK IBRAHIM (13XX-1419)
+                    <small class="w9-note">VERSI SILSILAH TRADISIONAL & LITERATUR NASAB NUSANTARA: menempatkan Syekh Maulana Malik Ibrahim (Sunan Gresik) dan Syekh Maulana Ibrahim Asmoro Qondi sebagai saudara kandung atau saudara sepupu — karena itu beliau ditampilkan di pohon utama dengan garis putus-putus (❓), menandai hubungan ini masih diperdebatkan.<br><br>
+                    <b>Dasar versi tersebut:</b> sama-sama Putra/Keturunan Syekh Jumadil Kubro (Syekh Jamaluddin Akbar al-Husain) yang datang bersama-sama/bergelombang ke Nusantara untuk berdakwah, sehingga dalam tradisi lisan sering disebut saudara seperjuangan atau saudara kandung/kerabat dekat.<br><br>
+                    <b>Versi lain:</b> Syekh Maulana Malik Ibrahim terkadang diletakkan sebagai paman atau kakek buyut, sementara Maulana Ibrahim Asmoro Qondi diposisikan khusus sebagai ayah dari Sunan Ampel.<br><br>
+                    Karena belum ada kepastian sejarah, kotak ini sengaja tidak diberi garis keturunan (anak/cucu) sendiri.</small>
+                </div>
             </div>
         </div>
     </div>
@@ -2933,9 +2941,7 @@ const wali9PathTree = {
                                         { name: "SUNAN GUNUNG JATI / SYARIF HIDAYATULLAH", wali9: true, relation: true,
                                           note: "Besan & sahabat karib Sunan Kalijaga — putrinya (Dewi Sarokah/Siti Zainap) adalah istri kedua Sunan Kalijaga. Jalur keturunannya sendiri dari Cirebon, terpisah dari garis Maulana Ishaq." }
                                       ] }
-                                ] },
-                                { name: "SUNAN GRESIK / MAULANA MALIK IBRAHIM (13XX-1419)", wali9: true,
-                                  note: "Keturunan Syekh Jumadil Qubro — VERSI TRADISIONAL menempatkan beliau sebagai saudara kandung/sepupu dari Ibrahim Asmoro Qondi & Maulana Ishaq (sama-sama Putra/Keturunan Jumadil Qubro yang datang bergelombang ke Nusantara). Hubungan masih diperdebatkan, garis putus-putus, dan sengaja tidak diberi anak/cucu sendiri karena belum pasti." }
+                                ] }
                             ] }
                         ] }
                     ] }
