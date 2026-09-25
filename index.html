@@ -191,7 +191,8 @@
 
     /* tree ala "org chart", indentasi + garis penghubung putus-putus */
     .w9-tree, .w9-tree ul { list-style: none; margin: 0; padding-left: 26px; }
-    .w9-tree { padding-left: 0; min-width: max-content; }
+    .w9-tree { padding-left: 0; min-width: max-content; position: relative; }
+    #wali9-connector-svg { position: absolute; top: 0; left: 0; overflow: visible; pointer-events: none; z-index: 0; }
     .w9-tree li {
         position: relative; margin: 10px 0; padding-left: 22px;
         border-left: 2px dashed #b6935a;
@@ -3015,9 +3016,50 @@ function renderWali9Tree() {
     root.innerHTML = '';
     root.appendChild(buildWali9Node(wali9PathTree));
 }
+// ===== Garis penghubung dari ujung rantai lurus (SYEKH JUMADIL QUBRO) turun
+// melengkung ke garis putus-putus cabang keturunan Wali Songo di bawahnya
+// (sebelumnya ada celah kosong di titik ini; digambar via SVG mengikuti
+// posisi kotak yang sebenarnya, supaya tetap pas walau ukuran teks berubah). =====
+function drawWali9ConnectorCurve() {
+    const treeRoot = document.getElementById('wali9-tree');
+    if (!treeRoot) return;
+    const oldSvg = document.getElementById('wali9-connector-svg');
+    if (oldSvg) oldSvg.remove();
+    const jumadilBox = treeRoot.querySelector('.w9-box[data-name="SYEKH JUMADIL QUBRO"]');
+    if (!jumadilBox) return;
+    const jumadilLi = jumadilBox.closest('li');
+    const childUl = jumadilLi && jumadilLi.querySelector(':scope > ul');
+    const firstChildLi = childUl && childUl.querySelector(':scope > li');
+    if (!firstChildLi) return;
+    const rootRect = treeRoot.getBoundingClientRect();
+    const jRect = jumadilBox.getBoundingClientRect();
+    const cRect = firstChildLi.getBoundingClientRect();
+    const sx = jRect.left - rootRect.left;
+    const sy = jRect.top - rootRect.top + jRect.height / 2;
+    const tx = cRect.left - rootRect.left;
+    const ty = cRect.top - rootRect.top;
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.id = 'wali9-connector-svg';
+    svg.setAttribute('width', Math.max(treeRoot.scrollWidth, sx) + 2);
+    svg.setAttribute('height', Math.max(treeRoot.scrollHeight, ty) + 2);
+    const path = document.createElementNS(svgNS, 'path');
+    path.setAttribute('d', `M ${sx} ${sy} C ${tx} ${sy}, ${tx} ${sy}, ${tx} ${ty}`);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', '#1e293b');
+    path.setAttribute('stroke-width', '3');
+    path.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(path);
+    treeRoot.insertBefore(svg, treeRoot.firstChild);
+}
+window.addEventListener('resize', () => {
+    const overlay = document.getElementById('wali9-overlay');
+    if (overlay && overlay.classList.contains('open')) drawWali9ConnectorCurve();
+});
 function openWali9Panel() {
     renderWali9Tree();
     document.getElementById('wali9-overlay').classList.add('open');
+    requestAnimationFrame(() => requestAnimationFrame(drawWali9ConnectorCurve));
 }
 function closeWali9Panel() {
     document.getElementById('wali9-overlay').classList.remove('open');
