@@ -2830,7 +2830,7 @@ wrapEl.addEventListener('click', (e) => {
 }, true);
 
 // ----- Touch (geser 1 jari, pinch 2 jari untuk zoom) -----
-let touchStartDist = null, touchStartScale = 1, touchStartTx = 0, touchStartTy = 0;
+let touchStartDist = null, touchStartScale = 1, touchStartTx = 0, touchStartTy = 0, touchMidX = 0, touchMidY = 0;
 function touchDist(t1, t2) { return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY); }
 wrapEl.addEventListener('touchstart', (e) => {
     if (e.target.closest('.expand-badge')) return;
@@ -2843,6 +2843,12 @@ wrapEl.addEventListener('touchstart', (e) => {
         touchStartDist = touchDist(e.touches[0], e.touches[1]);
         touchStartScale = tState.k;
         touchStartTx = tState.x; touchStartTy = tState.y;
+        // titik tengah antara 2 jari (relatif ke wrapEl) -- ini titik yang harus
+        // tetap "diam" di layar selama proses mencubit, sama seperti pinch-zoom
+        // native di app peta/galeri foto (dan sama dengan cara d3.zoom bekerja).
+        const rect = wrapEl.getBoundingClientRect();
+        touchMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+        touchMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
     }
 }, { passive: true });
 wrapEl.addEventListener('touchmove', (e) => {
@@ -2857,7 +2863,14 @@ wrapEl.addEventListener('touchmove', (e) => {
         const newDist = touchDist(e.touches[0], e.touches[1]);
         let k = touchStartScale * (newDist / touchStartDist);
         k = Math.min(SCALE_MAX, Math.max(SCALE_MIN, k));
-        tState.k = k; tState.x = touchStartTx; tState.y = touchStartTy;
+        // zoom terpusat di titik tengah 2 jari (rumus sama dgn zoom scroll mouse
+        // di bawah): titik itu dihitung dulu ke "koordinat dunia" konten, lalu
+        // x/y digeser supaya titik itu tetap persis di bawah jari setelah skala berubah.
+        const wx = (touchMidX - touchStartTx) / touchStartScale;
+        const wy = (touchMidY - touchStartTy) / touchStartScale;
+        tState.x = touchMidX - wx * k;
+        tState.y = touchMidY - wy * k;
+        tState.k = k;
         applyTransform();
     }
 }, { passive: true });
