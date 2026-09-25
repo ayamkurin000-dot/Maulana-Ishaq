@@ -2473,7 +2473,7 @@ function toggleDescTree() {
             setTimeout(() => buildAncestorChain(document.getElementById('node-maulana-ishaq')), 50);
         } else {
             anc.style.display = '';
-            setTimeout(() => anc._reposition && anc._reposition(), 350);
+            repositionBurst(() => anc._reposition && anc._reposition());
         }
     } else if (anc) {
         anc.style.display = 'none';
@@ -2496,6 +2496,16 @@ const ancestorChainData = [
     { name: "MINAK SEMBUYU / MINAK DEDALI PUTIH" }
 ];
 const ancestorWidth = 260;
+
+// ===== Panggil fn berkali-kali pada beberapa jeda waktu, supaya posisi kotak
+// LELUHUR DEWI SEKARDADU tetap presisi sejajar dgn kotak Ibrahim Asmoro Qondi
+// meskipun render/animasi cabang selesai lebih lambat (HP yang lebih lambat
+// dari laptop, terutama setelah kotak Sunan Gresik ditambahkan). Alih-alih
+// mengandalkan SATU jeda tetap yang bisa meleset di perangkat lambat, di sini
+// posisi dihitung ULANG beberapa kali sampai benar-benar menetap. =====
+function repositionBurst(fn) {
+    [30, 120, 260, 450, 700, 1000, 1400].forEach(ms => setTimeout(() => fn && fn(), ms));
+}
 
 function buildAncestorChain(targetEl) {
     if (!targetEl) return;
@@ -2610,10 +2620,13 @@ function buildAncestorChain(targetEl) {
         if (overlay) overlay.remove();
     }
 
-    // tunggu transisi buka anchor (0.25s) selesai supaya ukuran/posisi terukur akurat
+    // tunggu transisi buka anchor selesai supaya ukuran/posisi terukur akurat —
+    // diulang beberapa kali (bukan sekali) supaya tetap presisi di HP yang
+    // render-nya lebih lambat dari laptop.
     wrap._reposition = positionAndConnect;
-    setTimeout(positionAndConnect, 350);
-    window.addEventListener('resize', () => setTimeout(positionAndConnect, 60));
+    repositionBurst(positionAndConnect);
+    window.addEventListener('resize', () => repositionBurst(positionAndConnect));
+    window.addEventListener('orientationchange', () => repositionBurst(positionAndConnect));
 }
 
 // =====================================================================
