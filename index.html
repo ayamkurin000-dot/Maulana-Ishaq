@@ -3332,11 +3332,26 @@ function selectFoundName(name) {
         showToast(`DITEMUKAN: ${target.toUpperCase()}`);
     }
 
-    const revealed = revealName(targetUpper);
-    if (revealed) {
-        setTimeout(doFind, 320);
+    function revealAndFind() {
+        const revealed = revealName(targetUpper);
+        if (revealed) {
+            setTimeout(doFind, 320);
+        } else {
+            doFind();
+        }
+    }
+
+    // ===== FIX: cabang keturunan (descChildren) di-render LAZY — shape &
+    // registry toggle-nya baru ada di DOM setelah cabang utama "+" pernah
+    // dibuka. Kalau masih tertutup, revealName()/doFind() di atas tidak akan
+    // menemukan apa-apa sama sekali (itulah sebabnya layar tidak bergeser
+    // saat nama diketuk). Maka: buka dulu cabang utama kalau masih tertutup,
+    // baru lakukan reveal + pencarian setelah DOM-nya sempat ter-render. =====
+    if (!descOpen) {
+        toggleDescTree();
+        setTimeout(revealAndFind, 450);
     } else {
-        doFind();
+        revealAndFind();
     }
 }
 
