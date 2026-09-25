@@ -193,19 +193,24 @@
     #wali9-legend .dot { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 4px; vertical-align: middle; }
 
     /* tree ala "org chart", indentasi + garis penghubung putus-putus */
-    .w9-tree, .w9-tree ul { list-style: none; margin: 0; padding-left: 26px; }
+    .w9-tree, .w9-tree ul { list-style: none; margin: 0; padding-left: 16px; }
     .w9-tree { padding-left: 0; min-width: max-content; position: relative; }
     #wali9-connector-svg { position: absolute; top: 0; left: 0; overflow: visible; pointer-events: none; z-index: 0; }
     .w9-tree li {
-        position: relative; margin: 10px 0; padding-left: 22px;
-        border-left: 2px dashed #b6935a;
+        position: relative; margin: 10px 0; padding-left: 14px;
+        border-left: 2px solid #1e293b;
     }
     .w9-tree > li { border-left: none; padding-left: 0; }
-    .w9-tree li:last-child { border-left: 2px dashed transparent; }
+    .w9-tree li:last-child { border-left: 2px solid transparent; }
     .w9-tree li::before {
-        content: ''; position: absolute; left: -2px; top: 16px; width: 20px;
-        border-top: 2px dashed #b6935a;
+        content: ''; position: absolute; left: -2px; top: 16px; width: 12px;
+        border-top: 2px solid #1e293b;
     }
+    /* garis menuju kotak yang terhubung lewat pernikahan/relasi (bukan garis darah)
+       tetap dibuat putus-putus, supaya beda dari garis keturunan darah langsung */
+    .w9-tree li.w9-related-line { border-left: 2px dashed #a97c1f; }
+    .w9-tree li.w9-related-line::before { border-top: 2px dashed #a97c1f; }
+    .w9-tree li.w9-related-line:last-child { border-left: 2px dashed transparent; }
     .w9-tree > li::before { display: none; }
     /* ===== Ruas rantai tunggal (Nabi Muhammad SAW s/d Syekh Jumadil Qubro): LURUS
        ke bawah, tanpa indentasi tangga, dihubungkan garis tegak SOLID & rapi. ===== */
@@ -260,14 +265,15 @@
         50%  { box-shadow: 0 0 22px rgba(245, 158, 11, 0.95), 0 0 8px rgba(245, 158, 11, 0.85); }
         100% { box-shadow: 0 0 0px rgba(245, 158, 11, 0.95); }
     }
-    #wali9-standalone { margin-top: 26px; padding-top: 18px; border-top: 1.5px dashed #cbb583; text-align: center; }
-    .w9-standalone-title { font-size: 0.62rem; font-weight: 800; color: #8a6a1f; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
-    .w9-standalone-box { display: inline-block; text-align: left; max-width: 260px; }
     @media (max-width: 640px) {
         #wali9-card-head h4 { font-size: 0.85rem; letter-spacing: 1px; }
         .w9-box { font-size: 0.6rem; min-width: 120px; max-width: 170px; padding: 6px 9px; }
         #wali9-body { padding: 16px 10px 24px; }
     }
+    #wali9-standalone { margin-top: 26px; padding-top: 18px; border-top: 1.5px dashed #cbb583; text-align: center; }
+    .w9-standalone-title { font-size: 0.62rem; font-weight: 800; color: #8a6a1f; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+    .w9-standalone-box { display: inline-block; max-width: 260px; }
+    .w9-standalone-box .w9-note { text-align: left; }
 
     #chart-wrap {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -739,15 +745,6 @@
         <div id="wali9-body">
             <div id="wali9-legend"><span class="dot" style="background:linear-gradient(to bottom,#fbcfe8,#c7f0d8,#ffffff);border:1px solid #94a3b8;"></span> Kotak Anggota Wali Songo &nbsp;&nbsp; <span class="dot" style="background:#eef2f7;border:1px solid #94a3b8;"></span> Jalur Keturunan (bukan Wali Songo) &nbsp;&nbsp; <span class="dot" style="background:repeating-linear-gradient(135deg,#fdf6e3,#fdf6e3 3px,#f3e2c0 3px,#f3e2c0 6px);border:1.5px dashed #a97c1f;"></span> Anggota Wali Songo — terhubung lewat pernikahan/relasi (bukan garis darah)</div>
             <ul class="w9-tree" id="wali9-tree"></ul>
-            <div id="wali9-standalone">
-                <div class="w9-standalone-title">Anggota Wali Songo Lain (garis keturunan belum pasti)</div>
-                <div class="w9-box w9-member w9-standalone-box" data-name="SUNAN GRESIK / MAULANA MALIK IBRAHIM (13XX-1419)">SUNAN GRESIK / MAULANA MALIK IBRAHIM (13XX-1419)
-                    <small class="w9-note">VERSI SILSILAH TRADISIONAL & LITERATUR NASAB NUSANTARA: menempatkan Syekh Maulana Malik Ibrahim (Sunan Gresik) dan Syekh Maulana Ibrahim Asmoro Qondi sebagai saudara kandung atau saudara sepupu — karena itu beliau ditampilkan di pohon utama dengan garis putus-putus (❓), menandai hubungan ini masih diperdebatkan.<br><br>
-                    <b>Dasar versi tersebut:</b> sama-sama Putra/Keturunan Syekh Jumadil Kubro (Syekh Jamaluddin Akbar al-Husain) yang datang bersama-sama/bergelombang ke Nusantara untuk berdakwah, sehingga dalam tradisi lisan sering disebut saudara seperjuangan atau saudara kandung/kerabat dekat.<br><br>
-                    <b>Versi lain:</b> Syekh Maulana Malik Ibrahim terkadang diletakkan sebagai paman atau kakek buyut, sementara Maulana Ibrahim Asmoro Qondi diposisikan khusus sebagai ayah dari Sunan Ampel.<br><br>
-                    Karena belum ada kepastian sejarah, kotak ini sengaja tidak diberi garis keturunan (anak/cucu) sendiri.</small>
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -2937,11 +2934,17 @@ const wali9PathTree = {
                                       note: "Menantu — Sunan Kalijaga menikahi Dewi Saroh, adik Sunan Giri (bukan garis darah, melainkan pernikahan).",
                                       children: [
                                         { name: "SUNAN MURIA / RADEN UMAR SAID", wali9: true, relation: true,
-                                          note: "Cucu (dari pernikahan Sunan Kalijaga & Dewi Saroh)." },
-                                        { name: "SUNAN GUNUNG JATI / SYARIF HIDAYATULLAH", wali9: true, relation: true,
-                                          note: "Besan & sahabat karib Sunan Kalijaga — putrinya (Dewi Sarokah/Siti Zainap) adalah istri kedua Sunan Kalijaga. Jalur keturunannya sendiri dari Cirebon, terpisah dari garis Maulana Ishaq." }
+                                          note: "Cucu (dari pernikahan Sunan Kalijaga & Dewi Saroh)." }
                                       ] }
-                                ] }
+                                ] },
+                                { name: "SYEKH ALI NURUL ALAM", children: [
+                                    { name: "SYARIF ABDULLAH", children: [
+                                        { name: "SUNAN GUNUNG JATI / SYARIF HIDAYATULLAH", wali9: true,
+                                          note: "Keturunan Syekh Jumadil Qubro lewat jalur Syekh Ali Nurul Alam (bukan lewat Asmoro Qondi/Maulana Ishaq). Juga besan & sahabat karib Sunan Kalijaga — putrinya (Dewi Sarokah/Siti Zainap) adalah istri kedua Sunan Kalijaga." }
+                                    ] }
+                                ] },
+                                { name: "SUNAN GRESIK / MAULANA MALIK IBRAHIM (13XX-1419)", wali9: true,
+                                  note: "VERSI SILSILAH TRADISIONAL & LITERATUR NASAB NUSANTARA: sebagian riwayat menempatkan Syekh Maulana Malik Ibrahim (Sunan Gresik) sebagai putra langsung Syekh Jumadil Kubro, saudara kandung/sepupu Syekh Maulana Ibrahim Asmoro Qondi — sehingga di sini digabung sebagai keturunan langsung Syekh Jumadil Qubro. VERSI LAIN: beliau terkadang diletakkan sebagai paman atau kakek buyut. Karena belum ada kepastian sejarah, kotak ini sengaja tidak diberi garis keturunan (anak/cucu) sendiri." }
                             ] }
                         ] }
                     ] }
@@ -2953,6 +2956,7 @@ const wali9PathTree = {
 function buildWali9Node(nd) {
     const li = document.createElement('li');
     if (nd.chainLinear) li.classList.add('w9-linear');
+    if (nd.relation) li.classList.add('w9-related-line');
     const box = document.createElement('div');
     box.className = 'w9-box' + (nd.wali9 ? ' w9-member' : '') + (nd.relation ? ' w9-related' : '');
     box.dataset.name = (nd.name || '').toUpperCase();
@@ -3146,10 +3150,6 @@ function collectAllNames() {
             });
         }
         if (typeof wali9PathTree !== 'undefined') walkWali9Only([wali9PathTree]);
-        ["SUNAN GRESIK / MAULANA MALIK IBRAHIM (13XX-1419)"].forEach(nm => {
-            const key = nm.toUpperCase().trim();
-            if (!set.has(key)) set.set(key, { name: key, wali9Only: true });
-        });
     } catch(e) {}
     allNamesCache = Array.from(set.values());
     return allNamesCache;
