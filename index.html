@@ -203,6 +203,19 @@
         border-top: 2px dashed #b6935a;
     }
     .w9-tree > li::before { display: none; }
+    /* ===== Ruas rantai tunggal (Nabi Muhammad SAW s/d Syekh Jumadil Qubro): LURUS
+       ke bawah, tanpa indentasi tangga, dihubungkan garis tegak SOLID & rapi. ===== */
+    .w9-tree li.w9-linear {
+        border-left: none;
+        padding-left: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .w9-tree li.w9-linear::before { display: none; }
+    ul.w9-linear-ul { padding-left: 0; margin: 0; }
+    .w9-vline { width: 3px; height: 22px; background: #1e293b; border-radius: 2px; margin: 0 auto; }
     .w9-box {
         display: inline-block; min-width: 150px; max-width: 230px; padding: 8px 12px;
         border-radius: 9px; border: 1.5px solid #1e293b; font-size: 0.66rem; font-weight: 800;
@@ -2900,13 +2913,16 @@ function closeDisputeNote(){ document.getElementById('dispute-overlay').classLis
 // anggota Wali Songo beserta jalur/garis keturunan yang menghubungkannya,
 // ditampilkan terpisah sbg diagram statis (tidak mengubah tampilan pohon utama). =====
 const wali9PathTree = {
-    name: "NABI MUHAMMAD SAW", children: [
-        { name: "SITI FATIMAH AZ-ZAHRA'", children: [
-            { name: "SAYYIDINA HUSAIN", children: [
-                { name: "ZAINAL ALIM", children: [
-                    { name: "ZAINAL QUBRO", children: [
-                        { name: "ZAINAL HUSAIN", children: [
-                            { name: "SYEKH JUMADIL QUBRO", children: [
+    // chainLinear: true = ruas rantai tunggal (Nabi Muhammad SAW s/d Syekh Jumadil Qubro)
+    // yang ditampilkan LURUS KE BAWAH dengan garis penghubung tegas (solid), bukan
+    // model tangga/indent bercabang seperti bagian Wali Songo di bawahnya.
+    name: "NABI MUHAMMAD SAW", chainLinear: true, children: [
+        { name: "SITI FATIMAH AZ-ZAHRA'", chainLinear: true, children: [
+            { name: "SAYYIDINA HUSAIN", chainLinear: true, children: [
+                { name: "ZAINAL ALIM", chainLinear: true, children: [
+                    { name: "ZAINAL QUBRO", chainLinear: true, children: [
+                        { name: "ZAINAL HUSAIN", chainLinear: true, children: [
+                            { name: "SYEKH JUMADIL QUBRO", chainLinear: true, children: [
                                 { name: "SYEKH MAULANA IBRAHIM ASMORO QONDI", children: [
                                     { name: "RADEN SANTRI / SAYYID ALI MURTADHO", children: [
                                         { name: "SUNAN NGUDUNG / RADEN USMAN HAJI", children: [
@@ -2939,6 +2955,7 @@ const wali9PathTree = {
 };
 function buildWali9Node(nd) {
     const li = document.createElement('li');
+    if (nd.chainLinear) li.classList.add('w9-linear');
     const box = document.createElement('div');
     box.className = 'w9-box' + (nd.wali9 ? ' w9-member' : '') + (nd.relation ? ' w9-related' : '');
     box.dataset.name = (nd.name || '').toUpperCase();
@@ -2951,7 +2968,16 @@ function buildWali9Node(nd) {
     }
     li.appendChild(box);
     if (nd.children && nd.children.length) {
+        // ruas rantai tunggal (satu anak & sama-sama chainLinear): sambungkan dengan
+        // garis vertikal SOLID lurus ke bawah, bukan garis putus-putus diagonal.
+        const singleLinearChild = nd.children.length === 1 && nd.children[0].chainLinear;
+        if (singleLinearChild) {
+            const vline = document.createElement('div');
+            vline.className = 'w9-vline';
+            li.appendChild(vline);
+        }
         const ul = document.createElement('ul');
+        if (singleLinearChild) ul.classList.add('w9-linear-ul');
         nd.children.forEach(c => ul.appendChild(buildWali9Node(c)));
         li.appendChild(ul);
     }
