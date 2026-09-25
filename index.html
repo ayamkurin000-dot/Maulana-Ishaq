@@ -1701,17 +1701,19 @@ const descChildren = [
         ]
     },
     {
-        // ===== STATUS: DIPERDEBATKAN / BELUM PASTI =====
-        // Ditempatkan sebagai "saudara" Syekh Maulana Ishaq di generasi ini karena
-        // sebagian riwayat menyebut demikian — TAPI sengaja TIDAK diberi `children`
-        // (tidak diklaim garis keturunannya) dan diberi tanda ❓ + kotak keterangan
-        // terpisah (lihat badge di pojok kotak), karena identitas & posisi beliau
-        // dalam silsilah ini masih diperselisihkan sejarawan.
+        name: "SYEKH ALI NURUL ALAM", type: "gen7", children: [
+            { name: "SYARIF ABDULLAH", type: "gen8", children: [
+                { name: "SUNAN GUNUNG JATI / SYARIF HIDAYATULLAH", type: "gen9", wali9: true, markId: "node-sunan-gunung-jati" }
+            ] }
+        ]
+    },
+    {
+        // ===== Sunan Gresik / Maulana Malik Ibrahim: keturunan langsung Syekh
+        // Jumadil Qubro (satu jalur dengan Asmoro Qondi & Ali Nurul Alam), jadi
+        // ditampilkan dengan garis tegas (bukan putus-putus) seperti anak lain. =====
         name: "SUNAN GRESIK / MAULANA MALIK IBRAHIM (13XX-1419)", type: "gen7",
         wali9: true,
-        markId: "node-sunan-gresik",
-        disputed: true,
-        disputedNote: "VERSI SILSILAH TRADISIONAL & LITERATUR NASAB NUSANTARA:\nMenempatkan Syekh Maulana Malik Ibrahim (Sunan Gresik) dan Syekh Maulana Ibrahim Asmoro Qondi sebagai saudara kandung atau saudara sepupu — karena itu kotak ini ditempatkan sejajar di sini, dengan GARIS PUTUS-PUTUS (bukan garis tegas) untuk menandai hubungan ini masih diperdebatkan.\n\nDASAR VERSI TERSEBUT:\nSama-sama Putra/Keturunan Syekh Jumadil Kubro (Syekh Jamaluddin Akbar al-Husain) yang datang secara bersama-sama atau bergelombang ke Nusantara untuk berdakwah. Karena sama-sama bernasab kepada Syekh Jumadil Kubro, mereka sering kali disebut dalam tradisi lisan sebagai saudara seperjuangan atau saudara kandung/kerabat dekat.\n\nVERSI LAIN:\nSyekh Maulana Malik Ibrahim terkadang diletakkan sebagai paman atau kakek buyut, sementara Maulana Ibrahim Asmoro Qondi diposisikan secara khusus sebagai ayah dari Sunan Ampel.\n\nKarena belum ada kepastian sejarah, kotak ini SENGAJA tidak diberi garis keturunan (anak/cucu) sendiri. Lihat juga panel ⭐ WALI-9 dan 📖 RUJUKAN."
+        markId: "node-sunan-gresik"
     }
 ];
 // FIXED BEHAVIOR: jarak antar shape dibuat FIX secara vertikal, dan LEBAR secara horizontal.
