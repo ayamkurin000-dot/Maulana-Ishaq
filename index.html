@@ -2754,15 +2754,25 @@ function fitToIshaqTransform() {
     let w, h;
     const minX = 0, minY = 0;
     if (descOpen) {
-        // cabang terbuka: pas-kan Nabi Muhammad SAW s/d Syekh Maulana Ishaq
+        // cabang terbuka: pas-kan Nabi Muhammad SAW s/d Syekh Maulana Ishaq,
+        // DAN pastikan kotak SUNAN GRESIK (sibling terakhir, di bawah Ishaq)
+        // ikut masuk area yang di-fit, supaya tidak terpotong di luar layar.
         const target = document.getElementById('node-maulana-ishaq');
         if (!target) return null;
         const cRect = contEl.getBoundingClientRect();
         const tRect = target.getBoundingClientRect();
         const s = tState.k || 1;
         if (!tRect.width || !cRect.width) return null;
-        const maxX = Math.max(contEl.offsetWidth, (tRect.right - cRect.left) / s);
-        const maxY = Math.max(contEl.offsetHeight, (tRect.bottom - cRect.top) / s);
+        let maxX = Math.max(contEl.offsetWidth, (tRect.right - cRect.left) / s);
+        let maxY = Math.max(contEl.offsetHeight, (tRect.bottom - cRect.top) / s);
+        const gresik = document.getElementById('node-sunan-gresik');
+        if (gresik) {
+            const gRect = gresik.getBoundingClientRect();
+            if (gRect.width) {
+                maxX = Math.max(maxX, (gRect.right - cRect.left) / s);
+                maxY = Math.max(maxY, (gRect.bottom - cRect.top) / s);
+            }
+        }
         w = maxX - minX; h = maxY - minY;
     } else {
         // tampilan awal (collapse): pas-kan Nabi s/d Jumadil Qubro + petunjuk tangan
