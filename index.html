@@ -211,6 +211,28 @@
         background: linear-gradient(to bottom, #dc2626 0%, #dc2626 33.33%, #16a34a 33.33%, #16a34a 66.66%, #ffffff 66.66%, #ffffff 100%);
         text-shadow: 0 1px 2px rgba(255,255,255,0.55);
     }
+    /* kotak relasi non-garis-darah (mis. menantu/besan/guru-murid): border putus, isi beda */
+    .w9-box.w9-related {
+        border-style: dashed; border-color: #a97c1f;
+        background: repeating-linear-gradient(135deg, #fdf6e3, #fdf6e3 6px, #f3e2c0 6px, #f3e2c0 12px);
+    }
+    .w9-note {
+        display: block; font-weight: 600; font-style: italic; font-size: 0.58rem;
+        color: #475569; margin-top: 3px; line-height: 1.25; white-space: normal;
+    }
+    .w9-box.w9-related .w9-note { color: #6b4f14; }
+    .w9-box.w9-search-highlight {
+        animation: w9-search-pulse 1.3s ease-in-out 2;
+        outline: 3px solid #f59e0b; outline-offset: 1px;
+    }
+    @keyframes w9-search-pulse {
+        0%   { box-shadow: 0 0 0px rgba(245, 158, 11, 0.95); }
+        50%  { box-shadow: 0 0 22px rgba(245, 158, 11, 0.95), 0 0 8px rgba(245, 158, 11, 0.85); }
+        100% { box-shadow: 0 0 0px rgba(245, 158, 11, 0.95); }
+    }
+    #wali9-standalone { margin-top: 26px; padding-top: 18px; border-top: 1.5px dashed #cbb583; text-align: center; }
+    .w9-standalone-title { font-size: 0.62rem; font-weight: 800; color: #8a6a1f; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+    .w9-standalone-box { display: inline-block; text-align: left; max-width: 260px; }
     @media (max-width: 640px) {
         #wali9-card-head h4 { font-size: 0.85rem; letter-spacing: 1px; }
         .w9-box { font-size: 0.6rem; min-width: 120px; max-width: 170px; padding: 6px 9px; }
@@ -634,8 +656,14 @@
             <div class="w9-divider"></div>
         </div>
         <div id="wali9-body">
-            <div id="wali9-legend"><span class="dot" style="background:linear-gradient(to bottom,#dc2626 33%,#16a34a 33% 66%,#ffffff 66%);border:1px solid #94a3b8;"></span> Kotak Anggota Wali Songo &nbsp;&nbsp; <span class="dot" style="background:#eef2f7;border:1px solid #94a3b8;"></span> Jalur Keturunan (bukan Wali Songo)</div>
+            <div id="wali9-legend"><span class="dot" style="background:linear-gradient(to bottom,#dc2626 33%,#16a34a 33% 66%,#ffffff 66%);border:1px solid #94a3b8;"></span> Kotak Anggota Wali Songo &nbsp;&nbsp; <span class="dot" style="background:#eef2f7;border:1px solid #94a3b8;"></span> Jalur Keturunan (bukan Wali Songo) &nbsp;&nbsp; <span class="dot" style="background:repeating-linear-gradient(135deg,#fdf6e3,#fdf6e3 3px,#f3e2c0 3px,#f3e2c0 6px);border:1.5px dashed #a97c1f;"></span> Anggota Wali Songo — terhubung lewat pernikahan/relasi (bukan garis darah)</div>
             <ul class="w9-tree" id="wali9-tree"></ul>
+            <div id="wali9-standalone">
+                <div class="w9-standalone-title">Anggota Wali Songo Lain (belum tersambung ke silsilah ini)</div>
+                <div class="w9-box w9-member w9-standalone-box" data-name="SUNAN GRESIK / MAULANA MALIK IBRAHIM (W. 1419)">SUNAN GRESIK / MAULANA MALIK IBRAHIM (w. 1419)
+                    <small class="w9-note">Wali senior, dianggap wali pertama yang berdakwah di Jawa. Sebagian riwayat menyebutnya bersaudara dengan Maulana Ishaq &amp; ayah Sunan Ampel, namun sebagian riwayat lain meyakini beliau tokoh yang berbeda dari "Syekh Ibrahim Asmoro Qondi" di pohon ini (makam terpisah: Gresik vs Tuban). Karena belum ada kepastian, kotak ini sengaja tidak disambungkan ke garis keturunan manapun.</small>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -1542,6 +1570,15 @@ const descChildren = [
                             { name: "YUGO PUTRI (WAFAT WAKTU KECIL)", type: "gen10" }
                         ]
                     }
+                ]
+            },
+            {
+                name: "DEWI SAROH BINTI MAULANA ISHAQ", type: "gen8", combined: true, wali9: true,
+                spouseName: "SUNAN KALIJAGA / RADEN SAID (menantu Maulana Ishaq)",
+                children: [
+                    { name: "SUNAN MURIA / RADEN UMAR SAID", type: "gen9", wali9: true },
+                    { name: "DEWI RUQAYYAH", type: "gen9" },
+                    { name: "DEWI SUFIAH", type: "gen9" }
                 ]
             }
         ]
@@ -2647,7 +2684,15 @@ const wali9PathTree = {
                                     ] }
                                 ] },
                                 { name: "SYEKH MAULANA ISHAQ", children: [
-                                    { name: "SUNAN GIRI / MUHAMMAD 'AINUL YAKIN (1442-1506)", wali9: true }
+                                    { name: "SUNAN GIRI / MUHAMMAD 'AINUL YAKIN (1442-1506)", wali9: true },
+                                    { name: "DEWI SAROH & SUNAN KALIJAGA (RADEN SAID)", wali9: true, relation: true,
+                                      note: "Menantu — Sunan Kalijaga menikahi Dewi Saroh, adik Sunan Giri (bukan garis darah, melainkan pernikahan).",
+                                      children: [
+                                        { name: "SUNAN MURIA / RADEN UMAR SAID", wali9: true, relation: true,
+                                          note: "Cucu (dari pernikahan Sunan Kalijaga & Dewi Saroh)." },
+                                        { name: "SUNAN GUNUNG JATI / SYARIF HIDAYATULLAH", wali9: true, relation: true,
+                                          note: "Besan & sahabat karib Sunan Kalijaga — putrinya (Dewi Sarokah/Siti Zainap) adalah istri kedua Sunan Kalijaga. Jalur keturunannya sendiri dari Cirebon, terpisah dari garis Maulana Ishaq." }
+                                      ] }
                                 ] }
                             ] }
                         ] }
@@ -2660,8 +2705,15 @@ const wali9PathTree = {
 function buildWali9Node(nd) {
     const li = document.createElement('li');
     const box = document.createElement('div');
-    box.className = 'w9-box' + (nd.wali9 ? ' w9-member' : '');
+    box.className = 'w9-box' + (nd.wali9 ? ' w9-member' : '') + (nd.relation ? ' w9-related' : '');
+    box.dataset.name = (nd.name || '').toUpperCase();
     box.textContent = nd.name;
+    if (nd.note) {
+        const note = document.createElement('small');
+        note.className = 'w9-note';
+        note.textContent = nd.note;
+        box.appendChild(note);
+    }
     li.appendChild(box);
     if (nd.children && nd.children.length) {
         const ul = document.createElement('ul');
@@ -2778,6 +2830,27 @@ function collectAllNames() {
         if (typeof descChildren !== 'undefined') walk(descChildren);
         if (typeof ancestorChainData !== 'undefined') walk(ancestorChainData);
         if (typeof chain !== 'undefined') walk(chain);
+    } catch(e) {}
+    // ===== Nama anggota Wali Songo yang HANYA ada di panel WALI-9 (mis. Sunan
+    // Gunung Jati via relasi, atau Sunan Gresik yang berdiri sendiri tanpa
+    // sambungan ke pohon utama) — tetap dimasukkan supaya bisa dicari lewat
+    // search bar, ditandai wali9Only supaya selectFoundName tahu harus buka
+    // panel WALI-9, BUKAN mencari di pohon utama. =====
+    try {
+        function walkWali9Only(nodes) {
+            (nodes || []).forEach(n => {
+                if (n.name) {
+                    const key = n.name.toUpperCase().trim();
+                    if (!set.has(key)) set.set(key, { name: key, wali9Only: true });
+                }
+                if (n.children) walkWali9Only(n.children);
+            });
+        }
+        if (typeof wali9PathTree !== 'undefined') walkWali9Only([wali9PathTree]);
+        ["SUNAN GRESIK / MAULANA MALIK IBRAHIM (W. 1419)"].forEach(nm => {
+            const key = nm.toUpperCase().trim();
+            if (!set.has(key)) set.set(key, { name: key, wali9Only: true });
+        });
     } catch(e) {}
     allNamesCache = Array.from(set.values());
     return allNamesCache;
@@ -2939,6 +3012,13 @@ function selectFoundName(name) {
     clearFoundHighlight();
     const targetUpper = target.toUpperCase();
 
+    const allNames = collectAllNames();
+    const info = allNames.find(item => item.name === targetUpper);
+    if (info && info.wali9Only) {
+        selectFoundNameWali9(targetUpper, target);
+        return;
+    }
+
     function doFind() {
         const matches = [];
         document.querySelectorAll('.node-shape').forEach(shape => {
@@ -2962,6 +3042,24 @@ function selectFoundName(name) {
     } else {
         doFind();
     }
+}
+
+// ===== Nama yang hanya ada di panel WALI-9 (relasi/tidak tersambung ke pohon
+// utama): buka panel itu, lalu gulir & sorot kotaknya, bukan mencari di pohon. =====
+function selectFoundNameWali9(targetUpper, target) {
+    openWali9Panel();
+    setTimeout(() => {
+        const boxes = document.querySelectorAll('#wali9-body .w9-box');
+        let match = null;
+        boxes.forEach(b => {
+            if (!match && (b.dataset.name || '').includes(targetUpper)) match = b;
+        });
+        if (!match) { showToast(`TIDAK DITEMUKAN "${target}"`); return; }
+        match.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        match.classList.add('w9-search-highlight');
+        setTimeout(() => match.classList.remove('w9-search-highlight'), 2700);
+        showToast(`DITEMUKAN DI PANEL WALI-9: ${target.toUpperCase()}`);
+    }, 150);
 }
 
 document.addEventListener('click', function(e) {
