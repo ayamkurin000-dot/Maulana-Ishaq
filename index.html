@@ -2337,16 +2337,17 @@ function showPanHint() {
     if (!el) return;
     el.style.display = 'flex';
     requestAnimationFrame(() => el.classList.add('show'));
-    // jaga-jaga: bila tidak ada interaksi, lanjut sendiri ke petunjuk cubit setelah 6 detik
+    // jaga-jaga: bila tidak ada interaksi, lanjut sendiri ke petunjuk cubit setelah 4 detik
     clearTimeout(panHintTimer);
-    panHintTimer = setTimeout(() => { if (hintStage === 1) { endPanHint('return'); startPinchDemo(); } }, 7800);
+    panHintTimer = setTimeout(() => { if (hintStage === 1) { endPanHint('return'); startPinchDemo(); } }, 4000);
     // animasi geser NYATA pada silsilah (kanan, bawah, kiri, atas) mengikuti gerak panah;
     // dimulai setelah pas-layar awal selesai supaya posisi dasarnya sudah benar
     setTimeout(() => { if (hintStage === 1) startPanDemo(); }, 1000);
 }
 
-// ----- Demo geser: silsilah ikut bergerak kanan -> bawah -> kiri -> atas (siklus 2,2 dtk,
-//       sama persis dengan animasi ikon panah 4 arah) -----
+// ----- Demo geser: silsilah ikut bergerak kanan -> bawah -> kiri -> atas (1 SIKLUS
+//       SAJA, tidak diulang-ulang -- masing-masing arah tampil 1x lalu lanjut ke
+//       petunjuk cubit 2 jari) -----
 let panDemoTimers = [], panDemoBase = null;
 function startPanDemo() {
     stopPanDemo();
@@ -2354,17 +2355,17 @@ function startPanDemo() {
     const badge = document.querySelector('#pan-hint .pan-hint-badge');
     if (badge) { badge.style.animation = 'none'; void badge.offsetWidth; badge.style.animation = ''; } // sinkron
     const D = 36;                                              // jarak geser (px)
-    const seq = [[D, 0], [0, D], [-D, 0], [0, -D], [0, 0]];   // kanan, bawah, kiri, atas, kembali
-    function cycle() {
-        seq.forEach(([dx, dy], i) => panDemoTimers.push(setTimeout(() => {
-            if (!panDemoBase) return;
-            contEl.style.transition = 'transform 440ms ease-in-out';
-            tState.x = panDemoBase.x + dx; tState.y = panDemoBase.y + dy;
-            applyTransform();
-        }, i * 440)));
-        panDemoTimers.push(setTimeout(cycle, 2200));
-    }
-    cycle();
+    const seq = [[D, 0], [0, D], [-D, 0], [0, -D], [0, 0]];   // kanan, bawah, kiri, atas, kembali -- 1x saja
+    seq.forEach(([dx, dy], i) => panDemoTimers.push(setTimeout(() => {
+        if (!panDemoBase) return;
+        contEl.style.transition = 'transform 440ms ease-in-out';
+        tState.x = panDemoBase.x + dx; tState.y = panDemoBase.y + dy;
+        applyTransform();
+    }, i * 440)));
+    // setelah 1 siklus selesai (bukan diulang lagi), langsung lanjut ke petunjuk cubit 2 jari.
+    panDemoTimers.push(setTimeout(() => {
+        if (hintStage === 1) { endPanHint('return'); startPinchDemo(); }
+    }, seq.length * 440 + 150));
 }
 function stopPanDemo(mode) {
     panDemoTimers.forEach(clearTimeout); panDemoTimers = [];
@@ -2612,6 +2613,10 @@ function buildAncestorChain(targetEl) {
     logoImg.style.pointerEvents = 'none';
     logoImg.style.filter = 'drop-shadow(0 6px 10px rgba(0,0,0,0.35))';
     container.appendChild(logoImg);
+    // ===== Logo cukup berat (gambar base64 berukuran besar) untuk terus direposisi.
+    // Begitu user pertama kali MENGGESER layar (drag/pan), logo disembunyikan
+    // permanen lewat flag global window.__logoDismissed (lihat bagian geser/drag). =====
+    if (window.__logoDismissed) { logoImg.style.display = 'none'; }
 
     const titleLine1 = document.createElement('div');
     titleLine1.textContent = 'LELUHUR DEWI SEKARDADU';
@@ -2704,7 +2709,7 @@ function buildAncestorChain(targetEl) {
         const logoGap = 10;
         logoImg.style.left = (leftPx + wrapW / 2 - logoW / 2) + 'px';
         logoImg.style.top = (topPx - logoH - logoGap) + 'px';
-        logoImg.style.visibility = 'visible';
+        if (!window.__logoDismissed) logoImg.style.visibility = 'visible';
 
         // garis penghubung ke kotak Syekh Maulana Ishaq dihapus atas permintaan
         let overlay = document.getElementById('ancestor-link-overlay');
@@ -2792,6 +2797,15 @@ function centerChart(animate) {
 
 // ----- Drag (mouse) untuk geser -----
 let isDragging = false, dragStartX = 0, dragStartY = 0, startTx = 0, startTy = 0, movedWhileDown = false;
+// Logo (gambar base64 besar) disembunyikan permanen begitu user pertama kali
+// benar-benar menggeser (pan) layar, supaya tidak terus-menerus ikut dihitung
+// ulang posisinya / dirender saat kanvas digeser-geser.
+function dismissLogoOnPan() {
+    if (window.__logoDismissed) return;
+    window.__logoDismissed = true;
+    const li = document.getElementById('sekardadu-logo');
+    if (li) { li.style.visibility = 'hidden'; li.style.display = 'none'; }
+}
 wrapEl.addEventListener('mousedown', (e) => {
     if (e.target.closest('.expand-badge')) return; // biar tombol +/- tetap bisa diklik
     isDragging = true; movedWhileDown = false;
@@ -2802,7 +2816,7 @@ wrapEl.addEventListener('mousedown', (e) => {
 window.addEventListener('mousemove', (e) => {
     if (!isDragging) return;
     const dx = e.clientX - dragStartX, dy = e.clientY - dragStartY;
-    if (Math.abs(dx) > 2 || Math.abs(dy) > 2) movedWhileDown = true;
+    if (Math.abs(dx) > 2 || Math.abs(dy) > 2) { movedWhileDown = true; dismissLogoOnPan(); }
     tState.x = startTx + dx;
     tState.y = startTy + dy;
     applyTransform();
@@ -2854,7 +2868,7 @@ wrapEl.addEventListener('touchstart', (e) => {
 wrapEl.addEventListener('touchmove', (e) => {
     if (e.touches.length === 1 && isDragging) {
         const dx = e.touches[0].clientX - dragStartX, dy = e.touches[0].clientY - dragStartY;
-        if (Math.abs(dx) > 2 || Math.abs(dy) > 2) movedWhileDown = true;
+        if (Math.abs(dx) > 2 || Math.abs(dy) > 2) { movedWhileDown = true; dismissLogoOnPan(); }
         tState.x = startTx + dx;
         tState.y = startTy + dy;
         applyTransform();
