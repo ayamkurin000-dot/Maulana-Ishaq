@@ -704,9 +704,9 @@
             <div id="wali9-legend"><span class="dot" style="background:linear-gradient(to bottom,#dc2626 33%,#16a34a 33% 66%,#ffffff 66%);border:1px solid #94a3b8;"></span> Kotak Anggota Wali Songo &nbsp;&nbsp; <span class="dot" style="background:#eef2f7;border:1px solid #94a3b8;"></span> Jalur Keturunan (bukan Wali Songo) &nbsp;&nbsp; <span class="dot" style="background:repeating-linear-gradient(135deg,#fdf6e3,#fdf6e3 3px,#f3e2c0 3px,#f3e2c0 6px);border:1.5px dashed #a97c1f;"></span> Anggota Wali Songo — terhubung lewat pernikahan/relasi (bukan garis darah)</div>
             <ul class="w9-tree" id="wali9-tree"></ul>
             <div id="wali9-standalone">
-                <div class="w9-standalone-title">Anggota Wali Songo Lain (belum tersambung ke silsilah ini)</div>
-                <div class="w9-box w9-member w9-standalone-box" data-name="SUNAN GRESIK / MAULANA MALIK IBRAHIM (W. 1419)">SUNAN GRESIK / MAULANA MALIK IBRAHIM (w. 1419)
-                    <small class="w9-note">Wali senior, dianggap wali pertama yang berdakwah di Jawa. Sebagian riwayat menyebutnya bersaudara dengan Maulana Ishaq &amp; ayah Sunan Ampel, namun sebagian riwayat lain meyakini beliau tokoh yang berbeda dari "Syekh Ibrahim Asmoro Qondi" di pohon ini (makam terpisah: Gresik vs Tuban). Karena belum ada kepastian, kotak ini sengaja tidak disambungkan ke garis keturunan manapun.</small>
+                <div class="w9-standalone-title">Anggota Wali Songo Lain (garis keturunan belum pasti)</div>
+                <div class="w9-box w9-member w9-standalone-box" data-name="SUNAN GRESIK / MAULANA MALIK IBRAHIM (13XX-1419)">SUNAN GRESIK / MAULANA MALIK IBRAHIM (13XX-1419)
+                    <small class="w9-note">Wali senior, dianggap wali pertama yang berdakwah di Jawa. Sebagian riwayat menyebutnya bersaudara dengan Maulana Ishaq &amp; ayah Sunan Ampel — beliau sudah ditampilkan di pohon utama dengan garis putus-putus (❓) untuk menandai status ini masih diperdebatkan. Sebagian riwayat lain meyakini beliau tokoh yang berbeda dari "Syekh Ibrahim Asmoro Qondi" di pohon ini (makam terpisah: Gresik vs Tuban). Karena belum ada kepastian, kotak ini sengaja tidak diberi garis keturunan (anak/cucu) sendiri.</small>
                 </div>
             </div>
         </div>
@@ -1646,10 +1646,11 @@ const descChildren = [
         // (tidak diklaim garis keturunannya) dan diberi tanda ❓ + kotak keterangan
         // terpisah (lihat badge di pojok kotak), karena identitas & posisi beliau
         // dalam silsilah ini masih diperselisihkan sejarawan.
-        name: "SUNAN GRESIK / MAULANA MALIK IBRAHIM (w. 1419)", type: "gen7",
+        name: "SUNAN GRESIK / MAULANA MALIK IBRAHIM (13XX-1419)", type: "gen7",
+        wali9: true,
         markId: "node-sunan-gresik",
         disputed: true,
-        disputedNote: "Wali senior, dianggap wali pertama yang berdakwah di Jawa. Sebagian riwayat/babad menyebutnya bersaudara dengan Syekh Maulana Ishaq (dan ayah Sunan Ampel), sehingga kotak ini ditempatkan sejajar di sini — DENGAN GARIS PUTUS-PUTUS (bukan garis tegas) untuk menandai hubungan ini masih diperdebatkan. Sebagian riwayat lain bahkan meyakini beliau tokoh yang BERBEDA dari \"Syekh Ibrahim Asmoro Qondi\" di pohon ini — makamnya terpisah (Gresik, w. 1419) dari makam Syekh Ibrahim Asmoro Qondi (Tuban). Karena belum ada kepastian sejarah, kotak ini SENGAJA tidak diberi garis keturunan (anak/cucu) sendiri. Rujukan: babad & riwayat lisan Wali Songo — lihat juga panel ⭐ WALI-9 dan 📖 RUJUKAN."
+        disputedNote: "Wali senior, dianggap wali pertama yang berdakwah di Jawa. Sebagian riwayat/babad menyebutnya bersaudara dengan Syekh Maulana Ishaq (dan ayah Sunan Ampel), sehingga kotak ini ditempatkan sejajar di sini — DENGAN GARIS PUTUS-PUTUS (bukan garis tegas) untuk menandai hubungan ini masih diperdebatkan. Sebagian riwayat lain bahkan meyakini beliau tokoh yang BERBEDA dari \"Syekh Ibrahim Asmoro Qondi\" di pohon ini — makamnya terpisah (Gresik, wafat 1419) dari makam Syekh Ibrahim Asmoro Qondi (Tuban). Karena belum ada kepastian sejarah, kotak ini SENGAJA tidak diberi garis keturunan (anak/cucu) sendiri. Rujukan: babad & riwayat lisan Wali Songo — lihat juga panel ⭐ WALI-9 dan 📖 RUJUKAN."
     }
 ];
 // FIXED BEHAVIOR: jarak antar shape dibuat FIX secara vertikal, dan LEBAR secara horizontal.
@@ -2963,7 +2964,7 @@ function collectAllNames() {
             });
         }
         if (typeof wali9PathTree !== 'undefined') walkWali9Only([wali9PathTree]);
-        ["SUNAN GRESIK / MAULANA MALIK IBRAHIM (W. 1419)"].forEach(nm => {
+        ["SUNAN GRESIK / MAULANA MALIK IBRAHIM (13XX-1419)"].forEach(nm => {
             const key = nm.toUpperCase().trim();
             if (!set.has(key)) set.set(key, { name: key, wali9Only: true });
         });
