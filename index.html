@@ -50,6 +50,8 @@
         #header h1 { font-size: 0.95rem; }
         #header p { font-size: 0.6rem; }
         .controls .btn { font-size: 0.62rem; padding: 5px 9px; }
+        #search-wrap { flex-basis: 90px; min-width: 70px; max-width: none; padding: 4px 8px; }
+        #search-wrap input { font-size: 11px; }
     }
 
     #credit-tag {
@@ -446,14 +448,19 @@
         border-radius: 20px;
         padding: 4px 12px;
         box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-        position: relative;        align-self: flex-start;   /* baris pencarian rata kiri */
+        position: relative;
+        flex: 1 1 120px;   /* ikut sejajar tombol lain, menyusut duluan kalau ruang sempit */
+        min-width: 90px;
+        max-width: 220px;
     }
     #search-wrap input {
         border: none;
         outline: none;
         font-size: 13px;
         font-weight: 600;
-        width: 180px;
+        flex: 1 1 auto;    /* menyusut mengikuti #search-wrap, tidak lagi lebar tetap */
+        min-width: 0;
+        width: auto;
         background: transparent;
         text-transform: uppercase;
     }
@@ -666,12 +673,12 @@
             <button class="btn" onclick="collapseAllBranches()">TUTUP SEMUA</button>
             <button class="btn" id="lock-btn" onclick="toggleLock()" style="background:#64748b;">🔓 KUNCI: OFF</button>
             <button class="btn" id="wali9-btn" onclick="openWali9Panel()" style="background:linear-gradient(135deg,#dc2626,#16a34a);">⭐ WALI-9</button>
-        </div>
-        <div id="search-wrap">
-            <span style="font-size:13px;">🔍</span>
-            <input id="search-input" type="text" placeholder="Cari nama (min. 3 huruf)..." oninput="searchNames(this.value)" autocomplete="off" />
-            <button onclick="clearSearch()" title="Hapus">✕</button>
-            <div id="search-dropdown"></div>
+            <div id="search-wrap">
+                <span style="font-size:13px;">🔍</span>
+                <input id="search-input" type="text" placeholder="Cari nama (min. 3 huruf)..." oninput="searchNames(this.value)" autocomplete="off" />
+                <button onclick="clearSearch()" title="Hapus">✕</button>
+                <div id="search-dropdown"></div>
+            </div>
         </div>
     </div>
 </div>
