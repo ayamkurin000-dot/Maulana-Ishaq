@@ -1740,6 +1740,35 @@ const SUNAN_GUNUNG_JATI_INFO_HTML = `
 </ol>
 <p>Banyak keturunan langsung beliau (yang biasa menggunakan gelar Syarif, Raden, Ratu, atau Tubagus) kemudian menyebar sebagai ulama dan tokoh masyarakat yang memimpin pondok pesantren di berbagai wilayah Nusantara.</p>
 `;
+const SUNAN_KALIJAGA_INFO_HTML = `
+<h5>II. Istri dan Keturunan Sunan Kalijaga</h5>
+<p>Sunan Kalijaga tercatat menikah dengan beberapa orang istri dan dikaruniai sejumlah anak yang kelak menurunkan banyak tokoh penting, ulama, serta penguasa di Nusantara:</p>
+<ol>
+<li><b>Dewi Sarah</b> <i>(sebagian sumber menyebut Dewi Sarokah binti Maulana Ishaq)</i>
+    <p><i>Keturunan:</i></p>
+    <ul class="ic-sub">
+        <li>Raden Umar Said (Sunan Muria) — Anggota Wali Songo yang berdakwah di Gunung Muria, Kudus.</li>
+        <li>Dewi Ruqayyah (Dewi Rakayuh)</li>
+        <li>Dewi Sofiyah</li>
+    </ul>
+</li>
+<li><b>Siti Zaenab</b> <i>(Putri Syekh Siti Jenar / sebagian babad menyebut adik Sunan Gunung Jati)</i>
+    <p><i>Keturunan, di antaranya:</i></p>
+    <ul class="ic-sub">
+        <li>Ratu Pembayun — Menikah dengan Sultan Trenggana (Raja Kesultanan Demak).</li>
+        <li>Panembahan Hadi (Sunan Adi / Susuhunan Adi di Kadilangu) — Penasihat ruhani awal Kesultanan Mataram.</li>
+        <li>Raden Ayu Panengah — Menikah dengan Ki Ageng Ngerang III.</li>
+        <li>Pangeran Samudra</li>
+        <li>Raden Abdurrahman</li>
+    </ul>
+</li>
+<li><b>Siti Hafsah</b> <i>(Putri Sunan Ampel Denta)</i>
+    <p>Memiliki keturunan yang turut memperkuat jaringan kekeluargaan antar-tokoh Wali Songo di tanah Jawa.</p>
+</li>
+</ol>
+<h5>III. Peran Keturunan dalam Sejarah</h5>
+<p>Keturunan Sunan Kalijaga, terutama melalui garis Kadilangu (Demak), memegang peranan penting sebagai penjaga tradisi spiritual, pusaka, serta penasihat para penguasa di era Kesultanan Mataram hingga pecahan dinasti kerajaan selanjutnya di Jawa.</p>
+`;
 const descChildren = [
     { name: "SYEKH MAULANA IBRAHIM ASMORO QONDI", type: "gen7", markId: "node-ibrahim-asmoro-qondi", children: [
         { name: "Raden Santri / Raja Pandito Wungkal / Sayyid Ali Murtadho", type: "gen8", combined: true, spouseName: "Putri Arya Baribin", children: [
@@ -1934,11 +1963,34 @@ const descChildren = [
             },
             {
                 name: "DEWI SAROH BINTI MAULANA ISHAQ", type: "gen8", combined: true, wali9: true,
-                spouseName: "SUNAN KALIJAGA / RADEN SAID (menantu Maulana Ishaq)",
+                spouseName: "SUNAN KALIJAGA / RADEN SAID",
+                markId: "node-sunan-kalijaga",
+                infoNote: SUNAN_KALIJAGA_INFO_HTML,
                 children: [
-                    { name: "SUNAN MURIA / RADEN UMAR SAID", type: "gen9", wali9: true },
-                    { name: "DEWI RUQAYYAH", type: "gen9" },
-                    { name: "DEWI SUFIAH", type: "gen9" }
+                    {
+                        name: "ISTERI 1", type: "gen9", combined: true,
+                        spouseName: "DEWI SAROH BINTI MAULANA ISHAQ",
+                        children: [
+                            { name: "SUNAN MURIA / RADEN UMAR SAID", type: "gen10", wali9: true },
+                            { name: "DEWI RUQAYYAH (DEWI RAKAYUH)", type: "gen10" },
+                            { name: "DEWI SOFIYAH", type: "gen10" }
+                        ]
+                    },
+                    {
+                        name: "ISTERI 2", type: "gen9", combined: true,
+                        spouseName: "SITI ZAENAB (PUTRI SYEKH SITI JENAR)",
+                        children: [
+                            { name: "RATU PEMBAYUN", type: "gen10", combined: true, spouseName: "SULTAN TRENGGANA (RAJA DEMAK)" },
+                            { name: "PANEMBAHAN HADI / SUNAN ADI (SUSUHUNAN ADI KADILANGU)", type: "gen10" },
+                            { name: "RADEN AYU PANENGAH", type: "gen10", combined: true, spouseName: "KI AGENG NGERANG III" },
+                            { name: "PANGERAN SAMUDRA", type: "gen10" },
+                            { name: "RADEN ABDURRAHMAN", type: "gen10" }
+                        ]
+                    },
+                    {
+                        name: "ISTERI 3", type: "gen9", combined: true,
+                        spouseName: "SITI HAFSAH (PUTRI SUNAN AMPEL DENTA)"
+                    }
                 ]
             }
         ]
