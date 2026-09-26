@@ -3799,30 +3799,43 @@ function selectFoundName(name) {
         return;
     }
 
-    function doFind() {
+    // ===== FIX HP: dulu doFind() cuma dicoba SEKALI setelah jeda waktu tetap
+    // (450ms + 320ms). Di HP yang render-nya lebih lambat dari komputer —
+    // apalagi kalau cabang yang perlu dibuka banyak/dalam, atau ada rantai
+    // pasangan yang baru selesai dibangun 400ms kemudian — jeda tetap itu
+    // kadang keburu habis SEBELUM shape-nya benar-benar ada di layar, jadi
+    // pencarian gagal diam-diam & layar tidak bergeser (bukan tiap kali, hanya
+    // saat render-nya kebetulan lambat). Sekarang doFind() DICOBA BERULANG
+    // (polling) sampai shape-nya benar-benar ketemu di DOM, baru menyerah
+    // kalau memang sudah lama tidak ketemu. =====
+    function doFind(attemptsLeft) {
         const matches = [];
         document.querySelectorAll('.node-shape').forEach(shape => {
             const tspans = shape.querySelectorAll('tspan');
             const text = Array.from(tspans).map(t => t.textContent).join(' ').toUpperCase();
             if (text.includes(targetUpper)) matches.push(shape);
         });
-        if (matches.length === 0) {
-            showToast(`TIDAK DITEMUKAN "${target}"`);
+        if (matches.length > 0) {
+            const primary = matches[0];
+            centerOnElement(primary, 700);
+            setTimeout(() => highlightFoundElements([primary]), 60);
+            showToast(`DITEMUKAN: ${target.toUpperCase()}`);
             return;
         }
-        const primary = matches[0];
-        centerOnElement(primary, 700);
-        setTimeout(() => highlightFoundElements([primary]), 60);
-        showToast(`DITEMUKAN: ${target.toUpperCase()}`);
+        if (attemptsLeft > 0) {
+            // shape belum sempat ter-render (umum terjadi di HP yang lebih
+            // lambat) -> coba lagi sebentar lagi, jangan langsung menyerah
+            setTimeout(() => doFind(attemptsLeft - 1), 150);
+            return;
+        }
+        showToast(`TIDAK DITEMUKAN "${target}"`);
     }
 
     function revealAndFind() {
-        const revealed = revealName(targetUpper);
-        if (revealed) {
-            setTimeout(doFind, 320);
-        } else {
-            doFind();
-        }
+        revealName(targetUpper);
+        // beri jeda singkat utk reflow awal, lalu polling maks. ~3 detik
+        // (20 x 150ms) supaya HP yang lebih lambat tetap kebagian waktu
+        setTimeout(() => doFind(20), 250);
     }
 
     // ===== FIX: cabang keturunan (descChildren) di-render LAZY — shape &
@@ -3833,7 +3846,7 @@ function selectFoundName(name) {
     // baru lakukan reveal + pencarian setelah DOM-nya sempat ter-render. =====
     if (!descOpen) {
         toggleDescTree();
-        setTimeout(revealAndFind, 450);
+        setTimeout(revealAndFind, 600);
     } else {
         revealAndFind();
     }
@@ -3843,18 +3856,27 @@ function selectFoundName(name) {
 // utama): buka panel itu, lalu gulir & sorot kotaknya, bukan mencari di pohon. =====
 function selectFoundNameWali9(targetUpper, target) {
     openWali9Panel();
-    setTimeout(() => {
+    function tryFind(attemptsLeft) {
         const boxes = document.querySelectorAll('#wali9-body .w9-box');
         let match = null;
         boxes.forEach(b => {
             if (!match && (b.dataset.name || '').includes(targetUpper)) match = b;
         });
-        if (!match) { showToast(`TIDAK DITEMUKAN "${target}"`); return; }
-        match.scrollIntoView({ block: 'center', behavior: 'smooth' });
-        match.classList.add('w9-search-highlight');
-        setTimeout(() => match.classList.remove('w9-search-highlight'), 2700);
-        showToast(`DITEMUKAN DI PANEL WALI-9: ${target.toUpperCase()}`);
-    }, 150);
+        if (match) {
+            match.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            match.classList.add('w9-search-highlight');
+            setTimeout(() => match.classList.remove('w9-search-highlight'), 2700);
+            showToast(`DITEMUKAN DI PANEL WALI-9: ${target.toUpperCase()}`);
+            return;
+        }
+        if (attemptsLeft > 0) {
+            // panel WALI-9 mungkin belum selesai render di HP yang lebih lambat
+            setTimeout(() => tryFind(attemptsLeft - 1), 150);
+            return;
+        }
+        showToast(`TIDAK DITEMUKAN "${target}"`);
+    }
+    setTimeout(() => tryFind(15), 150);
 }
 
 document.addEventListener('click', function(e) {
