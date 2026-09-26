@@ -54,37 +54,52 @@
         #search-wrap input { font-size: 11px; }
     }
 
+    /* ===== "By: MANNIXS-21" sekarang jadi bagian dari baris #panel-switcher yang
+       sama (bukan kotak terpisah lagi), supaya selalu SEJAJAR/SATU BARIS dengan
+       tombol RUJUKAN/SARAN/VERSI NASAB, tidak pernah tumpang tindih maupun
+       "melayang" sendiri di posisi berbeda. ===== */
     #credit-tag {
-        position: fixed; bottom: 10px; right: 14px; font-size: 0.6rem; line-height: 1.25; color: #475569;
-        background: #ffffff; padding: 5px 10px; border-radius: 6px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.12); border: 1px solid #e2e8f0;
-        z-index: 10000; pointer-events: none; user-select: none;
-        letter-spacing: 0.2px; font-weight: 600;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.6rem; line-height: 1.25; color: #475569;
+        background: #f8fafc; padding: 5px 8px; border-radius: 0 6px 6px 0;
+        border-left: 1px solid #e2e8f0;
+        pointer-events: none; user-select: none;
+        letter-spacing: 0.2px; font-weight: 700; white-space: nowrap;
     }
 
     #panel-switcher {
-        position: fixed; bottom: 10px; left: 14px; z-index: 9999;
-        display: flex; border-radius: 6px;
+        position: fixed; bottom: 10px; left: 14px; right: 14px; z-index: 9999;
+        display: flex; border-radius: 6px; overflow: hidden;
         box-shadow: 0 2px 8px rgba(0,0,0,0.12); border: 1px solid #e2e8f0;
     }
-    /* ukuran tombol disamakan dengan kotak "DIBUAT OLEH" (#credit-tag) */
+    /* setiap item (3 tombol + kotak kredit) berbagi lebar secara merata,
+       supaya tidak pernah melebihi lebar layar atau tumpang tindih */
+    #panel-switcher > * {
+        flex: 1 1 0; min-width: 0; text-align: center;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
     #panel-switcher button {
         border: none; background: #ffffff; color: #475569; font-weight: 600;
         font-family: inherit; font-size: 0.6rem; line-height: 1.25;
-        padding: 5px 10px; cursor: pointer; letter-spacing: 0.2px;
+        padding: 5px 6px; cursor: pointer; letter-spacing: 0.2px;
     }
     #panel-switcher button:first-child { border-radius: 6px 0 0 6px; }
-    #panel-switcher button:last-child { border-radius: 0 6px 6px 0; }
     #panel-switcher button.active { background: #2563eb; color: #fff; }
     #panel-switcher button:hover:not(.active) { background: #f1f5f9; }
 
-    /* ===== Layar sempit (HP): kotak "By :" dipindah ke ATAS baris tombol switcher
-       (bertumpuk vertikal) supaya tidak lagi berdempetan/tumpang tindih dengan
-       tombol RUJUKAN/SARAN/VERSI NASAB pada satu baris yang sama. ===== */
+    /* label panjang (desktop) vs label singkat (HP) supaya kotak/tombol
+       tidak perlu melebar dan tetap muat berjajar dalam satu baris */
+    .lbl-s { display: none; }
+
     @media (max-width: 640px) {
-        #credit-tag { bottom: 42px; right: 10px; font-size: 0.55rem; padding: 4px 8px; }
-        #panel-switcher { left: 10px; }
-        #panel-switcher button { font-size: 0.56rem; padding: 4px 7px; }
+        #panel-switcher button { font-size: 0.52rem; padding: 4px 3px; }
+        #credit-tag { font-size: 0.5rem; padding: 4px 3px; }
+        .lbl-l { display: none; }
+        .lbl-s { display: inline; }
+    }
+    @media (max-width: 360px) {
+        #panel-switcher button { font-size: 0.46rem; padding: 3px 2px; }
+        #credit-tag { font-size: 0.44rem; padding: 3px 2px; }
     }
 
     #gen-legend {
@@ -739,12 +754,15 @@
 
     /* ===== PANEL SARAN (diadaptasi dari sistem "Chat Bani" di silsilah Mbah Kung) ===== */
     .chat-notif-badge {
-        position: absolute; top: -6px; right: -6px; min-width: 15px; height: 15px;
-        padding: 0 3px; background: #dc2626; color: #ffffff; border-radius: 999px;
-        font-size: 0.55rem; font-weight: 800; line-height: 15px; text-align: center;
-        box-shadow: 0 0 0 2px #ffffff; pointer-events: none;
+        position: absolute; top: -5px; right: 0px; min-width: 13px; height: 13px;
+        padding: 0 2px; background: #dc2626; color: #ffffff; border-radius: 999px;
+        font-size: 0.5rem; font-weight: 800; line-height: 13px; text-align: center;
+        box-shadow: 0 0 0 2px #ffffff; pointer-events: none; z-index: 2;
     }
-    #panel-switcher button { position: relative; }
+    /* badge diletakkan di pojok kanan-ATAS tombol (bukan menjorok ke luar kanan),
+       supaya tidak lagi menutupi/tumpang tindih dengan tombol VERSI NASAB
+       di sebelahnya */
+    #panel-switcher button { position: relative; overflow: visible; }
     #chat-panel {
         position: fixed; bottom: 46px; left: 14px; z-index: 9998;
         background: #fffdf7ee; border: 1px solid #e2d3ac; border-radius: 10px;
@@ -884,12 +902,11 @@
 </div>
 
 <div id="panel-switcher">
-    <button id="tab-generasi" class="active" onclick="openRincian()">RUJUKAN</button>
-    <button id="tab-chat" onclick="toggleSaranPanel()">💬 SARAN<span id="chat-notif-badge" class="chat-notif-badge" style="display:none;">0</span></button>
-    <button id="tab-versi-nasab" onclick="openVersiNasab()">🌳 VERSI NASAB</button>
+    <button id="tab-generasi" class="active" onclick="openRincian()"><span class="lbl-l">RUJUKAN</span><span class="lbl-s">RUJUKAN</span></button>
+    <button id="tab-chat" onclick="toggleSaranPanel()"><span class="lbl-l">💬 SARAN</span><span class="lbl-s">💬</span><span id="chat-notif-badge" class="chat-notif-badge" style="display:none;">0</span></button>
+    <button id="tab-versi-nasab" onclick="openVersiNasab()"><span class="lbl-l">🌳 VERSI NASAB</span><span class="lbl-s">🌳 NASAB</span></button>
+    <div id="credit-tag"><span class="lbl-l">By : MANNIXS-21</span><span class="lbl-s">MANNIXS-21</span></div>
 </div>
-
-<div id="credit-tag">By : MANNIXS-21</div>
 
 <div id="chat-panel">
     <div class="chat-header">
