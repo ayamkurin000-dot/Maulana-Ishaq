@@ -45,6 +45,18 @@
         transition: 0.2s ease; box-shadow: 0 3px 10px rgba(37, 99, 235, 0.35);
     }
     .btn:hover { background: linear-gradient(135deg, #38bdf8, #1d4ed8); transform: translateY(-1px); }
+    /* tombol WALI-9: sama ukuran dengan tombol lain (.btn), tapi hijau solid,
+       border hitam agak tebal, dan diberi bayangan berlapis supaya terkesan
+       "mengambang" (elevated) di atas tombol-tombol lainnya. */
+    #wali9-btn {
+        background: #22c55e; border: 2.5px solid #0f172a;
+        box-shadow: 0 6px 14px rgba(0,0,0,0.35), 0 2px 0 rgba(0,0,0,0.5);
+        transform: translateY(-2px);
+    }
+    #wali9-btn:hover {
+        background: #16a34a; transform: translateY(-4px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.4), 0 2px 0 rgba(0,0,0,0.5);
+    }
     @media (max-width: 640px) {
         #header { padding: 10px 12px; }
         #header h1 { font-size: 0.95rem; }
@@ -880,7 +892,7 @@
             <button class="btn" onclick="expandAllBranches()">BUKA SEMUA</button>
             <button class="btn" onclick="collapseAllBranches()">TUTUP SEMUA</button>
             <button class="btn" id="lock-btn" onclick="toggleLock()" style="background:#64748b;">🔓 KUNCI: OFF</button>
-            <button class="btn" id="wali9-btn" onclick="openWali9Panel()" style="background:linear-gradient(135deg,#f472b6,#4ade80);">⭐ WALI-9</button>
+            <button class="btn" id="wali9-btn" onclick="openWali9Panel()">⭐ WALI-9</button>
             <div id="search-wrap">
                 <span style="font-size:13px;">🔍</span>
                 <input id="search-input" type="text" placeholder="Cari nama (min. 3 huruf)..." oninput="searchNames(this.value)" autocomplete="off" />
