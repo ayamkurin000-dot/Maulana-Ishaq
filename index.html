@@ -1118,13 +1118,16 @@ const treeData = {
     "doaLines": ["Semoga Allah melimpahkan rahmat", "dan kesejahteraan kepadanya"],
     "type": "root",
     "spouseName": "Khadijah binti Khuwailid radhiyallahu 'anha",
+    "infoNote": "<p><b>Lokasi Makam:</b> Masjid Nabawi, Kota Madinah, Arab Saudi (di bawah Kubah Hijau / area Raudhah).</p>",
     "children": [
         { "name": "SITI FATIMAH AZ-ZAHRA'", "type": "gen1", "doaLines": ["Yang Berseri - Yang Bercahaya", "- Yang Bersinar"], "spouseName": "Ali bin Abi Thalib radhiyallahu 'anh", "children": [
             { "name": "SAYYIDINA HUSAIN", "type": "gen2", "spouseName": "Syahrbanu / Syah-e Zanan", "children": [
                 { "name": "ZAINAL ALIM", "type": "gen3", "children": [
                     { "name": "ZAINAL QUBRO", "type": "gen4", "children": [
                         { "name": "ZAINAL HUSAIN", "type": "gen5", "children": [
-                            { "name": "SYEKH JUMADIL QUBRO / SYEKH JAMALUDDIN AKBAR AL-HUSAIN", "type": "gen6", "children": [] }
+                            { "name": "SYEKH JUMADIL QUBRO / SYEKH JAMALUDDIN AKBAR AL-HUSAIN", "type": "gen6",
+                                "infoNote": "<p><b>Lokasi Makam:</b> masih diperdebatkan, diyakini berada di 3 tempat berbeda:</p><ul class=\"ic-sub\"><li>Dusun Sidodadi, Desa Sentonorejo, Kecamatan Trowulan, Kabupaten Mojokerto, Jawa Timur (kompleks Troloyo)</li><li>Kelurahan Terboyo Kulon, Kecamatan Genuk, Kota Semarang, Jawa Tengah</li><li>Desa Turgo, Kecamatan Pakem, Kabupaten Sleman, DI Yogyakarta (lereng Gunung Merapi)</li></ul><p>Ketiganya sama-sama diyakini oleh komunitas masing-masing dan ramai diziarahi peziarah.</p>",
+                                "children": [] }
                         ] }
                     ] }
                 ] }
@@ -1617,6 +1620,23 @@ function renderChain() {
         svg.appendChild(g);
         block.appendChild(svg);
 
+        // ===== badge ℹ️ "info" (mis. lokasi makam) untuk node di rantai utama
+        // (Nabi Muhammad SAW s/d Syekh Jumadil Qubro) yang punya field infoNote,
+        // memakai kembali komponen & fungsi openInfoNote() yang sama dengan
+        // badge info pada cabang keturunan (descChildren). =====
+        if (info.data.infoNote) {
+            const svgTopInBlockForFlag = (i > 0 ? gapBetween : 0);
+            const flag = document.createElement('div');
+            flag.className = 'dispute-flag info-flag';
+            flag.innerHTML = 'ℹ️';
+            flag.title = `Klik untuk info (${info.data.name})`;
+            flag.style.position = 'absolute';
+            flag.style.right = '2px';
+            flag.style.top = (svgTopInBlockForFlag - 8) + 'px';
+            flag.addEventListener('click', (e) => { e.stopPropagation(); openInfoNote(info.data.name, info.data.infoNote); });
+            block.appendChild(flag);
+        }
+
         // ===== Node terakhir (SYEKH JUMADIL QUBRO) jadi "akar" cabang keturunan =====
         // Tampilan generasi DI ATASNYA (chain Nabi Muhammad SAW s/d node ini) TIDAK diubah sama sekali.
         // Hanya ditambahkan badge (+) yang saat diklik memunculkan keturunannya di SEBELAH KANAN,
@@ -1698,6 +1718,8 @@ const SUNAN_GIRI_TITLE_LINES = [
 // ===== Isi kotak "Info Keluarga Lengkap" utk SUNAN GUNUNG JATI (dibuka lewat
 // badge ℹ️ terpisah dari toggle buka/tutup keturunan pada shape-nya). =====
 const SUNAN_GUNUNG_JATI_INFO_HTML = `
+<h5>Lokasi Makam</h5>
+<p><b>Lokasi Makam:</b> Desa Astana (kompleks Astana Gunung Sembung), Kecamatan Gunung Jati, Kabupaten Cirebon, Jawa Barat.</p>
 <h5>I. Daftar Istri Sunan Gunung Jati</h5>
 <ol>
 <li><b>Nyai Mas Babadan (Nyi Gedeng Babadan)</b>
@@ -1750,6 +1772,8 @@ const SUNAN_GUNUNG_JATI_INFO_HTML = `
 <p>Banyak keturunan langsung beliau (yang biasa menggunakan gelar Syarif, Raden, Ratu, atau Tubagus) kemudian menyebar sebagai ulama dan tokoh masyarakat yang memimpin pondok pesantren di berbagai wilayah Nusantara.</p>
 `;
 const SUNAN_KALIJAGA_INFO_HTML = `
+<h5>I. Lokasi Makam</h5>
+<p><b>Lokasi Makam:</b> Desa Kadilangu, Kecamatan Kota Demak, Kabupaten Demak, Jawa Tengah (sekitar 3 km dari Masjid Agung Demak).</p>
 <h5>II. Istri dan Keturunan Sunan Kalijaga</h5>
 <p>Sunan Kalijaga tercatat menikah dengan beberapa orang istri dan dikaruniai sejumlah anak yang kelak menurunkan banyak tokoh penting, ulama, serta penguasa di Nusantara:</p>
 <ol>
@@ -1780,21 +1804,26 @@ const SUNAN_KALIJAGA_INFO_HTML = `
 `;
 const descChildren = [
     { name: "SYEKH MAULANA IBRAHIM ASMORO QONDI", type: "gen7", markId: "node-ibrahim-asmoro-qondi",
-        infoNote: "<p>Ayah Sunan Ampel, kakek Sunan Bonang dan Sunan Drajat, serta kakek buyut Sunan Kudus.</p>",
+        infoNote: "<p>Ayah Sunan Ampel, kakek Sunan Bonang dan Sunan Drajat, serta kakek buyut Sunan Kudus.</p><p><b>Lokasi Makam:</b> Dusun Rembes, Desa Gesikharjo, Kecamatan Palang, Kabupaten Tuban, Jawa Timur.</p>",
         children: [
         { name: "Raden Santri / Raja Pandito Wungkal / Sayyid Ali Murtadho", type: "gen8", combined: true, spouseName: "Putri Arya Baribin", children: [
             { name: "Sunan Ngudung / Raden Usman Haji", type: "gen9", children: [
-                { name: "SUNAN KUDUS (JA'FAR SHODIQ)", type: "gen10", wali9: true }
+                { name: "SUNAN KUDUS (JA'FAR SHODIQ)", type: "gen10", wali9: true,
+                    infoNote: "<p><b>Lokasi Makam:</b> Desa Kauman, Kecamatan Kota Kudus, Kabupaten Kudus, Jawa Tengah (satu kompleks dengan Masjid Menara Kudus).</p>" }
             ] },
             { name: "Haji Usman", type: "gen9" },
             { name: "Nyai Ageng Tanda", type: "gen9" }
         ] },
-        { name: "SUNAN AMPEL / RADEN RAHMAT (1401-1481)", type: "gen8", combined: true, wali9: true, spouseName: "Dewi Condrowati (Nyai Ageng Manila)", children: [
+        { name: "SUNAN AMPEL / RADEN RAHMAT (1401-1481)", type: "gen8", combined: true, wali9: true, spouseName: "Dewi Condrowati (Nyai Ageng Manila)",
+            infoNote: "<p><b>Lokasi Makam:</b> Kelurahan Ampel, Kecamatan Semampir, Kota Surabaya, Jawa Timur (kompleks Masjid Ampel, di sebelah barat masjid, berdampingan dengan makam istrinya Nyai Condrowati).</p>",
+            children: [
             { name: "NYAI AGUNG MANYURAN", type: "gen9" },
             { name: "NYAI AGENG MALOKA", type: "gen9" },
             { name: "NYAI AGUNG WILIS", type: "gen9" },
-            { name: "SUNAN BONANG / RADEN MAKDUM IBRAHIM", type: "gen9", wali9: true },
-            { name: "SUNAN DRAJAT / RADEN QASIM / SUNAN MAYANG MADU", type: "gen9", wali9: true },
+            { name: "SUNAN BONANG / RADEN MAKDUM IBRAHIM", type: "gen9", wali9: true,
+                infoNote: "<p><b>Lokasi Makam:</b> Dukuh Kauman, Kelurahan Kutorejo, Kecamatan Tuban, Kabupaten Tuban, Jawa Timur (sebelah barat Masjid Agung Tuban).</p><p><i>Catatan:</i> lokasi ini masih diperdebatkan — sebagian riwayat menyebut makam asli berada di Pulau Bawean atau di Desa Bonang, Kecamatan Lasem, Kabupaten Rembang, Jawa Tengah.</p>" },
+            { name: "SUNAN DRAJAT / RADEN QASIM / SUNAN MAYANG MADU", type: "gen9", wali9: true,
+                infoNote: "<p><b>Lokasi Makam:</b> Desa Drajat, Kecamatan Paciran, Kabupaten Lamongan, Jawa Timur.</p>" },
             { name: "DEWI MURTOSIYAH", type: "gen9" },
             { name: "DEWI MURTHASIMAH", type: "gen9" }
         ] }
@@ -1804,10 +1833,11 @@ const descChildren = [
         name: "SYEKH MAULANA ISHAQ", type: "gen7", combined: true,
         spouseName: "DEWI SEKARDADU / DEWI SEKARDALU / SAYU ATIKAH / DEWI KASIHAN",
         markId: "node-maulana-ishaq",
-        infoNote: "<p>Ayah Sunan Giri dan mertua Sunan Kalijaga.</p>",
+        infoNote: "<p>Ayah Sunan Giri dan mertua Sunan Kalijaga.</p><p><b>Lokasi Makam:</b> Desa Kemantren, Kecamatan Paciran, Kabupaten Lamongan, Jawa Timur.</p><p><i>Catatan:</i> sebagian riwayat menyebut beliau wafat dan dimakamkan di Pasai, Aceh — versi Desa Kemantren adalah yang paling umum diziarahi saat ini.</p>",
         children: [
             {
                 name: SUNAN_GIRI_NAME, type: "gen8", titleLines: SUNAN_GIRI_TITLE_LINES, wali9: true,
+                infoNote: "<p><b>Lokasi Makam:</b> Dusun Kedhaton/Giri Gajah, Desa Giri, Kecamatan Kebomas, Kabupaten Gresik, Jawa Timur (di puncak Bukit Giri).</p>",
                 // 3 isteri Sunan Giri, MASING-MASING dibuat shape gabungan terpisah
                 children: [
                     {
@@ -1942,7 +1972,9 @@ const descChildren = [
                             { name: "SUNAN WERUJU", type: "gen10", children: [
                                     { name: "NYAI AGENG PAMENGKANG SUMUR SONGO", type: "gen11" }
                                 ] },
-                            { name: "ABDUL FATAH", type: "gen10", children: [
+                            { name: "ABDUL FATAH", type: "gen10",
+                                infoNote: "<p><b>Lokasi Makam (KH. Hasyim Asy'ari, KH. Abdul Wahid Hasyim, dan KH. Abdurrahman Wahid / Gus Dur):</b> ketiganya dimakamkan satu kompleks di Kompleks Makam Masyayikh Pondok Pesantren Tebuireng, Desa Cukir, Kecamatan Diwek, Kabupaten Jombang, Jawa Timur.</p>",
+                                children: [
                                     { chainList: true, type: "gen11", items: [
                                         "ABDUL AZIZ",
                                         "ABDULLAH",
@@ -1983,7 +2015,8 @@ const descChildren = [
                         name: "ISTERI 1", type: "gen9", combined: true,
                         spouseName: "DEWI SAROH BINTI MAULANA ISHAQ",
                         children: [
-                            { name: "SUNAN MURIA / RADEN UMAR SAID", type: "gen10", wali9: true },
+                            { name: "SUNAN MURIA / RADEN UMAR SAID", type: "gen10", wali9: true,
+                                infoNote: "<p><b>Lokasi Makam:</b> Desa Colo, Kecamatan Dawe, Kabupaten Kudus, Jawa Tengah (di lereng Gunung Muria).</p>" },
                             { name: "DEWI RUQAYYAH (DEWI RAKAYUH)", type: "gen10" },
                             { name: "DEWI SOFIYAH", type: "gen10" }
                         ]
@@ -2054,7 +2087,8 @@ const descChildren = [
         // ditampilkan dengan garis tegas (bukan putus-putus) seperti anak lain. =====
         name: "SUNAN GRESIK / MAULANA MALIK IBRAHIM (13XX-1419)", type: "gen7",
         wali9: true,
-        markId: "node-sunan-gresik"
+        markId: "node-sunan-gresik",
+        infoNote: "<p><b>Lokasi Makam:</b> Jalan Malik Ibrahim, Desa/Kelurahan Gapurosukolilo, Kecamatan Gresik, Kabupaten Gresik, Jawa Timur.</p>"
     }
 ];
 // FIXED BEHAVIOR: jarak antar shape dibuat FIX secara vertikal, dan LEBAR secara horizontal.
