@@ -78,6 +78,15 @@
     #panel-switcher button.active { background: #2563eb; color: #fff; }
     #panel-switcher button:hover:not(.active) { background: #f1f5f9; }
 
+    /* ===== Layar sempit (HP): kotak "By :" dipindah ke ATAS baris tombol switcher
+       (bertumpuk vertikal) supaya tidak lagi berdempetan/tumpang tindih dengan
+       tombol RUJUKAN/SARAN/VERSI NASAB pada satu baris yang sama. ===== */
+    @media (max-width: 640px) {
+        #credit-tag { bottom: 42px; right: 10px; font-size: 0.55rem; padding: 4px 8px; }
+        #panel-switcher { left: 10px; }
+        #panel-switcher button { font-size: 0.56rem; padding: 4px 7px; }
+    }
+
     #gen-legend {
         position: fixed; bottom: 46px; left: 14px; z-index: 9998;
         background: #ffffffee; border: 1px solid #e2e8f0; border-radius: 10px;
@@ -875,12 +884,12 @@
 </div>
 
 <div id="panel-switcher">
-    <button id="tab-generasi" class="active" onclick="openRincian()">📖 RUJUKAN</button>
+    <button id="tab-generasi" class="active" onclick="openRincian()">RUJUKAN</button>
     <button id="tab-chat" onclick="toggleSaranPanel()">💬 SARAN<span id="chat-notif-badge" class="chat-notif-badge" style="display:none;">0</span></button>
     <button id="tab-versi-nasab" onclick="openVersiNasab()">🌳 VERSI NASAB</button>
 </div>
 
-<div id="credit-tag">DIBUAT OLEH: MANNIXS-21</div>
+<div id="credit-tag">By : MANNIXS-21</div>
 
 <div id="chat-panel">
     <div class="chat-header">
