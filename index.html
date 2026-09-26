@@ -379,6 +379,27 @@
         #wali9-body { padding: 16px 10px 24px; }
     }
     #wali9-standalone { margin-top: 26px; padding-top: 18px; border-top: 1.5px dashed #cbb583; text-align: center; }
+    #wali9-standalone-title {
+        font-family: 'Georgia', 'Times New Roman', serif; font-weight: 800; letter-spacing: 1px;
+        font-size: 0.78rem; color: #1e2749; margin-bottom: 16px; text-transform: uppercase;
+    }
+    #wali9-standalone-title .ws-icon { margin-right: 4px; }
+    .w9-box.w9-gusdur {
+        position: relative;
+        background: linear-gradient(to bottom, #fef9c3 0%, #fde68a 45%, #ffffff 100%);
+        border-color: #b45309;
+        text-shadow: 0 1px 2px rgba(255,255,255,0.65);
+    }
+    .w9-box.w9-gusdur::after {
+        content: 'RI-4';
+        position: absolute; top: -12px; right: -14px;
+        min-width: 26px; height: 20px; padding: 0 4px; border-radius: 10px;
+        background: radial-gradient(circle at 35% 30%, #fde68a, #b45309 90%);
+        color: #fff; font-size: 0.56rem; font-weight: 900;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.35), 0 0 0 2px #ffffff;
+        text-shadow: none;
+    }
     .w9-standalone-title { font-size: 0.62rem; font-weight: 800; color: #8a6a1f; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
     .w9-standalone-box { display: inline-block; max-width: 260px; }
     .w9-standalone-box .w9-note { text-align: left; }
@@ -897,6 +918,10 @@
         <div id="wali9-body">
             <div id="wali9-legend"><span class="dot" style="background:linear-gradient(to bottom,#fbcfe8,#c7f0d8,#ffffff);border:1px solid #94a3b8;"></span> Kotak Anggota Wali Songo &nbsp;&nbsp; <span class="dot" style="background:#eef2f7;border:1px solid #94a3b8;"></span> Jalur Keturunan (bukan Wali Songo) &nbsp;&nbsp; <span class="dot" style="background:repeating-linear-gradient(135deg,#fdf6e3,#fdf6e3 3px,#f3e2c0 3px,#f3e2c0 6px);border:1.5px dashed #a97c1f;"></span> Anggota Wali Songo — terhubung lewat pernikahan/relasi (bukan garis darah)</div>
             <ul class="w9-tree" id="wali9-tree"></ul>
+            <div id="wali9-standalone">
+                <div id="wali9-standalone-title"><span class="ws-icon">🪷</span> SILSILAH GUS DUR — DARI SYEKH MAULANA ISHAQ</div>
+                <ul class="w9-tree" id="wali9-gusdur-tree"></ul>
+            </div>
         </div>
     </div>
 </div>
@@ -3396,7 +3421,7 @@ function buildWali9Node(nd) {
     if (nd.chainLinear) li.classList.add('w9-linear');
     if (nd.relation) li.classList.add('w9-related-line');
     const box = document.createElement('div');
-    box.className = 'w9-box' + (nd.wali9 ? ' w9-member' : '') + (nd.relation ? ' w9-related' : '');
+    box.className = 'w9-box' + (nd.wali9 ? ' w9-member' : '') + (nd.relation ? ' w9-related' : '') + (nd.gusdur ? ' w9-gusdur' : '');
     box.dataset.name = (nd.name || '').toUpperCase();
     box.textContent = nd.name;
     if (nd.note) {
@@ -3467,8 +3492,52 @@ window.addEventListener('resize', () => {
     const overlay = document.getElementById('wali9-overlay');
     if (overlay && overlay.classList.contains('open')) drawWali9ConnectorCurve();
 });
+// ===== Silsilah GUS DUR (dari SYEKH MAULANA ISHAQ), ditampilkan sbg jalur
+// tersendiri di bawah pohon Wali Songo, dipisah garis putus-putus. Rantai ini
+// mengikuti jalur yang sama dengan data pohon utama: Maulana Ishaq -> Sunan
+// Giri -> (isteri: Dewi Murtosiyah binti Sunan Ampel) -> Abdul Fatah -> ...
+// -> KH. Hasyim Asy'ari -> KH. Abdul Wahid Hasyim -> KH. Abdurrahman Wahid
+// (Gus Dur, Presiden RI ke-4). ===== 
+const gusdurPathTree = {
+    name: "SYEKH MAULANA ISHAQ", chainLinear: true, children: [
+        { name: "SUNAN GIRI / MUHAMMAD 'AINUL YAKIN (1442-1506)", chainLinear: true,
+          note: "Isteri: Dewi Murtosiyah binti Sunan Ampel.",
+          children: [
+            { name: "ABDUL FATAH", chainLinear: true, children: [
+                { name: "ABDUL AZIZ", chainLinear: true, children: [
+                    { name: "ABDULLAH", chainLinear: true, children: [
+                        { name: "ABDUL HALIM (PANGERAN BENAWA)", chainLinear: true, children: [
+                            { name: "ABDURRAHMAN (JAKA TINGKIR / SULTAN HADIWIJAYA)", chainLinear: true, children: [
+                                { name: "ABDUL WAHID", chainLinear: true, children: [
+                                    { name: "KH. ASY'ARI", chainLinear: true, children: [
+                                        { name: "KH. MUHAMMAD HASYIM ASY'ARI (1871-1947)", chainLinear: true,
+                                          note: "Pendiri Nahdlatul Ulama & Pondok Pesantren Tebuireng.",
+                                          children: [
+                                            { name: "KH. ABDUL WAHID HASYIM (1914-1953)", chainLinear: true,
+                                              note: "Tokoh nasional, Menteri Agama RI.",
+                                              children: [
+                                                { name: "KH. ABDURRAHMAN WAHID / GUS DUR (1940-2009)", chainLinear: true, gusdur: true,
+                                                  note: "Presiden Republik Indonesia ke-4 (1999–2001)." }
+                                              ] }
+                                        ] }
+                                    ] }
+                                ] }
+                            ] }
+                        ] }
+                    ] }
+                ] }
+            ] }
+        ] }
+    ]
+};
+function renderGusDurTree() {
+    const root = document.getElementById('wali9-gusdur-tree');
+    root.innerHTML = '';
+    root.appendChild(buildWali9Node(gusdurPathTree));
+}
 function openWali9Panel() {
     renderWali9Tree();
+    renderGusDurTree();
     document.getElementById('wali9-overlay').classList.add('open');
     requestAnimationFrame(() => requestAnimationFrame(drawWali9ConnectorCurve));
 }
