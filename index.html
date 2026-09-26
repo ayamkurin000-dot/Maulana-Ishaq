@@ -783,7 +783,12 @@
     .info-flag {
         background: linear-gradient(145deg, #bae6fd, #0284c7); color: #082f49;
         border: 1.5px solid #0369a1; border-style: solid;
+        /* ===== 2x ukuran badge dasar (22px -> 44px) & dipindah ke pojok kiri-atas
+           shape, 50% badge sengaja "keluar" dari shape supaya lebih mudah
+           diketuk/diklik di HP (area sentuh lebih besar). ===== */
+        width: 44px; height: 44px; font-size: 1.44rem;
     }
+    .info-flag:hover { transform: scale(1.1); }
     #info-overlay {
         position: fixed; inset: 0; background: rgba(15,23,42,0.55);
         z-index: 26000; display: none; align-items: center; justify-content: center; padding: 16px;
@@ -1668,8 +1673,11 @@ function renderChain() {
             flag.innerHTML = 'ℹ️';
             flag.title = `Klik untuk info (${info.data.name})`;
             flag.style.position = 'absolute';
-            flag.style.right = '2px';
-            flag.style.top = (svgTopInBlockForFlag - 8) + 'px';
+            // ===== pojok KIRI-ATAS shape, badge 2x lebih besar & sengaja
+            // digeser separuh (22px, setengah dari 44px) keluar dari tepi
+            // shape (kiri & atas) supaya lebih gampang diketuk di HP. =====
+            flag.style.left = (SHAPE_LEFT_PAD - 22) + 'px';
+            flag.style.top = (svgTopInBlockForFlag - 22) + 'px';
             flag.addEventListener('click', (e) => { e.stopPropagation(); openInfoNote(info.data.name, info.data.infoNote); });
             block.appendChild(flag);
         }
@@ -2546,15 +2554,24 @@ function renderSiblingGroup(nodes, hostDiv, onResize, parentController) {
                 anchorEls[i].style.top = nubCenterYinSvg + 'px';
             }
             if (disputeFlagEls[i]) {
-                // ditempel di pojok kanan-atas kotak (bukan di dalam shape), supaya jelas
-                // ini "keterangan tempel" terpisah dari shape silsilah itu sendiri.
-                // Digeser lebih ke KIRI (menjauhi pojok kanan) supaya tidak menumpuk
-                // dengan badge bulat emas angka "9" (penanda anggota Wali Songo) yang
-                // menonjol di pojok kanan-atas shape.
-                const flagXinSvg = childX + d.w - 40;
-                const flagYinSvg = (cy - d.h/2) + 6; // +6 mengikuti translate(0,6) pada g
-                disputeFlagEls[i].style.left = (flagXinSvg - 11) + 'px';
-                disputeFlagEls[i].style.top = (flagYinSvg - 11) + 'px';
+                const isInfoBadge = disputeFlagEls[i].classList.contains('info-flag');
+                if (isInfoBadge) {
+                    // ===== badge ℹ️ "info": dipindah ke pojok KIRI-ATAS shape,
+                    // ukuran 2x (44px) & sengaja digeser separuh (22px) keluar
+                    // dari tepi shape (kiri & atas) supaya area ketuk/klik-nya
+                    // lebih besar dan lebih mudah disentuh di HP. =====
+                    const flagXinSvg = childX;
+                    const flagYinSvg = (cy - d.h/2) + 6; // +6 mengikuti translate(0,6) pada g
+                    disputeFlagEls[i].style.left = (flagXinSvg - 22) + 'px';
+                    disputeFlagEls[i].style.top = (flagYinSvg - 22) + 'px';
+                } else {
+                    // badge ❓ "status diperdebatkan": posisi lama tetap (pojok
+                    // kanan-atas, digeser kiri agar tak menumpuk badge WALI-9).
+                    const flagXinSvg = childX + d.w - 40;
+                    const flagYinSvg = (cy - d.h/2) + 6; // +6 mengikuti translate(0,6) pada g
+                    disputeFlagEls[i].style.left = (flagXinSvg - 11) + 'px';
+                    disputeFlagEls[i].style.top = (flagYinSvg - 11) + 'px';
+                }
             }
         });
         if (shouldPropagate && onResize) onResize();
