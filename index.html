@@ -82,7 +82,7 @@
         font-size: 0.6rem; line-height: 1.25; color: #475569;
         background: #ffffff; padding: 5px 10px; border-radius: 6px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.12); border: 1px solid #e2e8f0;
-        pointer-events: none; user-select: none;
+        pointer-events: auto; user-select: none; cursor: pointer; touch-action: manipulation;
         letter-spacing: 0.2px; font-weight: 600; white-space: nowrap;
     }
 
@@ -314,7 +314,6 @@
         touch-action: manipulation;
     }
     #credit-img-close:hover { background: rgba(255,255,255,0.26); }
-    #credit-tag { cursor: pointer; touch-action: manipulation; }
 
     #versi-nasab-note {
         font-size: 0.68rem; color: #0c4a6e; background: #f0f9ff; border: 1px solid #bae6fd;
