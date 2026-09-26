@@ -192,6 +192,57 @@
     #wali9-legend { text-align: center; font-size: 0.64rem; color: #64748b; margin-bottom: 18px; font-weight: 600; }
     #wali9-legend .dot { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 4px; vertical-align: middle; }
 
+    /* ===== Overlay panel "VERSI NASAB" (perbandingan silsilah Nabi Muhammad SAW
+       s.d. Syekh Jumadil Qubro menurut beberapa versi/riwayat) — tema biru supaya
+       beda dari panel WALI-9 (tema emas) & RUJUKAN (tema krem). ===== */
+    #versi-nasab-overlay {
+        position: fixed; inset: 0; background: rgba(15,23,42,0.55);
+        z-index: 25000; display: none; align-items: center; justify-content: center; padding: 16px;
+    }
+    #versi-nasab-overlay.open { display: flex; }
+    #versi-nasab-card {
+        background: linear-gradient(175deg, #f0f9ff 0%, #e0f2fe 55%, #bae6fd 100%);
+        border-radius: 16px; width: 980px; max-width: 96vw; max-height: 92vh;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.4); overflow: hidden;
+        display: flex; flex-direction: column; border: 1px solid #7dd3fc;
+    }
+    #versi-nasab-head {
+        position: relative; text-align: center; padding: 20px 24px 16px;
+        background: linear-gradient(135deg, #0c4a6e 0%, #075985 45%, #0c4a6e 100%);
+        border-bottom: 3px solid #38bdf8; box-shadow: 0 6px 16px rgba(0,0,0,0.18); flex: 0 0 auto;
+    }
+    #versi-nasab-head .vn-icon { font-size: 1.6rem; margin-bottom: 6px; display: block; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); }
+    #versi-nasab-head h4 {
+        color: #e0f2fe; font-size: 1.05rem; letter-spacing: 2px; font-weight: 800;
+        font-family: 'Georgia', 'Times New Roman', serif; margin: 0; text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    }
+    #versi-nasab-head .vn-divider { width: 64px; height: 2px; margin: 10px auto 0; background: linear-gradient(90deg, transparent, #38bdf8, transparent); }
+    #versi-nasab-head .vn-sub { display: block; margin-top: 8px; font-size: 0.62rem; letter-spacing: 0.4px; color: #bae6fd; }
+    #versi-nasab-close {
+        position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(56,189,248,0.6); border-radius: 8px; width: 40px; height: 40px;
+        cursor: pointer; font-weight: 800; color: #e0f2fe; font-size: 1rem;
+        display: flex; align-items: center; justify-content: center; line-height: 1;
+        z-index: 5; touch-action: manipulation;
+    }
+    #versi-nasab-close:hover { background: rgba(255,255,255,0.22); }
+    #versi-nasab-body { overflow: auto; padding: 18px 18px 26px; flex: 1 1 auto; }
+    #versi-nasab-note {
+        font-size: 0.68rem; color: #0c4a6e; background: #f0f9ff; border: 1px solid #bae6fd;
+        border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; line-height: 1.55;
+    }
+    .vn-table-wrap { overflow-x: auto; border: 1px solid #bae6fd; border-radius: 8px; }
+    .vn-table { border-collapse: collapse; width: 100%; min-width: 800px; font-size: 0.72rem; }
+    .vn-table th, .vn-table td { border: 1px solid #bae6fd; padding: 7px 9px; vertical-align: top; text-align: left; }
+    .vn-table th { background: #0c4a6e; color: #fff; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.3px; position: sticky; top: 0; z-index: 1; }
+    .vn-table td.vn-gen { text-align: center; font-weight: 700; color: #0369a1; background: #f0f9ff; }
+    .vn-table td.vn-last { font-weight: 800; color: #b45309; }
+    .vn-table tr:nth-child(even) td:not(.vn-gen) { background: #f8fbff; }
+    .vn-sources { margin-top: 18px; }
+    .vn-sources h5 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.4px; color: #0369a1; margin: 0 0 10px; border-bottom: 1px solid #bae6fd; padding-bottom: 5px; }
+    .vn-source-item { font-size: 0.71rem; line-height: 1.55; margin-bottom: 9px; color: #0f172a; }
+    .vn-source-item b { color: #0c4a6e; }
+
     /* tree ala "org chart", indentasi + garis penghubung putus-putus */
     .w9-tree, .w9-tree ul { list-style: none; margin: 0; padding-left: 16px; }
     .w9-tree { padding-left: 0; min-width: max-content; position: relative; }
@@ -790,6 +841,19 @@
     </div>
 </div>
 
+<div id="versi-nasab-overlay" onclick="if(event.target===this) closeVersiNasab();">
+    <div id="versi-nasab-card">
+        <div id="versi-nasab-head">
+            <button id="versi-nasab-close" onclick="closeVersiNasab()">✕</button>
+            <span class="vn-icon">🌳</span>
+            <h4>VERSI NASAB</h4>
+            <div class="vn-divider"></div>
+            <span class="vn-sub">Nabi Muhammad SAW s.d. Syekh Jumadil Qubro — berbagai versi/riwayat</span>
+        </div>
+        <div id="versi-nasab-body"></div>
+    </div>
+</div>
+
 <div id="dispute-overlay" onclick="if(event.target===this) closeDisputeNote();">
     <div id="dispute-card">
         <button id="dispute-close" onclick="closeDisputeNote()">✕</button>
@@ -813,6 +877,7 @@
 <div id="panel-switcher">
     <button id="tab-generasi" class="active" onclick="openRincian()">📖 RUJUKAN</button>
     <button id="tab-chat" onclick="toggleSaranPanel()">💬 SARAN<span id="chat-notif-badge" class="chat-notif-badge" style="display:none;">0</span></button>
+    <button id="tab-versi-nasab" onclick="openVersiNasab()">🌳 VERSI NASAB</button>
 </div>
 
 <div id="credit-tag">DIBUAT OLEH: MANNIXS-21</div>
@@ -3203,8 +3268,114 @@ function openWali9Panel() {
 function closeWali9Panel() {
     document.getElementById('wali9-overlay').classList.remove('open');
 }
+
+// ===== Panel "VERSI NASAB": tabel perbandingan silsilah Nabi Muhammad SAW s.d.
+// Syekh Jumadil Qubro menurut beberapa versi/riwayat yang beredar. Data statis
+// (hasil penelusuran berbagai sumber), ditampilkan berdampingan supaya pembaca
+// bisa membandingkan sendiri — TIDAK memutuskan versi mana yang paling sahih. =====
+const VERSI_NASAB_DATA = [
+    {
+        label: "Versi A",
+        title: "Naqobah Ansab Irak-Mesir-Pakistan",
+        source: "Lembaga pencatat nasab (Naqobah Ansab) di Irak, Mesir &amp; Pakistan — dikutip a.l. oleh kumparan.com, ReadMore.id, dan Jurnaba.co",
+        names: [
+            "Nabi Muhammad SAW", "Sayyidah Fatimah Az-Zahra", "Sayyidina Husain",
+            "Ali Zainal Abidin", "Muhammad Al-Baqir", "Ja'far Shodiq", "Musa Al-Kazim",
+            "Ali Ar-Ridho", "Muhammad At-Taqi Al-Jawad", "Ali Al-Hadi An-Naqi", "Ja'far Az-Zaki",
+            "Ali Al-Asyqori", "Abdullah", "Ahmad", "Mahmud", "Muhammad", "Ja'far", "Ali",
+            "Husain Jalaluddin Al-Bukhori", "Ahmad Kabir", "Jalaluddin Husain",
+            "Mahmud Nasiruddin (Makhdum Mahmudinil Kubro)", "Sayyid Jamaluddin (SYEKH JUMADIL KUBRO)"
+        ]
+    },
+    {
+        label: "Versi B",
+        title: "Walisongobangkit.com",
+        source: "walisongobangkit.com, \"Silsilah Syekh Jumadil Kubro &amp; Perjalanan Dakwah\"",
+        names: [
+            "Nabi Muhammad SAW", "Sayyidah Fathimah Az-Zahra", "Imam Sayyidina Husain Asy-Syahid",
+            "Ali Zainal Abidin", "Muhammad Al-Baqir", "Ja'far As-Shodiq", "Musa Al-Kadzim",
+            "Ali Ar-Ridho", "Muhammad At-Taqi", "Ali An-Naqi", "Muhammad Al-Askari Al-Ba'aj",
+            "Ali Al-Akbar", "Muhammad Al-Hakim", "Muhammad Al-Husain Al-Kholwati", "Ahmad Balaqi",
+            "Muhammad Sya'ban", "Qosim", "Imamuddin", "Syamsuddin Umar Al-Bukhori", "Kamaluddin",
+            "Ajall Syamsuddin Umar Al-Bukhori", "Nashruddin", "Zainal Husain", "SYEKH JUMADIL KUBRO"
+        ]
+    },
+    {
+        label: "Versi C",
+        title: "Dipakai di panel \"Jalur Wali Songo\" pada situs ini",
+        source: "Riwayat ringkas versi Babad/Serat yang selama ini dipakai pada panel \"Jalur Wali Songo\" (tombol ⭐ WALI-9) di situs ini",
+        names: [
+            "Nabi Muhammad SAW", "Siti Fatimah Az-Zahra", "Sayyidina Husain",
+            "Zainal Alim", "Zainal Qubro", "Zainal Husain", "SYEKH JUMADIL QUBRO"
+        ]
+    },
+    {
+        label: "Versi D",
+        title: "Rizem Aizid (jalur Azmatkhan/Ba'alawi)",
+        source: "Rizem Aizid, \"Sejarah Islam Nusantara\" — dikutip a.l. oleh Samudrafakta.com dan ColorMag (mahadalyjakarta.com)",
+        names: [
+            "Nabi Muhammad SAW", "Sayyidah Fatimah / Sayyidina Ali", "Sayyidina Husain",
+            "Ali Zainal Abidin", "Muhammad (Al-Baqir)", "Isa", "Ahmad Al-Muhajir", "Ubaidillah",
+            "Alwi", "Muhammad", "Alwi", "Ali Khali' Qasam", "Muhammad Shahib Mirbath",
+            "Alwi 'Ammil Faqih", "Abdul Malik Azmatkhan", "Abdillah", "Ahmad Jalaluddin",
+            "Husain Jamaluddin", "SYEKH JUMADIL KUBRO"
+        ]
+    },
+    {
+        label: "Versi E",
+        title: "Moch Cholil Nasiruddin (\"Punjer Wali Songo\")",
+        source: "Moch Cholil Nasiruddin, \"Punjer Wali Songo: Sejarah Sayyid Jumadil Kubro\" — dikutip oleh ColorMag (mahadalyjakarta.com)",
+        names: [
+            "Nabi Muhammad SAW", "Siti Fatimah Az-Zahra / Sayyidina Ali", "Sayyid Husain",
+            "Sayyid Zainal Abidin", "Sayyid Zainul Alam", "Sayyid Zainul Kubro",
+            "Sayyid Zainul Khusen", "Sayyid Hussein Jumadil Kubro"
+        ]
+    }
+];
+let versiNasabBuilt = false;
+function buildVersiNasabPanel() {
+    if (versiNasabBuilt) return;
+    versiNasabBuilt = true;
+    const body = document.getElementById('versi-nasab-body');
+    const maxLen = Math.max(...VERSI_NASAB_DATA.map(v => v.names.length));
+
+    let html = '<div id="versi-nasab-note">'
+        + 'Silsilah Syekh Jumadil Qubro (Jamaluddin Akbar/Al-Husain) sampai Nabi Muhammad SAW tidak memiliki satu versi yang disepakati semua kalangan — berbeda kitab nasab/naskah, berbeda pula susunan &amp; ejaan namanya (7 s.d. 24 mata rantai). Tabel di bawah menampilkan beberapa versi BERDAMPINGAN supaya pembaca bisa membandingkan sendiri, bukan untuk menentukan versi mana yang paling sahih.'
+        + '</div>';
+
+    html += '<div class="vn-table-wrap"><table class="vn-table"><thead><tr><th>Gen.<br>ke-</th>';
+    VERSI_NASAB_DATA.forEach(v => { html += `<th>${v.label}<br>${v.title}</th>`; });
+    html += '</tr></thead><tbody>';
+
+    for (let r = 0; r < maxLen; r++) {
+        html += `<tr><td class="vn-gen">${r + 1}</td>`;
+        VERSI_NASAB_DATA.forEach(v => {
+            const name = v.names[r] || '';
+            const isLast = r === v.names.length - 1;
+            html += `<td class="${isLast ? 'vn-last' : ''}">${name}</td>`;
+        });
+        html += '</tr>';
+    }
+    html += '</tbody></table></div>';
+
+    html += '<div class="vn-sources"><h5>Sumber tiap versi</h5>';
+    VERSI_NASAB_DATA.forEach(v => {
+        html += `<div class="vn-source-item"><b>${v.label} — ${v.title}:</b> ${v.source}</div>`;
+    });
+    html += '</div>';
+
+    body.innerHTML = html;
+}
+function openVersiNasab() {
+    buildVersiNasabPanel();
+    document.getElementById('versi-nasab-overlay').classList.add('open');
+}
+function closeVersiNasab() {
+    document.getElementById('versi-nasab-overlay').classList.remove('open');
+}
+
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeWali9Panel();
+    if (e.key === 'Escape') { closeWali9Panel(); closeVersiNasab(); }
 });
 
 // ===== Legend toggle (tab GENERASI) =====
