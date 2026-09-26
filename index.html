@@ -952,7 +952,7 @@
             <div class="w9-divider"></div>
         </div>
         <div id="wali9-body">
-            <div id="wali9-legend"><span class="dot" style="background:linear-gradient(to bottom,#fbcfe8,#c7f0d8,#ffffff);border:1px solid #94a3b8;"></span> Kotak Anggota Wali Songo &nbsp;&nbsp; <span class="dot" style="background:#eef2f7;border:1px solid #94a3b8;"></span> Jalur Keturunan (bukan Wali Songo) &nbsp;&nbsp; <span class="dot" style="background:repeating-linear-gradient(135deg,#fdf6e3,#fdf6e3 3px,#f3e2c0 3px,#f3e2c0 6px);border:1.5px dashed #a97c1f;"></span> Anggota Wali Songo — terhubung lewat pernikahan/relasi (bukan garis darah)</div>
+            <div id="wali9-legend"><span class="dot" style="background:#dc2626;border:1px solid #94a3b8;"></span> Kotak Anggota Wali Songo &nbsp;&nbsp; <span class="dot" style="background:#eef2f7;border:1px solid #94a3b8;"></span> Jalur Keturunan (bukan Wali Songo) &nbsp;&nbsp; <span class="dot" style="background:repeating-linear-gradient(135deg,#fdf6e3,#fdf6e3 3px,#f3e2c0 3px,#f3e2c0 6px);border:1.5px dashed #a97c1f;"></span> Anggota Wali Songo — terhubung lewat pernikahan/relasi (bukan garis darah)</div>
             <ul class="w9-tree" id="wali9-tree"></ul>
             <div id="wali9-standalone">
                 <div id="wali9-standalone-title"><span class="ws-icon">🪷</span> SILSILAH GUS DUR — DARI SYEKH MAULANA ISHAQ</div>
@@ -1306,14 +1306,14 @@ function fitSingleLineFontSize(text, maxWidth, baseFontSize, weight, minFontSize
 // gambar blok teks multi-baris dengan ukuran & tebal huruf BERBEDA per baris
 // (dipakai utk judul kustom 3 baris: nama besar, nama alias, tahun), rata tengah
 // vertikal terhadap centerY.
-function drawCustomTitleLines(g, titleLines, w, centerY) {
+function drawCustomTitleLines(g, titleLines, w, centerY, textColor) {
     const totalH = titleLines.reduce((s, l) => s + l.lineHeight, 0);
     let cursorY = centerY - totalH / 2;
     titleLines.forEach((l) => {
         cursorY += l.lineHeight / 2;
         const t = el('text', {
             x: w / 2, y: cursorY, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
-            fill: '#0f172a', 'font-weight': l.weight, 'font-size': l.fontSize
+            fill: textColor || '#0f172a', 'font-weight': l.weight, 'font-size': l.fontSize
         });
         t.textContent = l.text;
         g.appendChild(t);
@@ -1482,19 +1482,17 @@ function buildDefs(svg) {
         .forEach(([off,col]) => metalNub.appendChild(el('stop', { offset: off, 'stop-color': col })));
     defs.appendChild(metalNub);
 
-    // ===== Gradient khusus shape anggota WALI SONGO: gradasi SOFT & MENYATU
-    // dari merah muda (atas) → hijau muda (tengah) → putih (bawah), tanpa batas tegas. =====
+    // ===== Kotak anggota WALI SONGO: warna SOLID merah dengan teks putih,
+    // supaya langsung menonjol dibanding kotak jalur keturunan biasa. =====
     const waliGrad = el('linearGradient', { id: 'grad-wali9', x1:'0%', y1:'0%', x2:'0%', y2:'100%' });
     [
-        ['0%', '#fbcfe8'], ['22%', '#f6d9de'],
-        ['50%', '#c7f0d8'], ['78%', '#e6f8ee'],
-        ['100%', '#ffffff']
+        ['0%', '#dc2626'], ['100%', '#dc2626']
     ].forEach(([off, col]) => waliGrad.appendChild(el('stop', { offset: off, 'stop-color': col })));
     defs.appendChild(waliGrad);
 
     const waliGloss = el('linearGradient', { id: 'gloss-wali9', x1:'0%', y1:'0%', x2:'0%', y2:'100%' });
-    waliGloss.appendChild(el('stop', { offset:'0%', 'stop-color':'#ffffff', 'stop-opacity':0.5 }));
-    waliGloss.appendChild(el('stop', { offset:'32%', 'stop-color':'#ffffff', 'stop-opacity':0.15 }));
+    waliGloss.appendChild(el('stop', { offset:'0%', 'stop-color':'#ffffff', 'stop-opacity':0.32 }));
+    waliGloss.appendChild(el('stop', { offset:'32%', 'stop-color':'#ffffff', 'stop-opacity':0.1 }));
     waliGloss.appendChild(el('stop', { offset:'68%', 'stop-color':'#ffffff', 'stop-opacity':0 }));
     defs.appendChild(waliGloss);
 
@@ -2262,7 +2260,8 @@ function drawCombinedShape(g, dims) {
     if (dims.wali9) drawWali9Badge(g, w, h);
 
     // --- nama suami (bagian atas) ---
-    const husbandText = el('text', { x:w/2, y:0, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:'#0f172a' });
+    const husbandTextColor = dims.wali9 ? '#ffffff' : '#0f172a';
+    const husbandText = el('text', { x:w/2, y:0, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:husbandTextColor });
     const hCenterY = -h/2 + topH/2;
     const hStartY = hCenterY - ((nameLines.length - 1) * NAME_LINE_HEIGHT) / 2;
     nameLines.forEach((ln, li) => {
@@ -2277,7 +2276,7 @@ function drawCombinedShape(g, dims) {
 
     // --- nama isteri (alias digabung dgn '/'), ukuran huruf seragam, center tengah atas-bawah ---
     const wifeTop = -h/2 + topH;
-    const wifeText = el('text', { x:w/2, y:0, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:'#0f172a' });
+    const wifeText = el('text', { x:w/2, y:0, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:husbandTextColor });
     const wCenterY = wifeTop + bottomH/2;
     const wStartY = wCenterY - ((spouseLines.length - 1) * NAME_LINE_HEIGHT) / 2;
     spouseLines.forEach((ln, li) => {
@@ -2498,10 +2497,10 @@ function drawLeafShape(g, dims) {
         }));
     }
     if (dims.titleLines) {
-        drawCustomTitleLines(g, dims.titleLines, dims.w, 0);
+        drawCustomTitleLines(g, dims.titleLines, dims.w, 0, dims.wali9 ? '#ffffff' : '#0f172a');
         return;
     }
-    const textEl = el('text', { x: dims.w/2, y:0, 'text-anchor':'middle', 'dominant-baseline':'middle', fill:'#0f172a', 'font-weight':700, 'font-size':dims.fontSize });
+    const textEl = el('text', { x: dims.w/2, y:0, 'text-anchor':'middle', 'dominant-baseline':'middle', fill: dims.wali9 ? '#ffffff' : '#0f172a', 'font-weight':700, 'font-size':dims.fontSize });
     const startY = -((dims.lines.length - 1) * NAME_LINE_HEIGHT) / 2;
     dims.lines.forEach((ln, li) => {
         const tspan = el('tspan', { x: dims.w/2, y: startY + li*NAME_LINE_HEIGHT });
