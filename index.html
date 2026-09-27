@@ -4564,6 +4564,23 @@ function collectAllNames() {
         }
         if (typeof wali9PathTree !== 'undefined') walkWali9Only([wali9PathTree]);
     } catch(e) {}
+    // ===== Nama-nama tokoh Islam Nusantara di cabang "TOKOH-TOKOH ISLAM
+    // BERSEJARAH" (tokohIslamChildren) — pohon TERPISAH dari descChildren,
+    // dibangun/di-render LAZY lewat buildTokohTree(). Tetap dimasukkan supaya
+    // bisa dicari lewat search bar, ditandai tokohOnly supaya selectFoundName
+    // tahu harus membuka cabang TOKOH ISLAM (bukan cabang keturunan darah). =====
+    try {
+        function walkTokohIslam(nodes) {
+            (nodes || []).forEach(n => {
+                if (n.name) {
+                    const key = n.name.toUpperCase().trim();
+                    if (!set.has(key)) set.set(key, { name: key, tokohOnly: true });
+                }
+                if (n.children) walkTokohIslam(n.children);
+            });
+        }
+        if (typeof tokohIslamChildren !== 'undefined') walkTokohIslam(tokohIslamChildren);
+    } catch(e) {}
     allNamesCache = Array.from(set.values());
     return allNamesCache;
 }
@@ -4649,8 +4666,17 @@ function findDescPath(nodes, targetUpper, path) {
 }
 
 function revealName(targetUpper) {
-    if (typeof descChildren === 'undefined') return false;
-    const path = findDescPath(descChildren, targetUpper, []);
+    let path = null;
+    if (typeof descChildren !== 'undefined') {
+        path = findDescPath(descChildren, targetUpper, []);
+    }
+    // ===== kalau tidak ketemu di pohon keturunan darah, coba cari di pohon
+    // "TOKOH-TOKOH ISLAM BERSEJARAH" (tokohIslamChildren) — nodeToggleRegistry
+    // dipakai bersama oleh renderSiblingGroup utk KEDUA pohon, jadi mekanisme
+    // buka-cabang di bawah ini otomatis berfungsi utk keduanya. =====
+    if (!path && typeof tokohIslamChildren !== 'undefined') {
+        path = findDescPath(tokohIslamChildren, targetUpper, []);
+    }
     if (!path) return false;
     let openedSomething = false;
     for (let i = 0; i < path.length - 1; i++) {
@@ -4718,6 +4744,43 @@ function highlightFoundElements(elements) {
 // ===== Alur lengkap: nama dipilih -> buka cabang leluhurnya kalau perlu ->
 // kamera geser halus ke shape-nya -> shape berkedip disorot amber.
 // Persis alur selectSearchResult() di silsilah Bani Isbadar. =====
+// ===== FIX (anti "kadang tidak geser"): sebelumnya kode ini menunggu
+// waktu TETAP (fixed delay) lalu langsung menyerah kalau kotaknya belum
+// ketemu. Padahal sebagian cabang (terutama yang punya rantai
+// pasangan/anak tambahan, chainList/childChain) baru SELESAI dibangun
+// ~400ms setelah dibuka, dan di HP/koneksi yang lebih lambat proses
+// render bisa lebih lama lagi dari delay tetap tsb. Kalau delay habis
+// duluan sebelum kotaknya benar-benar ada di DOM, pencarian menyerah
+// ("TIDAK DITEMUKAN") dan layar tidak jadi geser — itulah sebabnya
+// masalahnya terasa "kadang-kadang", tergantung kecepatan render saat
+// itu. Solusinya: COBA ULANG (retry/poll) beberapa kali dengan jeda
+// singkat, bukan cuma menunggu sekali lalu menyerah. Dipakai bersama oleh
+// selectFoundName() (pohon keturunan darah) & selectFoundNameTokoh() (pohon
+// TOKOH-TOKOH ISLAM BERSEJARAH), karena keduanya sama-sama merender shape
+// dengan class .node-shape. =====
+function findAndHighlightShape(targetUpper, target, attemptsLeft) {
+    if (attemptsLeft === undefined) attemptsLeft = 10;
+    const matches = [];
+    document.querySelectorAll('.node-shape').forEach(shape => {
+        const tspans = shape.querySelectorAll('tspan');
+        const text = Array.from(tspans).map(t => t.textContent).join(' ').toUpperCase();
+        if (text.includes(targetUpper)) matches.push(shape);
+    });
+    if (matches.length === 0) {
+        if (attemptsLeft > 0) {
+            // kotaknya mungkin masih dalam proses dibangun/dianimasikan -> coba lagi
+            setTimeout(() => findAndHighlightShape(targetUpper, target, attemptsLeft - 1), 150);
+            return;
+        }
+        showToast(`TIDAK DITEMUKAN "${target}"`);
+        return;
+    }
+    const primary = matches[0];
+    centerOnElement(primary, 700);
+    setTimeout(() => highlightFoundElements([primary]), 60);
+    showToast(`DITEMUKAN: ${target.toUpperCase()}`);
+}
+
 function selectFoundName(name) {
     const target = (name || '').trim();
     if (!target) return;
@@ -4730,60 +4793,55 @@ function selectFoundName(name) {
         selectFoundNameWali9(targetUpper, target);
         return;
     }
-
-    // ===== FIX (anti "kadang tidak geser"): sebelumnya kode ini menunggu
-    // waktu TETAP (fixed delay) lalu langsung menyerah kalau kotaknya belum
-    // ketemu. Padahal sebagian cabang (terutama yang punya rantai
-    // pasangan/anak tambahan, chainList/childChain) baru SELESAI dibangun
-    // ~400ms setelah dibuka, dan di HP/koneksi yang lebih lambat proses
-    // render bisa lebih lama lagi dari delay tetap tsb. Kalau delay habis
-    // duluan sebelum kotaknya benar-benar ada di DOM, pencarian menyerah
-    // ("TIDAK DITEMUKAN") dan layar tidak jadi geser — itulah sebabnya
-    // masalahnya terasa "kadang-kadang", tergantung kecepatan render saat
-    // itu. Solusinya: COBA ULANG (retry/poll) beberapa kali dengan jeda
-    // singkat, bukan cuma menunggu sekali lalu menyerah. =====
-    function doFind(attemptsLeft) {
-        if (attemptsLeft === undefined) attemptsLeft = 10;
-        const matches = [];
-        document.querySelectorAll('.node-shape').forEach(shape => {
-            const tspans = shape.querySelectorAll('tspan');
-            const text = Array.from(tspans).map(t => t.textContent).join(' ').toUpperCase();
-            if (text.includes(targetUpper)) matches.push(shape);
-        });
-        if (matches.length === 0) {
-            if (attemptsLeft > 0) {
-                // kotaknya mungkin masih dalam proses dibangun/dianimasikan -> coba lagi
-                setTimeout(() => doFind(attemptsLeft - 1), 150);
-                return;
-            }
-            showToast(`TIDAK DITEMUKAN "${target}"`);
-            return;
-        }
-        const primary = matches[0];
-        centerOnElement(primary, 700);
-        setTimeout(() => highlightFoundElements([primary]), 60);
-        showToast(`DITEMUKAN: ${target.toUpperCase()}`);
+    if (info && info.tokohOnly) {
+        selectFoundNameTokoh(targetUpper, target);
+        return;
     }
 
     function revealAndFind() {
         const revealed = revealName(targetUpper);
         if (revealed) {
-            setTimeout(() => doFind(), 350);
+            setTimeout(() => findAndHighlightShape(targetUpper, target), 350);
         } else {
-            doFind();
+            findAndHighlightShape(targetUpper, target);
         }
     }
 
     // ===== FIX: cabang keturunan (descChildren) di-render LAZY — shape &
     // registry toggle-nya baru ada di DOM setelah cabang utama "+" pernah
-    // dibuka. Kalau masih tertutup, revealName()/doFind() di atas tidak akan
-    // menemukan apa-apa sama sekali (itulah sebabnya layar tidak bergeser
-    // saat nama diketuk). Maka: buka dulu cabang utama kalau masih tertutup,
-    // baru lakukan reveal + pencarian setelah DOM-nya sempat ter-render
-    // (doFind sendiri sudah punya mekanisme coba-ulang di atas sebagai
-    // jaring pengaman tambahan). =====
+    // dibuka. Kalau masih tertutup, revealName()/findAndHighlightShape() di
+    // atas tidak akan menemukan apa-apa sama sekali (itulah sebabnya layar
+    // tidak bergeser saat nama diketuk). Maka: buka dulu cabang utama kalau
+    // masih tertutup, baru lakukan reveal + pencarian setelah DOM-nya sempat
+    // ter-render (findAndHighlightShape sendiri sudah punya mekanisme
+    // coba-ulang di atas sebagai jaring pengaman tambahan). =====
     if (!descOpen) {
         toggleDescTree();
+        setTimeout(revealAndFind, 500);
+    } else {
+        revealAndFind();
+    }
+}
+
+// ===== Nama yang hanya ada di cabang "TOKOH-TOKOH ISLAM BERSEJARAH"
+// (tokohIslamChildren) — pohon terpisah dari cabang keturunan darah, juga
+// di-render LAZY lewat buildTokohTree(). Sama seperti selectFoundName() utk
+// pohon utama: buka dulu cabang TOKOH ISLAM kalau masih tertutup (sekaligus
+// menutup cabang keturunan darah bila sedang terbuka, meniru perilaku
+// userToggleTokoh(), supaya kedua cabang tidak tumpang tindih), baru
+// telusuri path & cari shape-nya. =====
+function selectFoundNameTokoh(targetUpper, target) {
+    function revealAndFind() {
+        const revealed = revealName(targetUpper);
+        if (revealed) {
+            setTimeout(() => findAndHighlightShape(targetUpper, target), 350);
+        } else {
+            findAndHighlightShape(targetUpper, target);
+        }
+    }
+    if (!tokohOpen) {
+        closeDescTreeIfOpen(true);
+        toggleTokohTree(true);
         setTimeout(revealAndFind, 500);
     } else {
         revealAndFind();
