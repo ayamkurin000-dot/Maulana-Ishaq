@@ -2772,11 +2772,13 @@ const TOKOH_ISLAM_NUSANTARA = {
             ["JARINGAN", "INTELEKTUAL & ULAMA"],
             [TOKOH_PERIODE_5, TOKOH_PERIODE_6, TOKOH_PERIODE_7]
         ),
-        makePeriodeNode(
-            "ULAMA PESANTREN & TOKOH ISLAM MODERN",
-            ["ULAMA PESANTREN", "& TOKOH ISLAM", "MODERN"],
-            [TOKOH_PERIODE_8]
-        )
+        // Catatan: TOKOH_PERIODE_8 TIDAK dibungkus makePeriodeNode lagi di sini —
+        // sebelumnya dibungkus wrapper "ULAMA PESANTREN & TOKOH ISLAM MODERN" yang
+        // hanya berisi 1 anak (TOKOH_PERIODE_8) dengan judul nyaris sama persis
+        // ("ULAMA PESANTREN DAN TOKOH ISLAM MODERN — ABAD XX"), sehingga saat diklik
+        // muncul shape kedua yang terlihat seperti pengulangan/duplikat. TOKOH_PERIODE_8
+        // langsung dijadikan saudara node periode lainnya di sini.
+        TOKOH_PERIODE_8
     ]
 };
 
