@@ -753,14 +753,16 @@
        keturunan darah). Tema keemasan & garis putus-putus supaya jelas
        secara visual bahwa isinya BUKAN garis keturunan darah. ===== */
     #tokoh-root-wrap { position: relative; margin-top: 54px; }
-    /* ===== Kotak "TOKOH-TOKOH ISLAM BERSEJARAH": disamakan LEBARNYA dengan
-       kotak shape Syekh Jumadil Qubro (260px), dan warnanya diganti gradasi
-       KUNING ke PUTIH bergaya MATTE (rata/datar, tanpa garis-garis atau kilau)
-       supaya terlihat seperti badan baterai asli yang dicat solid. ===== */
+    /* ===== Kotak "TOKOH-TOKOH ISLAM": disamakan UKURANNYA (lebar & tinggi)
+       dengan kotak shape "TOKOH ISLAM NUSANTARA" di bawahnya — lebar 260px,
+       tinggi 56px (= STANDARD_H, tinggi standar seluruh kotak shape lain).
+       Warnanya gradasi KUNING ke PUTIH bergaya MATTE (rata/datar, tanpa
+       garis-garis atau kilau) supaya terlihat seperti badan baterai asli
+       yang dicat solid. ===== */
     #tokoh-root-box {
         display: flex; align-items: center; justify-content: center; gap: 6px;
-        width: 260px; margin: 0 auto;
-        padding: 12px 14px; border-radius: 9px;
+        width: 260px; height: 56px; box-sizing: border-box; margin: 0 auto;
+        padding: 2px 8px; border-radius: 9px;
         border: 1.5px solid #92720b; cursor: pointer; user-select: none;
         background: linear-gradient(to bottom, #fde047 0%, #fef08a 30%, #fef9c3 65%, #ffffff 100%);
         box-shadow: 0 2px 6px rgba(0,0,0,0.16);
@@ -768,7 +770,7 @@
         line-height: 1.3; letter-spacing: 0.3px;
     }
     #tokoh-root-box:hover { filter: brightness(1.03); }
-    #tokoh-root-box .tokoh-root-text { font-size: 0.92rem; font-weight: 900; letter-spacing: 0.4px; }
+    #tokoh-root-box .tokoh-root-text { display: block; width: 100%; font-size: 1.4rem; font-weight: 900; line-height: 1.08; letter-spacing: 0.2px; }
     #tokoh-badge { right: -13px; top: 50%; transform: translateY(-50%); }
     .desc-node .real-body { filter: drop-shadow(0 3px 6px rgba(0,0,0,0.18)); }
     .desc-node:hover .real-body { filter: drop-shadow(0 4px 9px rgba(0,0,0,0.28)); }
@@ -1808,7 +1810,10 @@ function renderChain() {
             const tokohRootBox = document.createElement('div');
             tokohRootBox.id = 'tokoh-root-box';
             tokohRootBox.title = 'Tampilkan Tokoh-Tokoh Islam Bersejarah';
-            tokohRootBox.innerHTML = '<span class="tokoh-root-text">TOKOH-TOKOH ISLAM</span>';
+            tokohRootBox.innerHTML = '<span class="tokoh-root-text">TOKOH-TOKOH<br>ISLAM</span>';
+            // tinggi disamakan PERSIS dengan tinggi kotak shape "TOKOH ISLAM NUSANTARA"
+            // (keduanya memakai STANDARD_H yang sama), lebar sudah 260px lewat CSS.
+            tokohRootBox.style.height = STANDARD_H + 'px';
             tokohRootBox.addEventListener('click', () => userToggleTokoh());
 
             const tokohBadge = document.createElement('div');
