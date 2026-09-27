@@ -764,11 +764,11 @@
         border: 1.5px solid #92720b; cursor: pointer; user-select: none;
         background: linear-gradient(to bottom, #fde047 0%, #fef08a 30%, #fef9c3 65%, #ffffff 100%);
         box-shadow: 0 2px 6px rgba(0,0,0,0.16);
-        font-size: 0.64rem; font-weight: 800; color: #6b4f14; text-align: center;
+        font-size: 0.64rem; font-weight: 800; color: #000000; text-align: center;
         line-height: 1.3; letter-spacing: 0.3px;
     }
     #tokoh-root-box:hover { filter: brightness(1.03); }
-    #tokoh-root-box .tokoh-root-icon { font-size: 0.95rem; }
+    #tokoh-root-box .tokoh-root-text { font-size: 0.92rem; font-weight: 900; letter-spacing: 0.4px; }
     #tokoh-badge { right: -13px; top: 50%; transform: translateY(-50%); }
     .desc-node .real-body { filter: drop-shadow(0 3px 6px rgba(0,0,0,0.18)); }
     .desc-node:hover .real-body { filter: drop-shadow(0 4px 9px rgba(0,0,0,0.28)); }
@@ -1808,7 +1808,7 @@ function renderChain() {
             const tokohRootBox = document.createElement('div');
             tokohRootBox.id = 'tokoh-root-box';
             tokohRootBox.title = 'Tampilkan Tokoh-Tokoh Islam Bersejarah';
-            tokohRootBox.innerHTML = '<span class="tokoh-root-icon">📜</span><span>TOKOH-TOKOH ISLAM<br>BERSEJARAH</span>';
+            tokohRootBox.innerHTML = '<span class="tokoh-root-text">TOKOH-TOKOH ISLAM</span>';
             tokohRootBox.addEventListener('click', () => userToggleTokoh());
 
             const tokohBadge = document.createElement('div');
@@ -2954,6 +2954,7 @@ let descOpen = false;
 // dipakai untuk KLIK pengguna: buka/tutup lalu pas-kan ulang tampilan dgn animasi halus
 function userToggleDesc() {
     const wasOpen = descOpen;
+    if (!wasOpen && typeof closeTokohTreeIfOpen === 'function') closeTokohTreeIfOpen(true); // AUTO-COLLAPSE: tutup cabang Tokoh Islam dulu, cegah tumpang tindih
     toggleDescTree();
     setTimeout(() => centerChart(true), 450);
     if (!wasOpen && descOpen) showPanHint();   // hint geser 4 arah muncul setelah diketuk
@@ -3150,7 +3151,7 @@ function onInteractionEnd(e) {
     document.addEventListener(ev, onAnyInteraction, { passive: true, capture: true }));
 ['touchend', 'touchcancel', 'mouseup'].forEach(ev =>
     document.addEventListener(ev, onInteractionEnd, { passive: true, capture: true }));
-function toggleDescTree() {
+function toggleDescTree(silent) {
     buildDescTree();
     const anchor = document.getElementById('desc-anchor');
     const badge = document.getElementById('desc-badge');
@@ -3180,9 +3181,19 @@ function toggleDescTree() {
     } else if (anc) {
         anc.style.display = 'none';
     }
-    showToast(descOpen
-        ? 'Menampilkan 3 putra Syekh Jumadil Qubro di sebelah kanan.'
-        : 'Cabang keturunan ditutup.');
+    if (!silent) {
+        showToast(descOpen
+            ? 'Menampilkan 3 putra Syekh Jumadil Qubro di sebelah kanan.'
+            : 'Cabang keturunan ditutup.');
+    }
+}
+// ===== AUTO-COLLAPSE ANTAR-CABANG ROOT: cabang keturunan darah (Jumadil
+// Qubro) dan cabang "TOKOH-TOKOH ISLAM" sama-sama menempel di titik yang
+// sama, jadi kalau dibuka BERSAMAAN shape-nya bisa tumpang tindih. Fungsi
+// ini menutup cabang keturunan darah secara diam-diam (tanpa toast) kalau
+// sedang terbuka, dipanggil tepat sebelum cabang TOKOH ISLAM dibuka. =====
+function closeDescTreeIfOpen(silent) {
+    if (descOpen) toggleDescTree(silent);
 }
 
 // =====================================================================
@@ -3199,7 +3210,7 @@ function buildTokohTree() {
     tokohBuilt = true;
     tokohChildrenState = renderSiblingGroup(tokohIslamChildren, anchor).state;
 }
-function toggleTokohTree() {
+function toggleTokohTree(silent) {
     buildTokohTree();
     const anchor = document.getElementById('tokoh-anchor');
     const badge = document.getElementById('tokoh-badge');
@@ -3212,12 +3223,22 @@ function toggleTokohTree() {
         badge.innerHTML = tokohOpen ? minusIconSVG() : plusIconSVG();
         badge.title = tokohOpen ? 'Tutup Tokoh-Tokoh Islam Bersejarah' : 'Tampilkan Tokoh-Tokoh Islam Bersejarah';
     }
-    showToast(tokohOpen
-        ? 'Menampilkan Tokoh-Tokoh Islam Bersejarah.'
-        : 'Tokoh-Tokoh Islam Bersejarah ditutup.');
+    if (!silent) {
+        showToast(tokohOpen
+            ? 'Menampilkan Tokoh-Tokoh Islam Bersejarah.'
+            : 'Tokoh-Tokoh Islam Bersejarah ditutup.');
+    }
+}
+// tutup cabang TOKOH ISLAM secara diam-diam kalau sedang terbuka, dipanggil
+// tepat sebelum cabang keturunan darah (Jumadil Qubro) dibuka — pasangan dari
+// closeDescTreeIfOpen() di atas, supaya auto-collapse berlaku DUA ARAH.
+function closeTokohTreeIfOpen(silent) {
+    if (tokohOpen) toggleTokohTree(silent);
 }
 // dipakai utk KLIK pengguna: buka/tutup lalu pas-kan ulang tampilan dgn animasi halus
 function userToggleTokoh() {
+    const wasOpen = tokohOpen;
+    if (!wasOpen) closeDescTreeIfOpen(true); // AUTO-COLLAPSE: tutup cabang Jumadil Qubro dulu, cegah tumpang tindih
     toggleTokohTree();
     setTimeout(() => centerChart(true), 450);
 }
