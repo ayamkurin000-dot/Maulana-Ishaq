@@ -753,17 +753,21 @@
        keturunan darah). Tema keemasan & garis putus-putus supaya jelas
        secara visual bahwa isinya BUKAN garis keturunan darah. ===== */
     #tokoh-root-wrap { position: relative; margin-top: 54px; }
+    /* ===== Kotak "TOKOH-TOKOH ISLAM BERSEJARAH": disamakan LEBARNYA dengan
+       kotak shape Syekh Jumadil Qubro (260px), dan warnanya diganti gradasi
+       KUNING ke PUTIH bergaya MATTE (rata/datar, tanpa garis-garis atau kilau)
+       supaya terlihat seperti badan baterai asli yang dicat solid. ===== */
     #tokoh-root-box {
         display: flex; align-items: center; justify-content: center; gap: 6px;
-        min-width: 168px; max-width: 230px; margin: 0 auto;
-        padding: 9px 14px; border-radius: 9px;
-        border: 1.5px dashed #b45309; cursor: pointer; user-select: none;
-        background: repeating-linear-gradient(135deg, #fdf6e3, #fdf6e3 6px, #f3e2c0 6px, #f3e2c0 12px);
+        width: 260px; margin: 0 auto;
+        padding: 12px 14px; border-radius: 9px;
+        border: 1.5px solid #92720b; cursor: pointer; user-select: none;
+        background: linear-gradient(to bottom, #fde047 0%, #fef08a 30%, #fef9c3 65%, #ffffff 100%);
         box-shadow: 0 2px 6px rgba(0,0,0,0.16);
-        font-size: 0.64rem; font-weight: 800; color: #7c4a03; text-align: center;
+        font-size: 0.64rem; font-weight: 800; color: #6b4f14; text-align: center;
         line-height: 1.3; letter-spacing: 0.3px;
     }
-    #tokoh-root-box:hover { filter: brightness(1.04); }
+    #tokoh-root-box:hover { filter: brightness(1.03); }
     #tokoh-root-box .tokoh-root-icon { font-size: 0.95rem; }
     #tokoh-badge { right: -13px; top: 50%; transform: translateY(-50%); }
     .desc-node .real-body { filter: drop-shadow(0 3px 6px rgba(0,0,0,0.18)); }
@@ -1255,8 +1259,14 @@ const NU_GREEN = { light:'#ffffff', mid:'#bbf7d0', mid2:'#86efac', dark:'#ffffff
 // ===== Rantai leluhur Dewi Sekardadu / garis Majapahit (RAJA MAJAPAHIT
 // BRAWIJAYA I s/d MINAK SEMBUYU): gradasi merah putih. =====
 const MAJAPAHIT_RED_WHITE = { light:'#b91c1c', mid:'#dc2626', mid2:'#fca5a5', dark:'#ffffff' };
+// ===== Cabang "TOKOH-TOKOH ISLAM BERSEJARAH" (root kotak + seluruh kotak
+// turunannya: TOKOH ISLAM NUSANTARA, kotak Periode I-VII, & tokoh per-periode):
+// gradasi KUNING ke PUTIH, dibuat MATTE (tanpa lapisan gloss mengkilap) supaya
+// terkesan seperti badan baterai asli yang dicat solid, bukan plastik mengkilap. =====
+const TOKOH_GOLD_MATTE = { light:'#fde047', mid:'#fef08a', mid2:'#fef9c3', dark:'#ffffff' };
 
 const GEN_COLORS = {
+    tokohgold: TOKOH_GOLD_MATTE,
     root:  { light:'#fef3c7', mid:'#fde68a', mid2:'#fbbf24', dark:'#f59e0b' },
     gen1:  NU_GREEN,
     gen2:  NU_GREEN,
@@ -1534,6 +1544,11 @@ function buildDefs(svg) {
 const SEKARDADU_STYLE_TYPES = new Set(['root','gen1','gen2','gen3','gen4','gen5','gen6']);
 const NO_NUB_TYPES = new Set(['root','gen1','gen2','gen3','gen4','gen5']);
 const SEKARDADU_FILL = '#9ccb6b';
+// ===== MATTE_TYPES: tipe yang memakai gradasi warna TAPI TANPA lapisan gloss
+// (highlight putih mengkilap) di atasnya, supaya tampil matte/datar seperti
+// cat badan baterai asli, bukan plastik glossy. Dipakai utk cabang "TOKOH-TOKOH
+// ISLAM BERSEJARAH" & seluruh kotak turunannya. =====
+const MATTE_TYPES = new Set(['tokohgold']);
 
 // ===== Badge bulat emas berisi angka "9" di pojok kanan-atas shape, penanda
 // TEGAS bahwa kotak ini adalah salah satu dari sembilan (9) Wali Songo. =====
@@ -1574,7 +1589,7 @@ function drawBatteryShape(g, w, h, type, overrideColorKey) {
         'stroke-width': plain ? 4 : 0.9,
         'stroke-opacity': plain ? 1 : 0.18
     }));
-    if (!plain) {
+    if (!plain && !MATTE_TYPES.has(colorKey)) {
         g.appendChild(el('rect', {
             x: r*0.6, y: -h/2+2.5, width: w-r*1.2, height: h*0.36, rx: r*0.5,
             fill:`url(#gloss-${colorKey})`, 'pointer-events':'none'
@@ -2251,7 +2266,7 @@ function makeTightTitleLines(lines, opts) {
 }
 function makePeriodeNode(name, lines, children) {
     return {
-        name, type: "gen8",
+        name, type: "tokohgold",
         titleLines: makeTightTitleLines(lines),
         titleAutoHeight: true,
         children: children || []
@@ -2273,7 +2288,7 @@ const TOKOH_PERIODE_3 = makePeriodeNode(
     "PERIODE AWAL ISLAMISASI JAWA — MENJELANG DAN SEZAMAN GENERASI AWAL WALI SONGO ± ABAD XIV–XV",
     ["PERIODE AWAL ISLAMISASI JAWA", "MENJELANG DAN SEZAMAN", "GENERASI AWAL WALI SONGO", "± ABAD XIV–XV"],
     [
-        { name: "SYEKH SUBAKIR / MAULANA MUHAMMAD AL-BAQIR", type: "gen9",
+        { name: "SYEKH SUBAKIR / MAULANA MUHAMMAD AL-BAQIR", type: "tokohgold",
             infoNote: "<p>Dalam tradisi babad Tanah Jawa, nama lengkapnya disebut Maulana Muhammad Al-Baqir — lebih dikenal sebagai Syekh Subakir — putra Syekh Jumadil Qubro dan kakak dari Maulana Malik Ibrahim (Sunan Gresik). Sebagian riwayat menyebutnya pula sebagai Syekh Muhammad Al-Baqir atau Syekh Syamsuddin Al-Bakir Al-Farsi, dan berasal dari Persia (kini Iran), meski ada pula versi yang menyebut asalnya dari Rum/Turki.</p><p><b>Kedatangan ke Jawa:</b> menurut tradisi, beliau tiba di Tanah Jawa sekitar tahun 1404 M/808 H bersama rombongan ulama gelombang pertama (a.l. Syekh Maulana Maghribi dan Syekh Ibrahim As-Samarkandi), untuk berdakwah di tengah masih kuatnya pengaruh Hindu-Buddha kala itu. Riwayat populer mengaitkan pengutusannya dengan Sultan Muhammad I dari Kesultanan Utsmaniyah, meski hal ini bermasalah secara kronologi karena Sultan Muhammad I (Mehmed I) baru memerintah pada 1413–1421 M — sehingga kisah pengutusan ini kemungkinan bercampur dengan tradisi atau periode kedatangan ulama lain.</p><p><b>Peran & Legenda Gunung Tidar:</b> dikenal sebagai ahli ruqyah yang \\\"menumbali\\\" atau menetralkan tanah-tanah yang dahulu dianggap angker agar layak menjadi tempat dakwah dan pemukiman. Pusat kisahnya adalah Gunung Tidar, Magelang, yang dalam legenda dijuluki \\\"Paku Tanah Jawa\\\" — tempat beliau dikisahkan menghadapi penguasa gaib Pulau Jawa, Sabdo Palon, hingga tercapai perjanjian damai: dakwah Islam boleh berkembang asal tidak memaksa masyarakat Jawa meninggalkan budayanya. Dalam versi populer, beliau menancapkan tumbal berupa Tombak Kyai Sepanjang di puncak Gunung Tidar sebagai penstabil pulau.</p><p><b>Kedudukan dalam Wali Songo:</b> sebagian kajian tradisional menempatkan beliau sebagai anggota Wali Songo generasi pertama bersama Maulana Malik Ibrahim dan Maulana Ishaq — generasi pembuka jalan, berbeda dari sembilan wali yang lebih dikenal luas sekarang (mis. Sunan Ampel dan keturunannya) yang berdakwah pada generasi berikutnya setelah jalan spiritualnya dibuka.</p><p><b>Lokasi Makam/Petilasan:</b> tidak ada satu titik yang disepakati. Tradisi paling populer menyebut puncak Gunung Tidar, Magelang, Jawa Tengah, sebagai lokasi utama; sebagian riwayat lain menyebut beliau kembali ke Persia (diperkirakan sekitar 1462 M) dan wafat di sana. Ada pula tradisi masyarakat lokal yang meyakini adanya petilasan di Desa Penataran, Kecamatan Nglegok, Kabupaten Blitar, Jawa Timur.</p><p><b>Tahun lahir/wafat:</b> tidak diketahui secara pasti; sebagian sumber tradisional menyebut angka yang cukup spesifik seperti 787 H (lahir) dan 1021 H (wafat), namun tingkat kepastiannya jauh lebih rendah dibanding tokoh-tokoh yang dokumentasinya lebih kuat.</p><p><i>Catatan:</i> kisah hidup Syekh Subakir bercampur antara sejarah dan babad/tradisi lisan Jawa (a.l. legenda Sabdo Palon, Tombak Kyai Sepanjang, hingga sebagian riwayat yang mengaitkannya dengan tokoh Aji Saka) — bukan catatan sejarah baku seperti para Wali Songo generasi akhir. Status kekerabatannya sebagai putra sulung Syekh Jumadil Qubro dan kakak Maulana Malik Ibrahim pun berasal dari tradisi babad, belum ditemukan kepastian tunggal dalam sumber sejarah akademis.</p>" }
     ]
 );
@@ -2295,7 +2310,7 @@ const TOKOH_PERIODE_7 = makePeriodeNode(
 );
 
 const TOKOH_ISLAM_NUSANTARA = {
-    name: "TOKOH ISLAM NUSANTARA", type: "gen7",
+    name: "TOKOH ISLAM NUSANTARA", type: "tokohgold",
     children: [
         TOKOH_PERIODE_1, TOKOH_PERIODE_2, TOKOH_PERIODE_3, TOKOH_PERIODE_4,
         TOKOH_PERIODE_5, TOKOH_PERIODE_6, TOKOH_PERIODE_7
