@@ -772,6 +772,25 @@
     #tokoh-root-box:hover { filter: brightness(1.03); }
     #tokoh-root-box .tokoh-root-text { display: block; width: 100%; font-size: 1.4rem; font-weight: 900; line-height: 1.08; letter-spacing: 0.2px; }
     #tokoh-badge { right: -13px; top: 50%; transform: translateY(-50%); }
+
+    /* ===== Kotak "TOKOH ISLAM DUNIA": SAUDARA dari kotak "TOKOH ISLAM
+       NUSANTARA" di atasnya, tampil TEPAT DI BAWAHNYA dengan UKURAN SAMA
+       PERSIS (lebar 260px, tinggi 56px = STANDARD_H) dan gaya yang sama,
+       tombol +/- sendiri, terpisah dari cabang Nusantara. ===== */
+    #tokoh-dunia-root-wrap { position: relative; margin-top: 18px; }
+    #tokoh-dunia-root-box {
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        width: 260px; height: 56px; box-sizing: border-box; margin: 0 auto;
+        padding: 2px 8px; border-radius: 9px;
+        border: 1.5px solid #92720b; cursor: pointer; user-select: none;
+        background: linear-gradient(to bottom, #fde047 0%, #fef08a 30%, #fef9c3 65%, #ffffff 100%);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.16);
+        font-size: 0.64rem; font-weight: 800; color: #000000; text-align: center;
+        line-height: 1.3; letter-spacing: 0.3px;
+    }
+    #tokoh-dunia-root-box:hover { filter: brightness(1.03); }
+    #tokoh-dunia-root-box .tokoh-root-text { display: block; width: 100%; font-size: 1.4rem; font-weight: 900; line-height: 1.08; letter-spacing: 0.2px; }
+    #tokoh-dunia-badge { right: -13px; top: 50%; transform: translateY(-50%); }
     .desc-node .real-body { filter: drop-shadow(0 3px 6px rgba(0,0,0,0.18)); }
     .desc-node:hover .real-body { filter: drop-shadow(0 4px 9px rgba(0,0,0,0.28)); }
 
@@ -1810,7 +1829,7 @@ function renderChain() {
             const tokohRootBox = document.createElement('div');
             tokohRootBox.id = 'tokoh-root-box';
             tokohRootBox.title = 'Tampilkan Tokoh-Tokoh Islam Bersejarah';
-            tokohRootBox.innerHTML = '<span class="tokoh-root-text">TOKOH-TOKOH<br>ISLAM</span>';
+            tokohRootBox.innerHTML = '<span class="tokoh-root-text">TOKOH ISLAM<br>NUSANTARA</span>';
             // tinggi disamakan PERSIS dengan tinggi kotak shape "TOKOH ISLAM NUSANTARA"
             // (keduanya memakai STANDARD_H yang sama), lebar sudah 260px lewat CSS.
             tokohRootBox.style.height = STANDARD_H + 'px';
@@ -1831,6 +1850,35 @@ function renderChain() {
             tokohRootWrap.appendChild(tokohBadge);
             tokohRootWrap.appendChild(tokohAnchor);
             block.appendChild(tokohRootWrap);
+
+            // ----- Kotak SAUDARA "TOKOH ISLAM DUNIA", tampil TEPAT DI BAWAH
+            // kotak "TOKOH ISLAM NUSANTARA", ukuran sama persis, +/- sendiri
+            // (lihat tokohDuniaChildren & userToggleTokohDunia di bawah). -----
+            const tokohDuniaRootWrap = document.createElement('div');
+            tokohDuniaRootWrap.id = 'tokoh-dunia-root-wrap';
+
+            const tokohDuniaRootBox = document.createElement('div');
+            tokohDuniaRootBox.id = 'tokoh-dunia-root-box';
+            tokohDuniaRootBox.title = 'Tampilkan Tokoh Islam Dunia';
+            tokohDuniaRootBox.innerHTML = '<span class="tokoh-root-text">TOKOH ISLAM<br>DUNIA</span>';
+            tokohDuniaRootBox.style.height = STANDARD_H + 'px';
+            tokohDuniaRootBox.addEventListener('click', () => userToggleTokohDunia());
+
+            const tokohDuniaBadge = document.createElement('div');
+            tokohDuniaBadge.className = 'expand-badge';
+            tokohDuniaBadge.id = 'tokoh-dunia-badge';
+            tokohDuniaBadge.title = 'Tampilkan Tokoh Islam Dunia';
+            tokohDuniaBadge.innerHTML = plusIconSVG();
+            tokohDuniaBadge.addEventListener('click', (e) => { e.stopPropagation(); userToggleTokohDunia(); });
+
+            const tokohDuniaAnchor = document.createElement('div');
+            tokohDuniaAnchor.className = 'desc-anchor';
+            tokohDuniaAnchor.id = 'tokoh-dunia-anchor';
+
+            tokohDuniaRootWrap.appendChild(tokohDuniaRootBox);
+            tokohDuniaRootWrap.appendChild(tokohDuniaBadge);
+            tokohDuniaRootWrap.appendChild(tokohDuniaAnchor);
+            block.appendChild(tokohDuniaRootWrap);
         }
 
         container.appendChild(block);
@@ -2611,98 +2659,197 @@ const KH_SHOLEH_DARAT_INFO_HTML = `
 
 // ===== Keterangan lengkap KH Abdul Wahab Chasbullah (biografi + riwayat karomah) =====
 const KH_ABDUL_WAHAB_CHASBULLAH_INFO_HTML = `
-<p><b>Profil:</b> KH Abdul Wahab Chasbullah adalah salah seorang ulama besar pesantren Jawa pada abad ke-20 — tokoh perintis, penggerak, dan salah satu pendiri Nahdlatul Ulama, yang juga dikenal aktif dalam pendidikan, organisasi, perjuangan kebangsaan, dan pengembangan jaringan pesantren.</p>
-<p><b>Kelahiran:</b> ia lahir di Tambakberas, Jombang, Jawa Timur, pada 31 Maret 1888 menurut sumber yang banyak digunakan di lingkungan NU, meski sejumlah penelitian memberikan variasi tahun kelahirannya. Ayahnya, KH Chasbullah Said, adalah pengasuh Pesantren Tambakberas, sedangkan ibunya dikenal sebagai Nyai Latifah.</p>
-<h5>Pendidikan Pesantren dan Makkah</h5>
-<p>Sejak kecil ia memperoleh pendidikan agama dari keluarganya, kemudian menuntut ilmu ke berbagai pesantren, antara lain Langitan, Mojosari, Tawangsari, Bangkalan, Branggahan, dan Tebuireng. Ia juga belajar kepada Syaikhona Kholil Bangkalan, yang kemudian mengarahkannya untuk belajar kepada KH Hasyim Asy'ari — di Tebuireng ia belajar selama beberapa tahun dan bahkan dipercaya menjadi lurah pondok. Ia kemudian melanjutkan perjalanan ke Makkah dan belajar kepada sejumlah ulama Nusantara dan Haramain, termasuk Syekh Mahfudz at-Tarmasi dan Syekh Ahmad Khatib al-Minangkabawi, yang memperluas wawasan keilmuan dan sosialnya terhadap kondisi masyarakat Muslim di tanah air yang berada di bawah pemerintahan kolonial.</p>
-<h5>Kiprah di Surabaya: Nahdlatul Wathan, Taswirul Afkar, Nahdlatut Tujjar</h5>
-<p>Setelah kembali dari Makkah, ia memilih Surabaya sebagai salah satu pusat aktivitasnya karena kota tersebut merupakan pusat perdagangan, pendidikan, pergerakan, dan interaksi berbagai kelompok masyarakat. Di sana ia mendirikan Nahdlatul Wathan, organisasi yang bergerak dalam pendidikan dan pembentukan kader, serta Taswirul Afkar, forum diskusi yang mempertemukan ulama pesantren dengan tokoh-tokoh lain untuk membahas persoalan keagamaan dan kehidupan masyarakat. Pada tahun 1920-an ia juga terlibat dalam pembentukan Nahdlatut Tujjar, gerakan yang memperhatikan persoalan ekonomi umat — sehingga perjuangannya meliputi bidang agama, pendidikan, intelektual, ekonomi, dan organisasi masyarakat.</p>
-<h5>Perintis Berdirinya Nahdlatul Ulama</h5>
-<p>Pada tahun 1926, ia menjadi salah satu tokoh penting dalam proses berdirinya Nahdlatul Ulama, menggerakkan para ulama pesantren untuk merespons persoalan yang berkembang di dunia Islam, terutama situasi di Hijaz. Bersama KH Hasyim Asy'ari dan para ulama lainnya, terbentuklah Komite Hijaz yang menjadi salah satu rangkaian penting menuju berdirinya NU pada tahun 1926. Dalam sejarah NU, ia dikenal sebagai salah satu tokoh yang sangat aktif mengorganisasi jaringan ulama dan membangun komunikasi antarpesantren.</p>
-<h5>Tokoh Pergerakan</h5>
-<p>Abdul Wahab memiliki karakter yang berbeda dari banyak ulama pesantren pada masanya — aktif berorganisasi, berdiskusi, membangun jaringan, dan berhubungan dengan berbagai kelompok masyarakat. Karena keberanian dan ketegasannya, ia sering dikenal sebagai "Mbah Wahab"; dalam salah satu riwayat, Syaikhona Kholil Bangkalan bahkan disebut pernah menyebut Wahab muda sebagai "macan", ungkapan yang kemudian sering digunakan untuk menggambarkan karakternya. Pada masa pendudukan Jepang dan revolusi kemerdekaan, jaringan ulama yang dibangunnya turut berperan dalam mobilisasi masyarakat Muslim dan perjuangan mempertahankan kemerdekaan.</p>
+<p><b>Nama lengkap:</b> KH. Abdul Wahab bin Chasbullah &nbsp;|&nbsp; <b>Nama ayah:</b> KH. Chasbullah Said &nbsp;|&nbsp; <b>Nama ibu:</b> Nyai Latifah</p>
+<p><b>Tempat &amp; tanggal lahir:</b> Tambakberas, Jombang, Jawa Timur, 31 Maret 1888 M / 18 Rajab 1305 H &nbsp;|&nbsp; <b>Wafat:</b> 29 Desember 1971 M / 11 Dzulqa'dah 1391 H</p>
+<p><b>Makam:</b> Kompleks Pesantren Bahrul Ulum Tambakberas, Jombang &nbsp;|&nbsp; <b>Masyhur sebagai:</b> Mbah Wahab Tambakberas</p>
+<p><b>Bidang utama:</b> Fikih, ushul fikih, tasawuf, pendidikan, dakwah, organisasi, perjuangan kebangsaan &nbsp;|&nbsp; <b>Kedudukan sejarah:</b> Salah satu pendiri dan penggerak utama Nahdlatul Ulama</p>
+<p><i>Catatan tentang tahun kelahiran:</i> terdapat beberapa versi mengenai tahun kelahiran KH Abdul Wahab Chasbullah. NU Online mencatat beberapa pendapat, antara lain 1881/1884, 1883, 1887, dan 1888; dalam tradisi keluarga dan sumber NU yang paling banyak digunakan, tanggal 31 Maret 1888 menjadi tanggal yang sangat dikenal.</p>
+
+<h5>Putra Tambakberas dari Keluarga Pesantren</h5>
+<p>KH Abdul Wahab Chasbullah lahir di lingkungan Pesantren Tambakberas, Jombang. Ayahnya, KH Chasbullah Said, adalah ulama sekaligus pengasuh pesantren, sedangkan ibunya adalah Nyai Latifah. Sejak kecil ia hidup dekat dengan dunia ilmu — suasana masjid, santri, pengajian, dan kitab kuning menjadi bagian keseharian, sehingga wataknya tumbuh menjadi anak yang berani, aktif, cerdas, dan mempunyai rasa ingin tahu besar. Sifat inilah yang kelak menjadi ciri khasnya: Mbah Wahab bukan tipe kiai yang hanya berdiam di pesantren, melainkan kiai yang bergerak — mendatangi masyarakat, membangun sekolah, mendirikan organisasi, berdiskusi, berdagang, berhubungan dengan tokoh pergerakan, bahkan menggunakan media massa sebagai sarana dakwah — namun akar dirinya tetap seorang santri.</p>
+
+<h5>Santri Kelana</h5>
+<p>Beranjak dewasa, KH Abdul Wahab tidak puas hanya belajar di Tambakberas. Ayahnya mengirimnya merantau menimba ilmu ke berbagai pesantren: Pesantren Langitan (Tuban), Pesantren Mojosari (Nganjuk), Pesantren Tawangsari (Sepanjang), Bangkalan (Madura), Tebuireng (Jombang), lalu ke Makkah al-Mukarramah. Dari satu pesantren ia memperoleh fikih, dari yang lain ia mendalami tasawuf, dari seorang guru ia belajar berdebat dan mempertahankan argumentasi, dari kehidupan pesantren ia belajar adab, dan dari pengalaman hidup ia belajar membaca keadaan masyarakat.</p>
+
+<h5>Berguru kepada Syaikhona Kholil Bangkalan</h5>
+<p>Salah satu mata rantai terpenting perjalanan KH Wahab adalah hubungannya dengan Syaikhona KH Muhammad Kholil Bangkalan, ulama besar yang sangat berpengaruh terhadap generasi ulama Jawa-Madura akhir abad XIX dan awal abad XX. Di lingkungan Syaikhona Kholil, KH Wahab memperoleh bukan hanya ilmu kitab, tetapi juga pendidikan rohani — sebuah hubungan guru-murid yang dalam tradisi pesantren mengandung keberkahan, adab, sanad, dan doa guru. Kelak ia menjadi salah satu mata rantai penting yang membawa keberkahan jaringan keilmuan Syaikhona Kholil kepada generasi berikutnya.</p>
+
+<h5>Tebuireng dan KH Hasyim Asy'ari</h5>
+<p>KH Wahab juga berguru kepada KH Muhammad Hasyim Asy'ari di Tebuireng. Hubungan keduanya kemudian menjadi sangat istimewa: pada perjalanan sejarah berikutnya, Hasyim Asy'ari dan Wahab menjadi pasangan penting dalam membangun organisasi ulama yang kelak bernama Nahdlatul Ulama — jika Hasyim Asy'ari menjadi pusat otoritas keilmuan dan spiritual, Wahab tampil sebagai penggerak lapangan, organisator, komunikator, dan perintis jaringan; keduanya saling melengkapi. KH Wahab bahkan pernah menjadi lurah pondok di Tebuireng, memperdalam kitab-kitab seperti Fathul Wahab, Mahalli, Baidhawi, ilmu isti'arah, fikih, akhlak, nahwu, sharaf, dan berbagai ilmu agama lainnya.</p>
+
+<h5>Ke Makkah dan Kembali ke Jawa</h5>
+<p>Sekitar 1909 M, ayahnya masih memandang ilmu Wahab belum selesai sehingga mengirimnya ke Makkah — cerminan tradisi pesantren bahwa anak seorang kiai pun tetap harus menjadi santri dan mengaji jauh dari rumah. Di Makkah ia berguru kepada sejumlah ulama besar, di antaranya Syekh Mahfudz at-Tarmasi, KH Ahmad Khatib al-Minangkabawi, Syekh Baqir al-Jugjawi, KH Muhtarom Banyumas, KH Asy'ari Bawean, dan Syekh Said al-Yamani. Di Haramain ia menyaksikan langsung dinamika umat Islam dari berbagai bangsa, perbedaan pemikiran, dan persoalan politik dunia Islam — pengalaman yang kelak sangat memengaruhi langkahnya ketika terjadi perubahan politik di Hijaz. Ia kembali ke Jawa pada 1914 dan banyak bergerak di Surabaya, tinggal di Kertopaten dekat Ampel, di rumah mertuanya KH Musa — kota yang dinamis dengan pedagang, kaum terpelajar, organisasi, dan gerakan kebangsaan, tempat energi KH Wahab kemudian berkembang.</p>
+
+<h5>Keluasan Minat: Bukan Hanya Ulama Kitab</h5>
+<p>Salah satu keunikan Mbah Wahab adalah keluasan minatnya: ahli agama sekaligus memahami ekonomi, perdagangan, organisasi, komunikasi, pendidikan, media, dan politik. Ia bahkan menjadi salah satu tokoh pribumi pada zamannya yang memiliki mobil dan kemudian motor Harley Davidson — bukan sebagai simbol kekayaan, melainkan alat untuk bergerak: mendatangi pesantren, mengurus madrasah, menemui tokoh, dan mengurus persoalan organisasi dari satu daerah ke daerah lain.</p>
+
+<h5>Merintis Pendidikan, Pemikiran, dan Ekonomi Umat</h5>
+<p>Sekitar 1912, KH Wahab mendirikan madrasah <b>Mubdil Fan</b> di Tambakberas sebagai laboratorium awal gagasan pendidikannya; model pembelajarannya sempat tidak mudah diterima — bahkan menurut riwayat yang dikutip NU Online, ayahnya sendiri pernah melempari lokasi belajar dengan kerikil sambil berkata, <i>"Ngaji nganggo bor, alamat bar"</i> (belajar memakai papan tulis dianggap membawa bubarnya tradisi lama) — namun gagasan ini kemudian berkembang menjadi pola pendidikan madrasah yang penting. Ia lalu mendirikan <b>Nahdlatul Wathan</b>, organisasi pendidikan dan kebangsaan yang memadukan ilmu agama dengan kecintaan tanah air, serta <b>Taswirul Afkar</b>, forum diskusi bagi ulama dan pemuda untuk membicarakan berbagai persoalan zaman. Ia juga terlibat mengembangkan <b>Nahdlatut Tujjar</b>, gerakan yang menekankan pentingnya kemandirian ekonomi umat, dan ikut merintis media sebagai sarana dakwah serta membangun opini dan komunikasi antarkiai — menunjukkan bahwa Mbah Wahab mampu menggunakan sarana modern tanpa kehilangan akar pesantren.</p>
+
+<h5>Komite Hijaz dan Lahirnya Nahdlatul Ulama</h5>
+<p>Ketika kekuasaan Ibnu Saud menguat di Hijaz pada 1920-an dan persoalan mazhab serta tradisi keagamaan menjadi perhatian besar ulama pesantren Indonesia, Mbah Wahab menggagas dibentuknya wadah bersama para ulama. Dari diskusi tersebut lahirlah <b>Komite Hijaz</b>, yang diketuai KH Abdul Wahab Chasbullah dan bertugas menyampaikan aspirasi ulama Nusantara mengenai kebebasan bermazhab kepada Raja Ibnu Saud — langkah yang menunjukkan keberaniannya membawa persoalan ulama Nusantara ke panggung dunia Islam. Perjuangan ini menjadi jalan penting menuju berdirinya <b>Nahdlatul Ulama</b> pada 1926, dengan KH Hasyim Asy'ari sebagai Rais Akbar dan KH Wahab Chasbullah sebagai salah satu penggerak utamanya. Jika NU diibaratkan kapal besar, Hasyim Asy'ari adalah kompas keilmuan dan ruhnya, sedangkan Wahab Chasbullah adalah salah satu mesin penggerak yang membuat kapal itu bergerak — karena itulah julukan <b>"Sang Penggerak"</b> sangat melekat pada Mbah Wahab.</p>
+
+<h5>Mengader Generasi</h5>
+<p>Mbah Wahab dikenal memiliki kemampuan luar biasa menemukan potensi seseorang, bukan mencari orang yang sudah jadi, melainkan pemuda yang masih bisa dibentuk, lalu diberi ruang, tugas, dan kepercayaan untuk belajar. KH Masykur — yang kelak menjadi Menteri Agama Republik Indonesia — adalah salah satu contoh paling terkenal dari kader yang dibina dan dibantunya sejak masih memimpin madrasah kecil di Singosari.</p>
+
 <h5>Riwayat Karomah</h5>
-<p><i>Catatan:</i> kisah karomah Abdul Wahab Chasbullah cukup banyak berkembang dalam tradisi pesantren dan lingkungan NU, sebagian telah ditulis dalam buku-buku mengenai karomah para kiai; namun, seperti pada tokoh lainnya, kisah berikut sebaiknya dipahami sebagai riwayat karomah, bukan fakta sejarah yang seluruh detailnya dapat diverifikasi secara independen.</p>
+<p><i>Catatan:</i> kisah-kisah karomah berikut berkembang dalam tradisi manaqib pesantren dan lingkungan NU — termasuk di antaranya yang dituturkan kembali oleh keluarga beliau pada 2026 — dan sebaiknya dipahami sebagai riwayat spiritual, bukan fakta sejarah yang seluruh detailnya dapat diverifikasi secara independen.</p>
 <ol>
-<li><b>Menyembuhkan kusir ketika masih muda</b> — menurut kisah yang diceritakan dalam haul KH Abdul Wahab Chasbullah, ketika ia masih sekitar 13 tahun dan hendak menuju Pesantren Langitan, terjadi kecelakaan pada dokar yang ditumpanginya hingga sang kusir cedera dan tak dapat melanjutkan perjalanan; dalam riwayat tersebut, Wahab muda berdoa dan mengusap bagian tubuh kusir yang sakit, dan kusir dikisahkan sembuh sehingga perjalanan dapat dilanjutkan. Kisah ini dipandang menunjukkan bahwa sejak muda ia telah dikenal memiliki kedekatan spiritual dan doa yang diyakini mustajab.</li>
-<li><b>Kisah sorban Mbah Wahab</b> — riwayat yang beredar di lingkungan pesantren menceritakan sorban beliau digunakan dalam sebuah peristiwa ketika seseorang bernama Abah Afandi menghadapi ancaman dari kelompok jawara; setelah mendapat doa dan sentuhan yang dikaitkan dengan sorban Mbah Wahab, orang-orang yang berniat mencelakakan Abah Afandi dikisahkan justru merasa takut dan mengurungkan niatnya. Karena sumbernya tradisi lisan pesantren, kisah ini sebaiknya dipahami sebagai kisah karomah yang hidup dalam ingatan masyarakat.</li>
-<li><b>Menghadapi gerombolan begal di Hutan Cepu</b> — kisah populer lain menceritakan rombongan ulama yang dipimpin KH Abbas Buntet mengalami gangguan dari gerombolan begal saat melintasi Hutan Cepu; dalam riwayat yang berkembang, KH Abdul Wahab Chasbullah mengangkat kedua tangan dan menepukkannya, dan para begal dikisahkan jatuh serta tak mampu melanjutkan serangan. Karena sumbernya tradisi kisah karomah, cerita ini sebaiknya ditempatkan dalam konteks manaqib dan memori pesantren.</li>
-<li><b>Riwayat "perpanjangan usia"</b> — menurut kisah yang berkembang di lingkungan NU, menjelang Muktamar NU ke-25 tahun 1971 kondisi kesehatan Mbah Wahab sangat lemah, dan ia dikisahkan berharap dapat menyelesaikan tugasnya terlebih dahulu sebelum wafat; setelah Muktamar selesai, ia wafat beberapa hari kemudian pada 29 Desember 1971. Karena kesesuaian antara permohonan tersebut dan waktu wafatnya, kisah ini dikenal sebagai salah satu riwayat karomah atau <i>verlengd</i> Mbah Wahab, yang juga dikaitkan dengan kesaksian keluarganya dan tradisi NU.</li>
+<li><b>Mimpi KH Masykur.</b> Sekitar 1923, ketika KH Masykur menghadapi persoalan legalitas madrasah Misbahul Wathan di Singosari, ia bertahajud lalu bermimpi berada di Pelabuhan Tanjung Perak dan melihat dua orang bermusyawarah di sebuah kapal besar — salah satunya gurunya, KH Hasyim Asy'ari, sedangkan yang lain memperkenalkan diri sebagai "Wahab, lengkapnya Abdul Wahab Chasbullah". Setelah terbangun, Masykur sowan kepada KH Hasyim Asy'ari yang justru mengarahkannya menemui KH Wahab di Surabaya — dan sosok yang ditemuinya ternyata persis seperti dalam mimpi. Mbah Wahab kemudian membantu menyelesaikan persoalan legalitas madrasah tersebut, sebuah kisah yang dikenang sebagai karomah dalam membaca dan menemukan kader.</li>
+<li><b>Karomah sorban Mbah Wahab.</b> Dikisahkan seorang murid bernama Abah Afandi mengalami ancaman dari sekelompok jawara yang dibayar untuk mencelakainya. Setelah sowan, Mbah Wahab memerintahkannya memperbanyak membaca Hizib Nashor, lalu melepas sorbannya, berdoa, dan menggosokkannya ke wajah Abah Afandi seraya berkata bahwa orang tersebut tidak akan lagi mengganggunya. Dalam perjalanan pulang, ketua jawara yang semula hendak mencelakainya justru bersimpuh ketakutan dan meminta maaf. Kisah ini dipandang sebagai bentuk <i>tabarruk</i> — keberkahan yang berasal dari doa seorang wali, bukan dari benda itu sendiri.</li>
+<li><b>Menghadapi gerombolan begal di Hutan Cepu.</b> Dalam perjalanan bersama beberapa kiai (di antaranya disebut KH Abbas Buntet, KH Bisri Syansuri, dan KH As'ad Syamsul Arifin), rombongan dihadang gerombolan begal yang menurut versi kisah yang beredar berjumlah sekitar seratus orang. Atas permintaan KH Bisri Syansuri, Mbah Wahab berdiri, mengangkat kedua tangan, lalu menepukkannya — seketika para begal dikisahkan terpental dan tak berdaya. Kisah ini digambarkan sebagai <i>haibah</i>, kewibawaan spiritual seorang wali yang membuat kekuatan lahiriah menjadi tidak berdaya.</li>
+<li><b>Mimpi bertemu Imam al-Bushiri.</b> Pada Agustus 2026, putri beliau, Nyai Hj Machfudhoh Aly Ubaid, menceritakan bahwa ayahnya pernah bermimpi bertemu Imam al-Bushiri, pengarang qasidah Burdah, dan mendengar dua bait dari Burdah dalam mimpi tersebut — pengalaman yang menjadi salah satu alasan Mbah Wahab mengamalkan bagian tertentu wirid Burdah dan mewariskannya kepada putrinya. Warisan wirid dan hizib Mbah Wahab, termasuk Hizib Nashor dan Kitab Bahrul Asrar, terus dijaga hingga kini; pada 2026 RMI PBNU menyelenggarakan Majelis Nasyrus Sanad untuk melestarikan sanad wirid dan hizib beliau.</li>
+<li><b>Karomah "verlengd" — umur yang diperpanjang.</b> Pada 1971, menjelang Muktamar NU ke-25 di Surabaya, kondisi kesehatan Mbah Wahab sangat kritis. Namun beliau tiba-tiba membuka mata dan berkata, <i>"Gak sido-gak sido, aku verlengd"</i> (kurang lebih: "Tidak jadi, tidak jadi, saya diperpanjang") — verlengd adalah bahasa Belanda yang berarti diperpanjang. Kondisinya kemudian membaik dan beliau benar-benar dapat menghadiri Muktamar NU ke-25 (20–25 Desember 1971); beberapa hari setelah muktamar selesai, kondisinya kembali menurun dan beliau wafat pada 29 Desember 1971. Kisah ini dituturkan oleh putra beliau, KH M Hasib Wahab, dan dalam tradisi keluarga dipahami sebagai umur yang diberi tambahan waktu oleh Allah agar sebuah amanah selesai.</li>
 </ol>
-<h5>Wafat &amp; Warisan</h5>
-<p><b>Wafat:</b> KH Abdul Wahab Chasbullah wafat pada 29 Desember 1971 M dan dimakamkan di kompleks keluarga Pesantren Bahrul Ulum Tambakberas, Jombang.</p>
-<p><b>Warisan</b> beliau dapat dilihat lewat: Nahdlatul Ulama sebagai salah satu tokoh utama pendiri dan penggeraknya; Nahdlatul Wathan dalam pengembangan pendidikan dan kaderisasi; Taswirul Afkar dalam tradisi diskusi dan intelektual; Nahdlatut Tujjar dalam perhatian terhadap ekonomi umat; penguatan jaringan pesantren; keterlibatan ulama dalam perjuangan kebangsaan; serta pengembangan kaderisasi ulama lewat jaringan pendidikan pesantren.</p>
-<p><b>Sumber Utama:</b> NU Online dan dokumentasi sejarah NU; riwayat Pesantren Bahrul Ulum Tambakberas; kajian biografi KH Abdul Wahab Chasbullah; <i>Karomah Para Kiai</i> dan tradisi manaqib pesantren untuk kisah-kisah karomah; dokumentasi sejarah organisasi dan perjuangan KH Abdul Wahab Chasbullah.</p>
+
+<h5>Perjuangan Kemerdekaan dan Politik</h5>
+<p>Ketika Indonesia memasuki masa perjuangan kemerdekaan, Mbah Wahab bersama ulama lainnya berada dalam arus perjuangan mempertahankan kemerdekaan, dengan pesantren dan santri ikut terlibat — hubungannya dengan Resolusi Jihad dan perjuangan mempertahankan kemerdekaan menempatkannya dalam sejarah penting bangsa. Ia juga memahami bahwa ulama perlu memahami pemerintahan dan mampu berdiplomasi tanpa mengorbankan prinsip agama, sehingga menjadi salah satu tokoh penting dalam perjalanan politik umat Islam Indonesia, meski orientasi utamanya tetap menjaga kepentingan umat dan bangsa.</p>
+
+<h5>Keahlian Ushul Fikih dan Kemampuan Berdebat</h5>
+<p>Mbah Wahab dikenal sebagai ahli ushul fikih — ilmu yang mengajarkan cara mengambil kesimpulan hukum berdasarkan dalil, illat, maslahat, keadaan, dan tujuan syariat — sehingga ia mampu menghadapi persoalan baru tanpa kehilangan akar tradisi; NU Online mengaitkan kepakaran ini dengan sikapnya yang lentur dalam menghadapi persoalan sosial dan politik. Ia juga dikenal dengan kemampuan berdebat yang kuat, namun bagi beliau debat adalah sarana menemukan kebenaran, bukan sekadar mengalahkan lawan — tegas ketika prinsip agama dipertaruhkan, namun lentur pada persoalan cabang, sehingga ia mampu duduk bersama kelompok yang berbeda pandangan.</p>
+
+<h5>Kecintaan pada Shalawat dan Hadrah</h5>
+<p>Mbah Wahab juga dikenal sangat mencintai shalawat dan hadrah; kecintaan ini dikaitkan dengan berkembangnya tradisi ISHARI di lingkungan NU, menunjukkan bahwa bagi beliau seni dan shalawat juga dapat menjadi jalan dakwah, sejalan dengan madrasah, organisasi, ekonomi, dan media yang semuanya dapat menjadi ibadah apabila diniatkan untuk Allah.</p>
+
+<h5>Jaringan Keilmuan</h5>
+<p>Hubungan KH Wahab dengan KH Hasyim Asy'ari merupakan salah satu pasangan terpenting dalam sejarah pesantren Indonesia — keduanya berbeda karakter namun bertemu dalam satu tujuan menjaga Islam Ahlussunnah wal Jamaah dan membangun umat, sehingga lahirlah NU. Jika ditarik lebih jauh, mata rantainya membentuk jalur Syaikhona Kholil Bangkalan → KH Abdul Wahab Chasbullah → Nahdlatul Ulama → generasi ulama dan pesantren Nusantara, menempatkan Mbah Wahab sebagai penghubung penting antara generasi ulama abad XIX dan generasi ulama Indonesia abad XX, dalam jaringan besar yang turut melibatkan KH Sholeh Darat, KH Ahmad Khatib al-Minangkabawi, dan Syekh Mahfudz at-Tarmasi.</p>
+
+<h5>Wafat dan Pemakaman</h5>
+<p>KH Abdul Wahab Chasbullah wafat pada 29 Desember 1971. Jenazahnya dimakamkan di kompleks pemakaman keluarga Pesantren Bahrul Ulum Tambakberas, Jombang, yang kemudian menjadi salah satu tujuan ziarah para santri dan Nahdliyin.</p>
+
+<h5>Warisan</h5>
+<p>Warisan KH Abdul Wahab Chasbullah terentang luas: pendidikan (madrasah dan jaringan pesantren), pemikiran (Taswirul Afkar dan tradisi diskusi), ekonomi (Nahdlatut Tujjar), kebangsaan (perjuangan melawan kolonialisme dan mempertahankan kemerdekaan), organisasi (Nahdlatul Wathan dan kemudian Nahdlatul Ulama), dakwah (media dan jaringan ulama), spiritualitas (wirid, hizib, dan ijazah amalan), serta kaderisasi generasi muda yang beliau bina. Mbah Wahab dikenang sebagai sosok wali yang "bergerak di tengah masyarakat" — sorban tetap di kepala, kitab tetap di tangan, wirid tetap dijaga, namun kaki tetap berjalan membangun madrasah, organisasi, dan kader hingga akhir hayatnya.</p>
+
+<p><b>Posisi dalam struktur Sejarah Islam Nusantara:</b> 5. Ulama Pesantren &amp; Tokoh Islam Modern → Periode VII — Jaringan Ulama Nusantara–Haramain dan Pesantren → KH Abdul Wahab Chasbullah, salah satu jembatan besar antara pesantren, Haramain, pendidikan modern, organisasi Islam, perjuangan kebangsaan, dan jaringan ulama Nusantara.</p>
+
+<p><b>Sumber Utama:</b> NU Online dan dokumentasi sejarah NU; riwayat Pesantren Bahrul Ulum Tambakberas; kajian biografi KH Abdul Wahab Chasbullah; tradisi manaqib pesantren dan kesaksian keluarga (termasuk penuturan Nyai Hj Machfudhoh Aly Ubaid dan KH M Hasib Wahab) untuk kisah-kisah karomah; dokumentasi RMI PBNU mengenai Majelis Nasyrus Sanad (2026); dokumentasi sejarah organisasi dan perjuangan KH Abdul Wahab Chasbullah.</p>
 `;
 
 // ===== Keterangan lengkap KH Bisri Syansuri (biografi + riwayat karomah) =====
 const KH_BISRI_SYANSURI_INFO_HTML = `
-<p><b>Profil:</b> KH Bisri Syansuri adalah salah seorang ulama besar pesantren Indonesia pada abad ke-20 — ulama ahli fikih, pendiri Pesantren Mamba'ul Ma'arif Denanyar Jombang, salah satu pendiri Nahdlatul Ulama, serta Rais Aam PBNU pada periode 1971–1980.</p>
-<p><b>Kelahiran:</b> ia lahir di Tayu, Pati, Jawa Tengah; mengenai tanggal kelahirannya terdapat dua versi yang cukup dikenal dalam sumber biografis — salah satu sumber NU mencatat 18 September 1886, sedangkan sumber lain mencatat 23 Agustus 1887, sehingga tanggal tersebut sebaiknya tidak dianggap mutlak. Nama kecilnya Mustajab, sedangkan nama Bisri digunakan setelah ia menunaikan ibadah haji. Ia lahir dari pasangan Syansuri Abdus Shomad dan Siti Rohmah (Mariah), dan tumbuh dalam lingkungan keluarga bertradisi keilmuan Islam yang kuat.</p>
-<h5>Pendidikan Awal</h5>
-<p>Sejak kecil ia telah memperoleh pendidikan agama. Salah seorang guru pentingnya pada masa awal adalah KH Abdus Salam, ulama yang menguasai Al-Qur'an dan fikih; dari gurunya ini Bisri mempelajari nahwu, fikih, tasawuf, tafsir, dan hadis.</p>
-<h5>Perjalanan Menuntut Ilmu</h5>
-<p>Ketika berusia sekitar 15 tahun, Bisri mulai berkelana menuntut ilmu ke sejumlah pesantren dan ulama, antara lain KH Kholil Kasingan (Rembang), KH Syu'aib Sarang (Lasem), Syaikhona Kholil Bangkalan, KH Hasyim Asy'ari di Tebuireng, serta sejumlah ulama di Makkah. Di Bangkalan ia bertemu dengan Abdul Wahab Chasbullah — persahabatan keduanya kemudian berlangsung sangat panjang dan menjadi salah satu hubungan penting dalam sejarah perkembangan NU.</p>
-<p>Pada tahun 1906, Bisri bersama Abdul Wahab belajar di Pesantren Tebuireng di bawah bimbingan KH Hasyim Asy'ari selama sekitar enam tahun, memperdalam fikih, tauhid, hadis, sejarah, dan ilmu-ilmu keislaman lainnya. Pada tahun 1911 ia berangkat ke Makkah dan belajar di sana selama kurang lebih empat tahun, di antaranya kepada Syekh Muhammad Bakir, Syekh Muhammad Said Yamani, Syekh Sholeh Bafadhol, Syekh Ibrahim Madani, Syekh Umar Bajened, Syekh Jamal al-Maliki, Syekh Ahmad Khatib al-Minangkabawi, Syekh Syu'aib Daghistani, dan Syekh Mahfudz at-Tarmasi.</p>
-<h5>Mendirikan Pesantren Denanyar</h5>
-<p>Setelah kembali dari Makkah, Bisri Syansuri bersama istrinya, Nyai Hj. Nur Khodijah, mulai mengembangkan pendidikan Islam di Denanyar, Jombang. Pada tahun 1917 ia merintis pesantren dengan jumlah santri awal yang masih sangat sedikit, menggunakan metode sorogan dan pengajaran kitab-kitab keislaman secara bertahap — pesantren ini kemudian berkembang menjadi Pondok Pesantren Mamba'ul Ma'arif Denanyar.</p>
-<h5>Perintis Pendidikan Pesantren Putri</h5>
-<p>Salah satu jasa penting KH Bisri Syansuri adalah perhatian besarnya terhadap pendidikan perempuan. Pada tahun 1919, ia bersama Nyai Nur Khodijah merintis pendidikan pesantren untuk santri perempuan — pada masa itu pendidikan pesantren putri masih sangat terbatas, sehingga Pesantren Denanyar berkembang menjadi salah satu pelopor pendidikan Islam bagi perempuan di lingkungan pesantren Jawa. Pada 1930 kemudian berkembang Madrasah Diniyah Putri Pesantren Mamba'ul Ma'arif Denanyar, menjadikannya bagian penting dari sejarah pendidikan Islam di Indonesia.</p>
-<h5>Ahli Fikih</h5>
-<p>KH Bisri Syansuri dikenal sangat kuat dalam bidang fikih, dengan penguasaan mendalam terhadap kitab-kitab fikih dan sikap sangat berhati-hati dalam mengambil keputusan keagamaan — dalam tradisi NU ia dikenal sebagai salah satu rujukan penting dalam persoalan fikih. Namun keteguhannya terhadap fikih tidak berarti menolak perubahan; dalam sejumlah persoalan sosial ia mampu memberikan jawaban yang mempertimbangkan kebutuhan masyarakat, misalnya pandangannya mengenai keluarga berencana ketika pada 1972 dimintai pendapat oleh Menteri Agama Mukti Ali dari perspektif hukum Islam.</p>
-<h5>Pendiri Nahdlatul Ulama</h5>
-<p>KH Bisri Syansuri merupakan salah seorang tokoh yang terlibat dalam berdirinya Nahdlatul Ulama pada tahun 1926, berada dalam jaringan ulama yang dipimpin KH Hasyim Asy'ari dan bersama KH Abdul Wahab Chasbullah menjadi bagian penting perkembangan awal NU. Jika KH Wahab dikenal sangat aktif dalam organisasi dan pergerakan, KH Bisri lebih dikenal sebagai salah satu rujukan fikih di lingkungan ulama NU — keduanya saling melengkapi dalam perkembangan organisasi tersebut.</p>
-<h5>Perjuangan dan Kehidupan Kebangsaan</h5>
-<p>Pada masa perjuangan kemerdekaan, aktivitas Pesantren Denanyar turut mengalami berbagai perubahan karena situasi politik dan keamanan. KH Bisri tidak hanya berperan sebagai guru agama, tetapi juga terlibat dalam kehidupan kebangsaan, termasuk menjadi anggota Konstituante dan kemudian aktif dalam lingkungan politik yang berkaitan dengan NU — meski dasar utama aktivitasnya tetap pendidikan dan pengajaran agama.</p>
-<h5>Menjadi Rais Aam NU</h5>
-<p>KH Bisri Syansuri menjadi Rais Aam PBNU pada tahun 1971 dan memegang jabatan tersebut hingga wafat pada 1980. Pada masa tersebut ia menjadi salah satu otoritas penting dalam persoalan fikih dan keputusan keagamaan NU, dan dikenal sebagai kiai yang sangat disiplin dalam menjalankan kehidupan pesantren.</p>
+<p><b>Nama lengkap:</b> KH. Muhammad Bisri Syansuri &nbsp;|&nbsp; <b>Nama sebelum terkenal:</b> Muhammad Mustajab</p>
+<p><b>Ayah:</b> Syansuri bin Abdus Shomad &nbsp;|&nbsp; <b>Ibu:</b> Siti Rohmah/Mariah &nbsp;|&nbsp; <b>Istri:</b> Nyai Hj. Nur Khodijah binti KH Chasbullah</p>
+<p><b>Tempat lahir:</b> Tayu Wetan, Pati, Jawa Tengah &nbsp;|&nbsp; <b>Tanggal lahir yang banyak digunakan:</b> 28 Dzulhijjah 1304 H / 18 September 1887 M &nbsp;|&nbsp; <b>Wafat:</b> Jumat, 25 April 1980 M</p>
+<p><b>Makam:</b> Kompleks Pesantren Mamba'ul Ma'arif Denanyar, Jombang</p>
+<p><b>Guru utama:</b> KH Abdul Salam, KH Kholil Kasingan, KH Syu'aib Sarang, Syaikhona KH Muhammad Kholil Bangkalan, KH Hasyim Asy'ari, dan para ulama Haramain</p>
+<p><b>Bidang utama:</b> Fikih, ushul fikih, hadis, tafsir, pendidikan, bahtsul masail, kepemimpinan ulama &nbsp;|&nbsp; <b>Kedudukan:</b> Pendiri NU, pendiri Pesantren Mamba'ul Ma'arif Denanyar, Rais Aam PBNU 1971–1980</p>
+<p><i>Catatan tentang tanggal kelahiran:</i> arsip keluarga dan sejumlah karya biografis menggunakan 28 Dzulhijjah 1304 H / 18 September 1887 M, sementara dokumen pemerintah Jepang tahun 1942 mencatat 5 Dzulhijjah 1304 H / 25 Agustus 1887 M, dan NU Online juga mencatat adanya versi 1886 dalam beberapa tulisan lama.</p>
+
+<h5>Lahir dari Keluarga Ulama</h5>
+<p>KH Bisri Syansuri lahir dengan nama Muhammad Mustajab, anak ketiga dari pasangan Syansuri Abdus Shomad dan Siti Rohmah (Mariah). Tradisi keilmuan agama telah mengakar dalam garis keluarganya — dalam catatan Gus Dur, garis keluarga Kiai Bisri juga berkaitan dengan sejumlah ulama besar seperti KH Kholil Lasem dan KH Baidlowi Lasem. Sejak kecil ia hidup dekat dengan Al-Qur'an, kitab, kiai, dan santri, dan seluruh kehidupannya kelak diarahkan pada satu jalan: ilmu, bukan untuk mencari kedudukan, melainkan untuk menjalankan syariat.</p>
+
+<h5>Masa Kecil dan Pendidikan Awal</h5>
+<p>Guru awalnya adalah KH Abdul Salam, ulama yang menguasai Al-Qur'an dan fikih; di bawah bimbingannya Mustajab mempelajari Al-Qur'an, nahwu, sharaf, fikih, tafsir, hadis, tasawuf, dan dasar-dasar akhlak dengan disiplin yang kuat — kedisiplinan inilah yang membentuk karakternya kelak sebagai kiai yang sangat teguh terhadap fikih, bukan hanya mengetahui hukum tetapi berusaha menjalankannya dalam kehidupan sehari-hari.</p>
+
+<h5>Santri Keliling</h5>
+<p>Sekitar usia lima belas tahun, Mustajab mulai merantau menuntut ilmu — setiap Ramadan ia pergi kepada ulama lain, di antaranya KH Kholil Kasingan (Rembang) dan KH Syu'aib Sarang (Lasem), mengikuti tradisi klasik pesantren Jawa "santri keliling": mencari guru, kitab, sanad, dan keberkahan dari banyak ulama.</p>
+
+<h5>Berguru kepada Syaikhona Kholil Bangkalan</h5>
+<p>Perjalanan ilmu membawanya ke Bangkalan, berguru kepada Syaikhona KH Muhammad Kholil Bangkalan. Di sanalah terjadi salah satu pertemuan penting dalam sejarah Islam Nusantara: Mustajab bertemu santri muda bernama Abdul Wahab Chasbullah. Keduanya menjadi sahabat dekat, kelak menjadi saudara ipar, sama-sama pendiri Nahdlatul Ulama, dan dua tokoh di puncak kepemimpinan NU — satu kuat dalam fikih, satu kuat dalam ushul fikih dan pergerakan, namun keduanya berakar dari pesantren yang sama.</p>
+
+<h5>Tebuireng dan KH Hasyim Asy'ari</h5>
+<p>Ia melanjutkan perjalanan ke Pesantren Tebuireng dan berguru kepada Hadratussyekh KH Muhammad Hasyim Asy'ari, belajar selama sekitar enam tahun hingga karakter fikihnya semakin matang, mempelajari berbagai kitab klasik mulai dari fikih hingga hadis. KH Hasyim Asy'ari kemudian memberinya ijazah mengajarkan sejumlah kitab keagamaan, di antaranya Az-Zubad serta Shahih Bukhari dan Shahih Muslim. Gus Dur menyebut kakeknya ini sebagai sosok dengan penguasaan literatur fikih yang sangat intens, sehingga kelak dikenal sebagai "Pecinta Fikih Sepanjang Hayat". Di Tebuireng pula ia belajar bahwa perbedaan pendapat tidak boleh menghancurkan persaudaraan, dan bahwa seorang ulama harus berani mengatakan halal tetap halal, haram tetap haram.</p>
+
+<h5>Belajar di Makkah dan Pernikahan</h5>
+<p>Sekitar 1912–1913 ia berangkat ke Makkah bersama sahabat sekaligus calon kakak iparnya, KH Abdul Wahab Chasbullah, dan berguru kepada sejumlah ulama Haramain, di antaranya Syekh Muhammad Bakir, Syekh Muhammad Said Yamani, Syekh Ibrahim Madani, Syekh al-Maliki, KH Ahmad Khatib al-Minangkabawi, dan Syekh Mahfudz at-Tarmasi — memperluas wawasannya tentang perbedaan mazhab dan pentingnya sanad, sekaligus memperkuat penguasaannya pada fikih mazhab Syafi'i. Sepulang dari Makkah, nama Mustajab lebih dikenal sebagai Bisri, kemudian ditambah nama ayahnya menjadi Bisri Syansuri. Di Makkah pula KH Wahab menjodohkan adiknya, Nyai Hj. Nur Khodijah, dengan Bisri — pernikahan yang menyatukan dua jaringan pesantren besar, Tambakberas dan Denanyar.</p>
+
+<h5>Merintis Pesantren di Denanyar</h5>
+<p>Sepulang dari Makkah, KH Bisri sempat membantu keluarga mertua di Tambakberas sambil belajar mengelola rumah tangga dan pertanian. Pada 1917 ia mulai membangun kehidupan baru di Denanyar, Jombang — wilayah yang pada masa itu dikenal keras, diwarnai perampokan, pencurian, dan berbagai persoalan sosial. Alih-alih menghindar, KH Bisri dan Nyai Nur Khodijah justru membangun rumah, lalu surau, lalu tempat mengaji, hingga santri demi santri berdatangan — dari sinilah lahir Pesantren Mamba'ul Ma'arif Denanyar, yang dimulai dari rumah sederhana tanpa bangunan besar maupun fasilitas.</p>
+
+<h5>Perintis Pendidikan Perempuan</h5>
+<p>Pada 1919, KH Bisri dan Nyai Nur Khodijah mengambil langkah yang sangat berani untuk masanya: membuka kelas khusus bagi santri perempuan, yang awalnya berlangsung di beranda belakang rumah. Pada 1921 pesantren putri mulai menerima santri dari berbagai daerah, dan pada 1930 berkembang menjadi Madrasah Diniyah Putri. Ketika pesantren putri mulai berkembang, KH Hasyim Asy'ari datang melihat langsung dan tidak memberikan penolakan — sikap diam sang guru dipahami sebagai restu, dan KH Bisri melanjutkan perintisannya dengan lebih mantap. Langkah ini menjadikan Denanyar salah satu pelopor pendidikan Islam bagi perempuan di lingkungan pesantren Jawa.</p>
+
+<h5>Ahli Fikih dan Bahtsul Masail</h5>
+<p>Berbeda dari KH Wahab yang kuat dalam ushul fikih, KH Bisri dikenal sebagai ahli fikih yang sangat teguh — kitab menjadi dasar, dalil menjadi pegangan, mazhab menjadi pijakan, namun tetap mampu membaca kebutuhan zaman, sebagaimana terlihat dari keberaniannya merintis pendidikan perempuan. Ia menjadi salah satu tokoh utama tradisi bahtsul masail NU sejak Kongres I, dan Majelis Tashih yang pernah berlangsung di Denanyar pada 1959 menunjukkan besarnya otoritas keilmuan serta koleksi kitab di pesantren tersebut. Pada 1972, sebagai Rais Aam, ia turut dimintai pandangan mengenai program Keluarga Berencana berdasarkan pertimbangan syariat dan kemaslahatan keluarga.</p>
+
+<h5>Persahabatan dengan KH Abdul Wahab Chasbullah</h5>
+<p>Hubungan KH Bisri dengan KH Wahab menjadi salah satu kisah paling dikenang dalam tradisi NU. Keduanya sama-sama keras dalam prinsip namun berbeda bidang keilmuan, sehingga kerap berdebat sengit dalam bahtsul masail — salah satu yang paling terkenal adalah perdebatan mengenai hukum drum band, hingga keduanya menggebrak meja, membuat kiai lain khawatir NU akan pecah. Namun begitu waktu istirahat atau waktu shalat tiba, keduanya kembali saling melayani dan menghormati; riwayat yang diwariskan keluarga dan ditulis KH Yahya Cholil Staquf bahkan menceritakan KH Bisri sendiri yang menimbakan air wudhu untuk KH Wahab setelah perdebatan sengit mereda — sebuah teladan adab menjaga persaudaraan di atas perbedaan pendapat.</p>
+
+<h5>Ketaatan pada Jam'iyyah dan Menjadi Rais Aam</h5>
+<p>Ketika KH Wahab menjadi Rais Aam dan KH Bisri menjadi Wakil Rais Aam, keduanya kerap berbeda pandangan dalam sejumlah persoalan organisasi maupun politik, namun setelah keputusan jam'iyyah ditetapkan, KH Bisri tetap tunduk dan tidak memecah organisasi. Pada Muktamar NU ke-25 di Surabaya tahun 1971, ketika KH Wahab sudah sangat sepuh dan sakit serta banyak muktamirin menginginkan KH Bisri naik menjadi Rais Aam, ia justru menyatakan hanya bersedia menduduki jabatan di bawah KH Wahab selama gurunya itu masih hidup. Barulah setelah KH Wahab wafat beberapa hari setelah muktamar, KH Bisri menerima amanah sebagai Rais Aam PBNU ketiga — setelah KH Hasyim Asy'ari dan KH Abdul Wahab Chasbullah — dan memegang jabatan tersebut hingga wafat, tetap aktif dalam bahtsul masail hingga usia lanjut.</p>
+
 <h5>Riwayat Karomah</h5>
-<p><i>Catatan:</i> kisah karomah KH Bisri Syansuri tidak sebanyak riwayat karomah KH Hasyim Asy'ari atau KH Abdul Wahab Chasbullah yang banyak beredar dalam literatur populer, sehingga bagian berikut disajikan secara terbatas tanpa mengarang atau memperbanyak kisah yang sumbernya lemah.</p>
+<p><i>Catatan:</i> kisah-kisah berikut berkembang dalam tradisi manaqib pesantren dan lingkungan NU, dan sebaiknya dipahami sebagai riwayat spiritual, bukan fakta sejarah yang seluruh detailnya dapat diverifikasi secara independen.</p>
 <ol>
-<li><b>Ketajaman ilmu dan firasat</b> — dalam tradisi pesantren, KH Bisri Syansuri dikenal sebagai kiai yang sangat kuat membaca persoalan fikih dan memahami keadaan masyarakat; para santri dan orang yang sowan kepadanya sering membawa persoalan rumit, dan jawabannya dikenal singkat, tegas, serta langsung mengarah pada persoalan pokok. Kualitas ini dipandang sebagai bagian dari karomah keilmuan beliau — karomah dalam pengertian ini tidak harus berupa kejadian spektakuler, tetapi dapat berupa keluasan ilmu, ketajaman memahami persoalan, dan keberkahan ilmu yang menghasilkan banyak generasi ulama.</li>
-<li><b>Hubungan keilmuan lintas generasi</b> — salah satu tanda yang sering dikenang dalam tradisi pesantren adalah kemampuan KH Bisri dalam mengkader generasi berikutnya; ia mendidik tokoh-tokoh muda yang kemudian menjadi ulama dan intelektual NU, di antaranya cucunya sendiri, KH Abdurrahman Wahid (Gus Dur), dan KH Abdul Aziz Masyhuri. NU mencatat bahwa Kiai Bisri secara aktif melibatkan generasi muda dalam forum keagamaan dan kaderisasi pesantren — dalam tradisi pesantren, keberhasilan seorang kiai melahirkan generasi penerus sering dipandang sebagai salah satu bentuk karomah ilmu.</li>
-<li><b>Keberkahan pesantren</b> — Pesantren Denanyar yang awalnya dirintis dengan santri sangat sedikit kemudian berkembang menjadi salah satu pusat pendidikan Islam penting di Jawa Timur; keberlanjutan pendidikan tersebut selama beberapa generasi dipandang oleh masyarakat pesantren sebagai salah satu bentuk keberkahan perjuangan KH Bisri — riwayat semacam ini lebih tepat disebut karomah dalam bentuk keberkahan ilmu dan kesinambungan perjuangan, bukan peristiwa supranatural yang dapat diverifikasi.</li>
+<li><b>Mengubah Denanyar yang keras.</b> Karomah Mbah Bisri sejak awal terlihat dari keberaniannya membangun pesantren di wilayah yang dikenal rawan kriminalitas — bukan dengan kekerasan, melainkan dengan ilmu dan kesabaran, hingga lingkungan tersebut berangsur berubah menjadi masyarakat yang lebih tertib dan berpendidikan agama.</li>
+<li><b>Debat keras, hati tetap bersih (kisah drum band).</b> Dalam bahtsul masail tentang hukum drum band, KH Bisri dan KH Wahab berdebat sangat sengit hingga sama-sama menggebrak meja, membuat kiai lain khawatir NU akan pecah. Namun begitu waktu istirahat tiba, keduanya saling melayani tanpa dendam, dan ketika beduk shalat berbunyi, KH Bisri sendiri yang menimbakan air wudhu untuk KH Wahab — dikenang sebagai karomah akhlak dalam menjaga persaudaraan di atas perbedaan pendapat.</li>
+<li><b>Tawadhu' menjelang Muktamar 1971.</b> Meski secara praktis posisi Rais Aam sudah di hadapannya, KH Bisri menyatakan tidak bersedia menduduki jabatan di atas KH Wahab selagi gurunya itu masih hidup, dan baru menerima amanah tersebut setelah KH Wahab wafat — dikenang sebagai karomah tawadhu' seorang ulama besar.</li>
+<li><b>Peran spiritual dalam kelahiran KH Maimoen Zubair.</b> Menurut kisah yang dituturkan sendiri oleh KH Maimoen Zubair dan diberitakan kembali pada 2025, tiga ulama pendiri NU — KH Hasyim Asy'ari, KH Abdul Wahab Chasbullah, dan KH Bisri Syansuri — dikisahkan meludahkan air ke dalam sebuah gelas yang kemudian diminumkan kepada ibu Mbah Moen yang sedang mengandung, tidak lama sebelum kelahirannya; riwayat ini dipandang sebagai bentuk tabarruk dan keberkahan para ulama, bukan sekadar peristiwa biologis.</li>
+<li><b>Kehati-hatian dalam kehidupan sehari-hari (kisah "tidak makan di warung").</b> Menurut penuturan Gus Dur, ketika KH Wahab bertanya mengapa KH Bisri tidak pernah makan di warung, Gus Dur menjawab bergurau bahwa kakeknya tidak menemukan hadis bahwa Nabi Muhammad ﷺ pernah makan di warung — kisah yang menggambarkan kehati-hatian KH Bisri menjalani hidup sedekat mungkin dengan teladan Nabi ﷺ, sekaligus kedekatan dan humor di antara dua tokoh besar tersebut.</li>
 </ol>
+
+<h5>Kiprah Kebangsaan dan Perjuangan Legislasi</h5>
+<p>Di luar pesantren, KH Bisri Syansuri juga terlibat dalam kehidupan kenegaraan — pernah menjadi anggota KNIP, kemudian anggota Konstituante, serta Ketua Majelis Syuro PPP ketika NU berada dalam wadah tersebut, dengan politik dipandangnya sebagai alat memperjuangkan kepentingan umat, bukan tujuan akhir. Ia juga berperan penting bersama ulama NU lainnya dalam memperjuangkan rumusan hukum keluarga yang sesuai syariat Islam, yang menjadi bagian dari proses panjang lahirnya Undang-Undang Perkawinan — salah satu bentuk nyata bagaimana fikih pesantren ikut memengaruhi hukum negara.</p>
+
+<h5>Keluarga dan Keturunan</h5>
+<p>Dari pernikahannya dengan Nyai Hj. Nur Khodijah, salah satu putri KH Bisri Syansuri adalah Nyai Sholihah, yang menikah dengan KH Abdul Wahid Hasyim dan menjadi ibunda KH Abdurrahman Wahid (Gus Dur) — menjadikan KH Bisri Syansuri kakek Gus Dur dari pihak ibu. Gus Dur sendiri banyak memberikan kesaksian mengenai karakter kakeknya yang sangat kuat dalam fikih dan disiplin dalam kehidupan, dan tumbuh dalam lingkungan pesantren Denanyar yang ikut membentuk karakternya.</p>
+
 <h5>Wafat &amp; Warisan</h5>
-<p><b>Wafat:</b> KH Bisri Syansuri wafat pada 25 April 1980 dan dimakamkan di kompleks Pesantren Mamba'ul Ma'arif Denanyar, Jombang.</p>
-<p><b>Warisan</b> beliau sangat besar, terutama dalam: fikih pesantren; pendidikan Islam; Pesantren Denanyar; pendidikan santri perempuan; kaderisasi ulama; Nahdlatul Ulama; serta pengembangan hukum Islam dalam persoalan sosial. Ia dikenang sebagai salah seorang ulama fikih terbesar NU pada abad ke-20, sekaligus pendidik yang berhasil mengembangkan pesantren dan melahirkan generasi ulama — putrinya, Nyai Sholichah, menikah dengan KH Abdul Wahid Hasyim, sehingga KH Bisri Syansuri merupakan kakek dari KH Abdurrahman Wahid (Gus Dur).</p>
-<p><b>Sumber Utama:</b> NU Online dan kajian biografi KH Bisri Syansuri; dokumentasi Pesantren Mamba'ul Ma'arif Denanyar; karya dan tradisi keilmuan KH Bisri Syansuri; riwayat keluarga dan santri Denanyar.</p>
+<p><b>Wafat:</b> KH Bisri Syansuri wafat pada Jumat, 25 April 1980, sebagai Rais Aam PBNU, pengasuh pesantren, guru, ayah, dan kakek, serta salah satu pendiri NU; jenazahnya dimakamkan di kompleks Pesantren Mamba'ul Ma'arif Denanyar, Jombang.</p>
+<p><b>Warisan</b> beliau terentang pada: Pesantren Mamba'ul Ma'arif Denanyar; perintisan pendidikan pesantren putri; tradisi pendalaman fikih dan bahtsul masail; kedudukannya sebagai salah satu pendiri dan Rais Aam ketiga PBNU; kaderisasi ulama; kedudukannya sebagai leluhur keluarga besar Gus Dur; serta keteladanan bersikap tegas dalam prinsip namun tetap santun dan menjaga persaudaraan di tengah perbedaan pendapat.</p>
+<p><b>Sumber Utama:</b> NU Online dan kajian biografi KH Bisri Syansuri; dokumentasi Pesantren Mamba'ul Ma'arif Denanyar; kesaksian dan tulisan keluarga (termasuk penuturan Gus Dur dan KH Yahya Cholil Staquf) serta penuturan KH Maimoen Zubair (2025) untuk kisah-kisah karomah; riwayat keluarga dan santri Denanyar; dokumentasi sejarah organisasi dan perjuangan KH Bisri Syansuri.</p>
 `;
 
 // ===== Keterangan lengkap KH Abdul Wahid Hasyim (biografi + riwayat karomah) =====
 const KH_WAHID_HASYIM_INFO_HTML = `
-<p><b>Profil:</b> KH Abdul Wahid Hasyim adalah salah seorang ulama, pendidik, dan tokoh kebangsaan Indonesia pada abad ke-20 — putra KH Hasyim Asy'ari dan salah satu tokoh penting yang menghubungkan tradisi pesantren dengan perkembangan pendidikan, organisasi Islam, dan kehidupan kenegaraan Indonesia.</p>
-<p><b>Kelahiran:</b> ia lahir di Tebuireng, Jombang, pada 1 Juni 1914, putra KH Hasyim Asy'ari dan Nyai Nafiqah binti Kiai Ilyas.</p>
-<h5>Masa Kanak-Kanak</h5>
-<p>Sejak kecil Abdul Wahid Hasyim menunjukkan kemampuan belajar yang sangat kuat — ia telah mampu membaca Al-Qur'an sejak usia muda dan disebut telah khatam Al-Qur'an pada usia tujuh tahun. Ia kemudian belajar di Madrasah Salafiyah Tebuireng. Menariknya, ia tidak menempuh pendidikan formal kolonial Belanda; sebagian besar pengetahuannya diperoleh melalui pendidikan pesantren, madrasah, membaca secara mandiri, dan bimbingan ayahnya. Pada usia sekitar 12 tahun ia telah membantu mengajar anak-anak seusianya di lingkungan Tebuireng.</p>
-<h5>Perjalanan Menuntut Ilmu</h5>
-<p>Ketika berusia sekitar 13 tahun, Wahid Hasyim mulai berkelana ke berbagai pesantren, antara lain Pesantren Siwalan Panji dan Pesantren Lirboyo, sebelum kembali ke Tebuireng. Pada usia 17 tahun ia sudah mulai mengajar di pesantren ayahnya. Ia juga memiliki kebiasaan membaca yang sangat luas — selain kitab berbahasa Arab, ia mempelajari bahasa dan tulisan Latin serta kemudian menguasai bahasa Belanda dan Inggris.</p>
-<h5>Belajar ke Makkah</h5>
-<p>Pada tahun 1932, Wahid Hasyim berangkat ke Makkah untuk menunaikan ibadah haji sekaligus memperdalam ilmu agama, dan berada di sana sekitar dua tahun. Setelah kembali ke tanah air, ia membawa gagasan-gagasan baru mengenai pendidikan dan pengembangan pesantren.</p>
-<h5>Pembaruan Pendidikan Pesantren dan Perpustakaan</h5>
-<p>Salah satu kontribusi penting Wahid Hasyim adalah pembaruan pendidikan di Tebuireng: ia mendirikan dan mengembangkan Madrasah Nizamiyah pada periode 1930-an, sebuah sistem yang memberikan pelajaran umum bersama pelajaran agama — berlandaskan pandangan bahwa santri perlu menguasai ilmu agama sekaligus memiliki pengetahuan yang memadai untuk menghadapi perkembangan zaman. Ia juga menjadi pelopor perpustakaan pesantren; koleksi perpustakaan Tebuireng pada masa itu mencapai sekitar seribu judul buku, termasuk buku agama, buku umum, dan majalah, yang dibuka aksesnya bagi para santri. Ia menginginkan santri mempunyai wawasan luas sehingga mampu memahami persoalan masyarakat modern tanpa kehilangan dasar keilmuan Islam.</p>
-<h5>Organisasi dan Pergerakan</h5>
-<p>Wahid Hasyim aktif dalam berbagai organisasi Islam. Pada usia muda ia sudah terlibat dalam Majelis Islam A'la Indonesia (MIAI), dan pada usia sekitar 26 tahun ia telah dipercaya menjadi ketua MIAI — menjadikannya salah satu tokoh penting dalam perkembangan organisasi Islam dan politik Indonesia.</p>
-<h5>Peran dalam Persiapan Kemerdekaan</h5>
-<p>Wahid Hasyim termasuk tokoh Islam yang terlibat dalam proses persiapan kemerdekaan Indonesia — ia menjadi anggota BPUPKI dan PPKI, serta termasuk anggota Panitia Sembilan yang terlibat dalam pembahasan dasar negara dan perumusan Piagam Jakarta. Perannya menunjukkan bahwa ulama pesantren tidak hanya berperan dalam kehidupan keagamaan, tetapi juga terlibat langsung dalam proses pembentukan negara Indonesia.</p>
-<h5>Menteri Agama</h5>
-<p>Setelah Indonesia merdeka, Wahid Hasyim dipercaya menjadi Menteri Agama Republik Indonesia, menjabat dalam tiga kabinet: Kabinet Republik Indonesia Serikat, Kabinet Mohammad Natsir, dan Kabinet Sukiman-Suwirjo. Dalam posisi tersebut, ia ikut membangun sistem kelembagaan pendidikan dan kehidupan keagamaan negara Indonesia.</p>
-<h5>Gagasan Pendidikan</h5>
-<p>Wahid Hasyim berpandangan bahwa pendidikan Islam harus mampu menjawab perkembangan zaman dan tidak menghendaki pesantren terisolasi dari perkembangan ilmu pengetahuan — prinsipnya dapat diringkas dalam gagasan mengambil sesuatu yang baik dari perkembangan zaman tanpa meninggalkan tradisi keislaman yang telah mapan. Karena itu ia mendorong pendidikan umum, penguasaan bahasa asing, budaya membaca, perpustakaan, pendidikan madrasah, dan penguatan ilmu agama.</p>
-<h5>Karya dan Tulisan</h5>
-<p>Wahid Hasyim tidak meninggalkan kitab keagamaan dalam jumlah besar seperti ayahnya, namun ia aktif menulis artikel dan gagasan mengenai pendidikan Islam, hubungan agama dan negara, kebangsaan, pendidikan pesantren, organisasi Islam, dan kehidupan sosial umat. Ia juga mendukung penerbitan media Islam dan menggunakan tulisan sebagai sarana pendidikan masyarakat.</p>
-<h5>Riwayat Karomah</h5>
-<p><i>Catatan:</i> riwayat karomah KH Abdul Wahid Hasyim tidak sebanyak kisah karomah KH Hasyim Asy'ari atau KH Abdul Wahab Chasbullah, namun terdapat beberapa kisah yang berkembang dalam tradisi keluarga dan masyarakat NU — kisah-kisah berikut sebaiknya dipahami sebagai riwayat spiritual, bukan bukti sejarah mengenai kejadian supranatural.</p>
+<p><b>Nama lengkap:</b> KH. Abdul Wahid Hasyim &nbsp;|&nbsp; <b>Lahir:</b> 1 Juni 1914 M / 5 Rabiul Awal 1333 H, Tebuireng, Jombang, Jawa Timur &nbsp;|&nbsp; <b>Wafat:</b> 19 April 1953 M, Cimahi, Jawa Barat</p>
+<p><b>Ayah:</b> KH. Muhammad Hasyim Asy'ari &nbsp;|&nbsp; <b>Ibu:</b> Nyai Nafiqah binti KH Ilyas, Pengasuh Pesantren Sewulan, Madiun</p>
+<p><b>Istri:</b> Nyai Hj. Sholehah binti KH Bisri Syansuri &nbsp;|&nbsp; <b>Putra-putri:</b> Abdurrahman Wahid, Aisyah Hamid Baidlowi, Salahuddin Wahid, Umar Wahid, Lily Chodijah Wahid, dan Hasyim Wahid</p>
+<p><b>Pesantren:</b> Tebuireng, Jombang &nbsp;|&nbsp; <b>Jabatan penting:</b> Ketua MIAI, anggota BPUPKI, anggota PPKI, Menteri Agama RI, Ketua PBNU, Ketua Umum Partai NU &nbsp;|&nbsp; <b>Gelar:</b> Pahlawan Nasional Indonesia</p>
+
+<h5>Kelahiran dan Keluarga Ulama</h5>
+<p>KH Abdul Wahid Hasyim lahir di lingkungan Pesantren Tebuireng, Jombang, pada 1 Juni 1914, putra kelima sekaligus anak laki-laki pertama KH Muhammad Hasyim Asy'ari dengan Nyai Nafiqah binti KH Ilyas dari Pesantren Sewulan, Madiun. Sejak lahir ia tumbuh bukan hanya di tengah keluarga ulama, tetapi juga di tengah kehidupan pesantren yang penuh kitab, santri, pengajian, ibadah, dan perjuangan. Dalam beberapa riwayat genealogis pesantren, jalur keluarga KH Hasyim Asy'ari disambungkan pada jaringan bangsawan dan ulama Jawa hingga Joko Tingkir, sebagaimana lazim dalam tradisi genealogis keluarga pesantren Jawa — namun yang paling menentukan kemuliaan Wahid Hasyim kelak dibuktikan lewat ilmu, akhlak, tirakat, dan pengabdiannya sendiri.</p>
+
+<h5>Masa Kecil: Anak yang Cepat Menangkap Ilmu</h5>
+<p>Sejak kecil Abdul Wahid mendapat pendidikan langsung dari ayahnya, belajar membaca Al-Qur'an sejak usia sangat muda dan disebut telah khatam pada usia sekitar tujuh tahun. Berbeda dari kebanyakan anak pesantren pada masanya, ia juga tertarik pada sastra, sejarah, bahasa, dan pengetahuan umum, bahkan mempelajari syair-syair Arab secara mandiri hingga hafal dan memahami maknanya — kemampuan yang kelak menjadi salah satu kekuatan intelektualnya dalam berdakwah dan menulis. Setelah menyelesaikan pendidikan dasar di Madrasah Salafiyah Tebuireng pada usia sekitar dua belas tahun, ia sudah mulai membantu mengajar anak-anak dan adik-adiknya.</p>
+
+<h5>Santri Kelana</h5>
+<p>Mengikuti tradisi "santri kelana" pendidikan ulama Jawa, pada usia sekitar tiga belas tahun Wahid berangkat ke Pondok Pesantren Siwalan Panji, Sidoarjo, lalu melanjutkan ke Pesantren Lirboyo, Kediri, sebelum kembali ke Tebuireng dalam rentang usia sekitar 13–15 tahun. Perjalanan ini membentuknya mengenal berbagai metode belajar, watak kiai dan santri, serta persoalan masyarakat yang berbeda-beda.</p>
+
+<h5>Tirakat dan Kegemaran Membaca</h5>
+<p>Salah satu ciri kuat Wahid Hasyim adalah kegemarannya membaca — ia mampu menghabiskan waktu berjam-jam setiap hari, tidak hanya pada kitab-kitab Arab, tetapi juga bahasa asing, majalah, dan surat kabar, sehingga memiliki pandangan yang jauh lebih luas dibanding banyak ulama pesantren seusianya mengenai kolonialisme, teknologi, nasionalisme, pendidikan modern, dan politik internasional. Baginya, seorang santri tidak cukup hanya mampu membaca kitab kuning, tetapi juga harus memahami zamannya.</p>
+
+<h5>Belajar di Makkah</h5>
+<p>Pada 1932, Wahid Hasyim pergi ke Makkah untuk berhaji sekaligus memperdalam ilmu agama, tinggal sekitar dua tahun di Tanah Suci memperdalam tafsir, hadis, fikih, dan ilmu-ilmu keislaman lainnya, sekaligus menyaksikan langsung pertemuan berbagai bangsa dan tradisi keilmuan Islam. Sepulang dari Makkah ia membawa semangat menggabungkan kedalaman ilmu agama dengan keluasan wawasan dunia.</p>
+
+<h5>Pembaruan Pendidikan Tebuireng: Madrasah Nizhamiyah &amp; Perpustakaan</h5>
+<p>Sekitar 1934, sekembalinya ke Jombang, Wahid Hasyim mendorong pembaruan pendidikan di Tebuireng — tanpa meninggalkan sistem sorogan dan bandongan, ia mengusulkan sistem kelas, pembagian jenjang, dan masuknya pelajaran umum, dengan pandangan bahwa tidak semua santri akan menjadi kiai, melainkan ada pula yang menjadi guru, dokter, pegawai, pedagang, ahli hukum, wartawan, dan berbagai profesi lain yang memerlukan bekal memadai. Gagasan ini terwujud dalam Madrasah Nizhamiyah, yang pada awalnya menimbulkan perdebatan di kalangan pesantren namun kemudian menjadi salah satu fondasi penting modernisasi pendidikan pesantren Indonesia. Ia juga menjadi pelopor perpustakaan pesantren, mengumpulkan sekitar seribu judul buku dan majalah keagamaan maupun umum di Tebuireng, didukung penguasaannya atas huruf Latin, bahasa Inggris, dan bahasa Belanda selain bahasa Arab.</p>
+
+<h5>Aktif di Nahdlatul Ulama dan Ketua MIAI</h5>
+<p>Wahid Hasyim mulai aktif di NU sejak usia muda — sekretaris NU Ranting Cukir, lalu Ketua Cabang NU Kabupaten Jombang, kemudian pada 1940 masuk kepengurusan PBNU bagian Ma'arif, mereorganisasi madrasah-madrasah NU, dan mendorong tradisi tulis-menulis melalui majalah Suluh Nahdlatul Ulama yang diasuh di lingkungan Tebuireng — baginya tulisan adalah salah satu senjata perjuangan umat. Pada 1937, ketika usianya baru sekitar 23 tahun, ia dipercaya menjadi Ketua Majelis Islam A'la Indonesia (MIAI), federasi organisasi Islam yang menjadi wadah penting perjuangan umat pada masa kolonial — kepercayaan besar yang menunjukkan kapasitasnya menjembatani tradisi pesantren, organisasi Islam, kaum intelektual, dan tokoh kebangsaan dalam satu ruang perjuangan.</p>
+
+<h5>Masa Pendudukan Jepang, Hizbullah, dan Persiapan Kemerdekaan</h5>
+<p>Pada masa pendudukan Jepang, Wahid Hasyim dipercaya memimpin Shumubu, Jawatan Urusan Agama di Jakarta — posisi strategis yang ia gunakan untuk memperkuat posisi umat Islam dan mempersiapkan kader bangsa. Ia juga terlibat dalam pengorganisasian dan pembinaan Hizbullah, kekuatan penting perjuangan bersenjata umat Islam pada masa itu, dengan keyakinan bahwa mempertahankan tanah air adalah bagian dari tanggung jawab keagamaan. Menjelang kemerdekaan ia menjadi salah satu anggota termuda BPUPKI, lalu anggota PPKI, dan turut serta dalam pembicaraan penting mengenai dasar negara — termasuk sikapnya menerima perubahan rumusan dalam Pembukaan UUD 1945 agar negara dapat berdiri di atas kesepakatan yang lebih luas, mencerminkan kemampuannya memadukan kepentingan umat Islam dengan kepentingan bangsa secara keseluruhan.</p>
+
+<h5>Menteri Agama Republik Indonesia</h5>
+<p>Setelah kemerdekaan, Wahid Hasyim menjadi Menteri Negara dan kemudian Menteri Agama Republik Indonesia, menjabat dalam tiga kabinet berturut-turut — membangun fondasi administrasi kehidupan keagamaan negara yang baru berdiri, memperhatikan pendidikan agama, madrasah, hubungan pemerintah dengan umat Islam, serta penguatan lembaga-lembaga keagamaan, meski usianya masih sangat muda ketika menduduki jabatan tersebut.</p>
+
+<h5>Gagasan Pendidikan dan Kebangsaan</h5>
+<p>Pemikiran Wahid Hasyim tentang pendidikan dapat dirangkum dalam satu gagasan besar: pesantren harus tetap menjadi pesantren, tetapi santrinya harus mampu hidup di zaman modern — memadukan Al-Qur'an dan ilmu agama, kitab klasik dan buku modern, bahasa Arab dan bahasa asing, tradisi pesantren dan pendidikan berjenjang, akhlak dan kecerdasan, ilmu dan pengabdian kepada masyarakat. Dalam soal kebangsaan, ia tidak melihat nasionalisme bertentangan dengan Islam — menjaga tanah air dan mempertahankan kemerdekaan baginya adalah bagian dari tanggung jawab seorang Muslim, sehingga ia mampu bekerja sama dengan tokoh dari berbagai latar belakang, termasuk KH Wahab Chasbullah dan KH Bisri Syansuri dari generasi ulama senior NU.</p>
+
+<h5>Ketua PBNU, Masyumi, dan Ketua Umum Partai NU</h5>
+<p>Pada 1946, Wahid Hasyim terpilih menjadi Ketua Tanfidziyah PBNU di tengah masa revolusi kemerdekaan, membagi waktunya antara pesantren, organisasi, pemerintahan, dan perjuangan bangsa. Pada November 1947, ia bersama sejumlah tokoh Islam ikut mendorong pembentukan Masyumi, dengan KH Hasyim Asy'ari sebagai Ketua Umum, dan berinteraksi erat dengan tokoh seperti Mohammad Natsir, Agus Salim, Mohammad Roem, dan Prawoto Mangkusasmito. Ketika NU memutuskan keluar dari Masyumi pada awal 1950-an dan berdiri sebagai partai politik sendiri, Wahid Hasyim — meski secara pribadi semula tidak menghendaki keluarnya NU — dipercaya menjadi Ketua Umum Partai NU dalam Kongres NU ke-19 di Palembang (1952) dan menjalankan amanah tersebut dengan penuh tanggung jawab, menunjukkan bahwa baginya keputusan jam'iyyah harus dihormati meski tidak selalu sejalan dengan pendapat pribadinya.</p>
+
+<h5>Pernikahan dan Keluarga</h5>
+<p>Wahid Hasyim menikah dengan Nyai Hj. Sholehah, putri KH Bisri Syansuri dari Denanyar, mempertemukan dua keluarga besar pesantren Jombang. Dari pernikahan ini lahir enam anak: KH Abdurrahman Wahid (Gus Dur), Aisyah Hamid Baidlowi, KH Salahuddin Wahid (Gus Sholah), Umar Wahid, Lily Chodijah Wahid, dan Hasyim Wahid — putra sulungnya kelak menjadi Ketua Umum PBNU dan Presiden Republik Indonesia ke-4, sementara Salahuddin Wahid menjadi Pengasuh Pesantren Tebuireng, meneruskan jejaknya lewat generasi keluarga.</p>
+
+<h5>Riwayat Karomah dan Keistimewaan</h5>
+<p><i>Catatan:</i> kisah-kisah berikut berkembang dalam tradisi manaqib keluarga Tebuireng dan lingkungan NU, dan sebaiknya dipahami sebagai riwayat spiritual, bukan bukti sejarah mengenai kejadian supranatural.</p>
 <ol>
-<li><b>Kisah saat kelahiran</b> — salah satu riwayat yang terkenal berkaitan dengan kelahiran Wahid Hasyim: ketika Nyai Nafiqah melahirkannya, suasana saat itu disebutkan sedang hujan sangat lebat, dan sang bayi sempat ditempatkan di beranda rumah karena pemilik rumah tidak mengizinkan bayi berada di dalam rumah. Dalam suasana tersebut Nyai Nafiqah disebut melafalkan kalimat tahlil dan asma Allah Yang Mahahidup lagi Mahaberdiri Sendiri. Riwayat NU menyebut bahwa masyarakat kemudian memandang kejadian tersebut sebagai salah satu pertanda bahwa Wahid Hasyim kelak akan menjadi tokoh besar — kisah ini lebih tepat disebut riwayat spiritual tentang kelahiran, bukan bukti sejarah mengenai suatu kejadian supranatural.</li>
-<li><b>Karomah berupa kecerdasan dan daya belajar</b> — sejak kecil ia menunjukkan kemampuan belajar yang luar biasa: khatam Al-Qur'an pada usia tujuh tahun, menguasai bahasa Arab, kemudian mempelajari bahasa Belanda dan Inggris secara mandiri, serta membaca banyak literatur umum. Dalam tradisi pesantren, kemampuan seperti ini sering disebut sebagai karomah ilmu, yaitu keberkahan dan keistimewaan yang tampak melalui kemampuan seseorang memperoleh ilmu dan memberikan manfaat kepada masyarakat.</li>
-<li><b>Karomah dalam keluasan membaca</b> — Wahid Hasyim dikenal sangat gemar membaca dan mengembangkan perpustakaan di Tebuireng dengan koleksi yang pada masa itu mencapai sekitar seribu judul. Dalam tradisi pesantren, kemampuan seorang kiai muda membuka wawasan baru tanpa meninggalkan tradisi keislaman dipandang sebagai bentuk keberkahan ilmu, sehingga warisan perpustakaan dan tradisi membaca yang ia bangun dapat disebut sebagai salah satu bentuk karomah keilmuan yang paling nyata.</li>
-<li><b>Karomah berupa usia muda tetapi pengaruh besar</b> — Wahid Hasyim wafat dalam usia yang relatif muda, tetapi sebelum wafat ia telah mencapai posisi penting dalam kehidupan agama dan negara: ketua organisasi Islam, anggota BPUPKI dan PPKI, tokoh perumus dasar negara, serta Menteri Agama. Dalam tradisi masyarakat, kemampuan mencapai tanggung jawab besar pada usia relatif muda sering dikenang sebagai tanda keberkahan umur dan ilmu — sebuah penafsiran spiritual terhadap perjalanan hidupnya, bukan klaim mengenai kejadian supranatural.</li>
+<li><b>Isyarat Syaikhona Kholil sejak bayi.</b> Ketika Wahid masih bayi, Nyai Nafiqah membawanya sowan kepada Syaikhona Kholil Bangkalan dalam keadaan hujan deras, namun keduanya diminta tetap menunggu di luar rumah dalam guyuran hujan — sebuah perlakuan yang dalam tradisi manaqib Syaikhona Kholil kemudian dipahami sebagai isyarat mengenai akhir kehidupannya. Bertahun-tahun kemudian, ketika Wahid mengalami kecelakaan di daerah Cimahi, hujan deras juga turun — kesamaan peristiwa ini dipandang sebagai terbukanya isyarat yang dahulu diberikan Syaikhona Kholil.</li>
+<li><b>Kecerdasan yang luar biasa.</b> Sejak muda ia mampu memahami kitab Arab, menghafal syair, membaca bahasa asing, dan mengikuti perkembangan politik internasional sekaligus — dalam tradisi pesantren, karunia berpikir cepat dan luas semacam ini dipandang sebagai salah satu bentuk karomah ilmu, memungkinkannya menjadi kiai pesantren tanpa menjadi sempit dalam berpikir.</li>
+<li><b>Tirakat puasa bertahun-tahun.</b> Menurut riwayat yang berkembang, sekitar tujuh tahun menjelang wafatnya ia menjalankan puasa secara terus-menerus sebagai bentuk riyadhah — membersihkan hati dan mendekatkan diri kepada Allah di tengah kesibukannya sebagai ulama, tokoh NU, politisi, dan pejabat negara, menunjukkan bahwa kesibukan duniawi tidak menghilangkan kehidupan batinnya.</li>
+<li><b>Membaca zaman lewat pembaruan pendidikan.</b> Ketika banyak kalangan pesantren masih memandang pendidikan umum sebagai ancaman, Wahid telah melihat bahwa santri perlu menguasai ilmu agama sekaligus ilmu umum — mendirikan perpustakaan, mendorong pelajaran umum dan sistem kelas, serta membuka wawasan santri terhadap dunia luar, gagasan yang pada masanya dianggap berani namun kemudian menjadi lazim dalam pendidikan pesantren Indonesia; dalam tradisi Tebuireng, kemampuan membaca masa depan ini dikenang sebagai salah satu keistimewaan terbesarnya.</li>
+<li><b>Menjembatani berbagai kalangan tanpa memutus mata rantai guru.</b> Ia mampu duduk bersama ulama tradisional, intelektual modern, tokoh nasionalis, dan aktivis Islam — bergaul dengan KH Wahab Chasbullah, KH Bisri Syansuri, Mohammad Natsir, Agus Salim, dan Mohammad Roem — namun tetap menempatkan KH Hasyim Asy'ari sebagai ayah sekaligus guru, membangun pembaruan dari dalam tradisi Tebuireng tanpa menghancurkan tradisi lama, dipandang sebagai adab seorang anak kiai yang mengembangkan warisan guru tanpa memutus mata rantainya.</li>
 </ol>
-<h5>Wafat &amp; Warisan</h5>
-<p><b>Wafat:</b> KH Abdul Wahid Hasyim wafat pada 19 April 1953 akibat kecelakaan kendaraan dalam perjalanan dari Jakarta menuju Bandung, dan dimakamkan di kompleks Pesantren Tebuireng, Jombang — wafatnya meninggalkan kehilangan besar bagi dunia pesantren dan kehidupan bangsa Indonesia.</p>
-<p><b>Warisan</b> beliau dapat dilihat lewat: pembaruan pendidikan pesantren; Madrasah Nizamiyah; Perpustakaan Pesantren Tebuireng; pendidikan umum dalam lingkungan pesantren; perjuangan kemerdekaan; pembentukan kelembagaan agama negara; pengembangan hubungan Islam dan kebangsaan; serta kaderisasi generasi ulama dan intelektual. Ia juga merupakan ayah dari KH Abdurrahman Wahid (Gus Dur), yang kemudian menjadi Presiden Republik Indonesia keempat — menjadikan KH Abdul Wahid Hasyim salah satu mata rantai penting antara generasi pendiri pesantren dan NU dengan generasi Islam Indonesia modern.</p>
-<p><b>Sumber Utama:</b> NU Online dan dokumentasi sejarah NU; Kementerian Agama Republik Indonesia; dokumentasi Pesantren Tebuireng; riwayat keluarga dan tulisan-tulisan KH Abdul Wahid Hasyim; tradisi keluarga dan masyarakat untuk kisah spiritual/karomah.</p>
+
+<h5>Wafat dalam Perjalanan Dakwah dan Perjuangan</h5>
+<p><b>Wafat:</b> Pada April 1953, dalam perjalanan menuju wilayah Priangan untuk menghadiri kegiatan Partai NU bersama putranya, Abdurrahman Wahid, kendaraan yang mereka tumpangi mengalami kecelakaan di daerah Cimindi; Wahid Hasyim mengalami luka berat dan wafat pada 19 April 1953 setelah dibawa ke rumah sakit di Bandung. Jenazahnya dibawa pulang dan dimakamkan di kompleks Pesantren Tebuireng, Jombang, berdekatan dengan makam ayahnya, KH Hasyim Asy'ari.</p>
+
+<h5>Warisan</h5>
+<p>KH Abdul Wahid Hasyim tidak meninggalkan karya kitab sebanyak ayahnya karena kesibukan perjuangan, organisasi, pemerintahan, dan usianya yang singkat, namun meninggalkan warisan pemikiran dan tradisi intelektual yang luas: pembaruan pendidikan pesantren lewat Madrasah Nizhamiyah, Perpustakaan Tebuireng, pendidikan umum dalam lingkungan pesantren, perjuangan kemerdekaan, pembentukan kelembagaan agama negara, pengembangan hubungan Islam dan kebangsaan, serta kaderisasi generasi ulama dan intelektual. Ia ditetapkan sebagai Pahlawan Nasional Indonesia dan namanya diabadikan sebagai nama jalan di berbagai daerah, termasuk Jalan KH Wahid Hasyim di Jakarta — menjadikannya salah satu mata rantai penting antara generasi pendiri pesantren dan NU dengan generasi Islam Indonesia modern, sekaligus ayah dari KH Abdurrahman Wahid (Gus Dur), Presiden Republik Indonesia ke-4.</p>
+
+<p><b>Sumber Utama:</b> NU Online dan dokumentasi sejarah NU; Kementerian Agama Republik Indonesia; dokumentasi Pesantren Tebuireng; riwayat keluarga dan tulisan-tulisan KH Abdul Wahid Hasyim; tradisi manaqib keluarga Tebuireng dan masyarakat NU untuk kisah-kisah spiritual/karomah.</p>
 `;
 
 // ===== Keterangan lengkap KH Abdul Hamid Pasuruan (biografi + riwayat karomah) =====
@@ -2911,10 +3058,25 @@ const TOKOH_ISLAM_NUSANTARA = {
     ]
 };
 
-const tokohIslamChildren = [
-    TOKOH_ISLAM_NUSANTARA
-    // ===== Tambahkan kategori lain di sini nanti sbg SAUDARA "TOKOH ISLAM
-    // NUSANTARA", mis.: { name: "TOKOH ISLAM INTERNASIONAL", type: "gen7", children: [...] } =====
+// ===== Tombol root sekarang berlabel langsung "TOKOH ISLAM NUSANTARA", jadi
+// saat diketuk/di-klik +, yang tampil LANGSUNG pembagian hierarkinya (kategori/
+// periode di bawah), TANPA melalui kotak perantara "TOKOH ISLAM NUSANTARA"
+// lagi (menghindari 1 klik ekstra yang mubazir). Kalau nanti mau menambah
+// kategori besar lain sbg SAUDARA (mis. "TOKOH ISLAM INTERNASIONAL"), tambahkan
+// sbg elemen baru di array ini, sejajar dengan isi TOKOH_ISLAM_NUSANTARA.children. =====
+const tokohIslamChildren = TOKOH_ISLAM_NUSANTARA.children;
+
+// =====================================================================
+// TOKOH ISLAM DUNIA — kotak SAUDARA dari "TOKOH ISLAM NUSANTARA", tampil
+// TEPAT DI BAWAHNYA dengan tombol +/- sendiri (lihat tokohDuniaRootBox/
+// tokohDuniaBadge/tokohDuniaAnchor pada renderChain(), dan buildTokohDuniaTree/
+// toggleTokohDuniaTree di bawah). Isi datanya masih PLACEHOLDER — tinggal
+// diganti/ditambah kategori & tokoh sungguhan kelak, dengan struktur yang
+// sama seperti tokohIslamChildren (makePeriodeNode / node biasa bertype
+// "tokohgold" dgn field "children"). =====
+const tokohDuniaChildren = [
+    { name: "SEGERA DITAMBAHKAN", type: "tokohgold",
+        infoNote: "<p>Kategori <b>Tokoh Islam Dunia</b> (tokoh-tokoh Islam dari luar Nusantara) akan segera dilengkapi di sini.</p>" }
 ];
 // FIXED BEHAVIOR: jarak antar shape dibuat FIX secara vertikal, dan LEBAR secara horizontal.
 // Saat cabang dibuka ke kanan, shape di atas/bawah TIDAK digeser — hanya jarak kanan-kiri
@@ -3548,7 +3710,8 @@ let descOpen = false;
 // dipakai untuk KLIK pengguna: buka/tutup lalu pas-kan ulang tampilan dgn animasi halus
 function userToggleDesc() {
     const wasOpen = descOpen;
-    if (!wasOpen && typeof closeTokohTreeIfOpen === 'function') closeTokohTreeIfOpen(true); // AUTO-COLLAPSE: tutup cabang Tokoh Islam dulu, cegah tumpang tindih
+    if (!wasOpen && typeof closeTokohTreeIfOpen === 'function') closeTokohTreeIfOpen(true); // AUTO-COLLAPSE: tutup cabang Tokoh Islam Nusantara dulu, cegah tumpang tindih
+    if (!wasOpen && typeof closeTokohDuniaTreeIfOpen === 'function') closeTokohDuniaTreeIfOpen(true); // AUTO-COLLAPSE: tutup cabang Tokoh Islam Dunia dulu, cegah tumpang tindih
     toggleDescTree();
     setTimeout(() => centerChart(true), 450);
     if (!wasOpen && descOpen) showPanHint();   // hint geser 4 arah muncul setelah diketuk
@@ -3832,8 +3995,59 @@ function closeTokohTreeIfOpen(silent) {
 // dipakai utk KLIK pengguna: buka/tutup lalu pas-kan ulang tampilan dgn animasi halus
 function userToggleTokoh() {
     const wasOpen = tokohOpen;
-    if (!wasOpen) closeDescTreeIfOpen(true); // AUTO-COLLAPSE: tutup cabang Jumadil Qubro dulu, cegah tumpang tindih
+    if (!wasOpen) {
+        closeDescTreeIfOpen(true); // AUTO-COLLAPSE: tutup cabang Jumadil Qubro dulu, cegah tumpang tindih
+        if (typeof closeTokohDuniaTreeIfOpen === 'function') closeTokohDuniaTreeIfOpen(true);
+    }
     toggleTokohTree();
+    setTimeout(() => centerChart(true), 450);
+}
+
+// =====================================================================
+// CABANG "TOKOH ISLAM DUNIA" — SAUDARA dari cabang "TOKOH ISLAM NUSANTARA"
+// (tokohIslamChildren/toggleTokohTree) di atas, dgn tombol +/- & anchor SENDIRI.
+// =====================================================================
+let tokohDuniaBuilt = false;
+let tokohDuniaChildrenState = null;
+let tokohDuniaOpen = false;
+function buildTokohDuniaTree() {
+    const anchor = document.getElementById('tokoh-dunia-anchor');
+    if (!anchor || tokohDuniaBuilt) return;
+    tokohDuniaBuilt = true;
+    tokohDuniaChildrenState = renderSiblingGroup(tokohDuniaChildren, anchor).state;
+}
+function toggleTokohDuniaTree(silent) {
+    buildTokohDuniaTree();
+    const anchor = document.getElementById('tokoh-dunia-anchor');
+    const badge = document.getElementById('tokoh-dunia-badge');
+    tokohDuniaOpen = !tokohDuniaOpen;
+    if (anchor) anchor.classList.toggle('open', tokohDuniaOpen);
+    if (!tokohDuniaOpen && tokohDuniaChildrenState) {
+        tokohDuniaChildrenState.forEach(c => c.close(true));
+    }
+    if (badge) {
+        badge.innerHTML = tokohDuniaOpen ? minusIconSVG() : plusIconSVG();
+        badge.title = tokohDuniaOpen ? 'Tutup Tokoh Islam Dunia' : 'Tampilkan Tokoh Islam Dunia';
+    }
+    if (!silent) {
+        showToast(tokohDuniaOpen
+            ? 'Menampilkan Tokoh Islam Dunia.'
+            : 'Tokoh Islam Dunia ditutup.');
+    }
+}
+// tutup cabang TOKOH ISLAM DUNIA secara diam-diam kalau sedang terbuka,
+// dipanggil sebelum cabang lain (keturunan darah / Tokoh Islam Nusantara) dibuka.
+function closeTokohDuniaTreeIfOpen(silent) {
+    if (tokohDuniaOpen) toggleTokohDuniaTree(silent);
+}
+// dipakai utk KLIK pengguna: buka/tutup lalu pas-kan ulang tampilan dgn animasi halus
+function userToggleTokohDunia() {
+    const wasOpen = tokohDuniaOpen;
+    if (!wasOpen) {
+        closeDescTreeIfOpen(true); // AUTO-COLLAPSE: tutup cabang Jumadil Qubro dulu, cegah tumpang tindih
+        closeTokohTreeIfOpen(true); // AUTO-COLLAPSE: tutup cabang Tokoh Islam Nusantara dulu, cegah tumpang tindih
+    }
+    toggleTokohDuniaTree();
     setTimeout(() => centerChart(true), 450);
 }
 
