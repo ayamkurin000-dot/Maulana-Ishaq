@@ -699,6 +699,16 @@
         text-overflow: ellipsis;
     }
     .search-suggest-item:last-child { border-bottom: none; }
+    /* penanda asal saran (hanya muncul bila hasil berasal dari >1 cabang) */
+    .search-suggest-item.has-tag { display: flex; align-items: center; gap: 8px; }
+    .search-suggest-item .ss-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    .search-suggest-item .ss-tag {
+        flex: 0 0 auto; font-size: 9px; font-weight: 800; letter-spacing: 0.3px;
+        padding: 2px 7px; border-radius: 10px; text-transform: none;
+        background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;
+    }
+    .search-suggest-item .ss-tag.tokoh { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+    .search-suggest-item .ss-tag.wali9 { background: #ede9fe; color: #5b21b6; border-color: #ddd6fe; }
     .search-suggest-item:hover { background: #f8fafc; color: #0ea5e9; }
     /* ===== Reaksi "ditemukan & dipilih" - PERSIS model Bani Isbadar:
        shape berkedip cahaya kuning-amber (glow) + garis tepi amber tebal,
@@ -6899,9 +6909,19 @@ function updateDropdown(query, filtered) {
         return;
     }
     const limited = filtered.slice(0, 10);
-    dd.innerHTML = limited.map(item =>
-        `<div class="search-suggest-item" onclick="selectSuggestion('${item.name.replace(/'/g, "\\'")}')">${item.name}</div>`
-    ).join('');
+    // ===== penanda asal saran: hanya ditampilkan bila daftar saran berasal dari
+    // lebih dari satu cabang (mis. "GUS DUR" ada di cabang Tokoh Islam DAN di
+    // daftar keturunan), supaya pengguna tahu mana yang mana. =====
+    const srcOf = it => it.tokohOnly ? 'tokoh' : (it.wali9Only ? 'wali9' : 'utama');
+    const multiSource = new Set(limited.map(srcOf)).size > 1;
+    const TAG = { utama: 'Silsilah', tokoh: 'Tokoh Islam', wali9: 'Wali-9' };
+    dd.innerHTML = limited.map(item => {
+        const src = srcOf(item);
+        const safe = item.name.replace(/'/g, "\\'");
+        return multiSource
+            ? `<div class="search-suggest-item has-tag" data-name="${item.name.replace(/"/g, '&quot;')}" onclick="selectSuggestion('${safe}')"><span class="ss-name">${item.name}</span><span class="ss-tag ${src}">${TAG[src]}</span></div>`
+            : `<div class="search-suggest-item" data-name="${item.name.replace(/"/g, '&quot;')}" onclick="selectSuggestion('${safe}')">${item.name}</div>`;
+    }).join('');
     dd.classList.add('show');
 }
 
@@ -6949,9 +6969,18 @@ function findDescPath(nodes, targetUpper, path) {
     return null;
 }
 
-function revealName(targetUpper) {
+function revealName(targetUpper, onlyTokoh) {
     let path = null;
-    if (typeof descChildren !== 'undefined') {
+    // ===== FIX: nama yang berasal dari cabang TOKOH ISLAM (onlyTokoh) harus
+    // ditelusuri di pohon TOKOH dulu. Sebelumnya pohon keturunan darah selalu
+    // dicek lebih dulu dan pencocokan items/pasangan memakai includes(), sehingga
+    // "GUS DUR" ikut cocok dgn item "KH. ABDURRAHMAN WAHID / GUS DUR (1940-2009)"
+    // di daftar Abdul Fatah -> path yang dibuka salah & Periode Abad XX tidak
+    // pernah terbuka (kotak GUS DUR tidak muncul, layar tidak bergeser). =====
+    if (onlyTokoh && typeof tokohIslamChildren !== 'undefined') {
+        path = findDescPath(tokohIslamChildren, targetUpper, []);
+    }
+    if (!path && typeof descChildren !== 'undefined') {
         path = findDescPath(descChildren, targetUpper, []);
     }
     // ===== kalau tidak ketemu di pohon keturunan darah, coba cari di pohon
@@ -7048,7 +7077,7 @@ function findAndHighlightShape(targetUpper, target, attemptsLeft) {
     document.querySelectorAll('.node-shape').forEach(shape => {
         const tspans = shape.querySelectorAll('tspan');
         const text = Array.from(tspans).map(t => t.textContent).join(' ').toUpperCase();
-        if (text.includes(targetUpper)) matches.push(shape);
+        if (text.includes(targetUpper)) matches.push({ shape, exact: text.trim() === targetUpper });
     });
     if (matches.length === 0) {
         if (attemptsLeft > 0) {
@@ -7059,7 +7088,12 @@ function findAndHighlightShape(targetUpper, target, attemptsLeft) {
         showToast(`TIDAK DITEMUKAN "${target}"`);
         return;
     }
-    const primary = matches[0];
+    // ===== utamakan shape yang teksnya PERSIS sama & sedang tampil (bukan
+    // tersembunyi di cabang yang tertutup), baru sisanya yang mengandung nama. =====
+    function isShown(m) { const r = m.shape.getBoundingClientRect(); return r.width > 0 && r.height > 0; }
+    const primary = (matches.find(m => m.exact && isShown(m))
+        || matches.find(m => isShown(m))
+        || matches[0]).shape;
     centerOnElement(primary, 700);
     setTimeout(() => highlightFoundElements([primary]), 60);
     showToast(`DITEMUKAN: ${target.toUpperCase()}`);
@@ -7116,7 +7150,7 @@ function selectFoundName(name) {
 // telusuri path & cari shape-nya. =====
 function selectFoundNameTokoh(targetUpper, target) {
     function revealAndFind() {
-        const revealed = revealName(targetUpper);
+        const revealed = revealName(targetUpper, true);
         if (revealed) {
             setTimeout(() => findAndHighlightShape(targetUpper, target), 350);
         } else {
@@ -7173,7 +7207,7 @@ document.getElementById('search-input').addEventListener('keydown', function(e) 
     const dd = document.getElementById('search-dropdown');
     const first = dd ? dd.querySelector('.search-suggest-item') : null;
     if (first) {
-        selectSuggestion(first.textContent);
+        selectSuggestion(first.dataset.name || first.textContent);
     } else {
         selectFoundName(this.value);
     }
