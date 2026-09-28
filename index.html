@@ -5874,8 +5874,20 @@ const tokohIslamChildren = TOKOH_ISLAM_NUSANTARA.children;
 // sama seperti tokohIslamChildren (makePeriodeNode / node biasa bertype
 // "tokohgold" dgn field "children"). =====
 const tokohDuniaChildren = [
-    { name: "SEGERA DITAMBAHKAN", type: "tokohgold",
-        infoNote: "<p>Kategori <b>Tokoh Islam Dunia</b> (tokoh-tokoh Islam dari luar Nusantara) akan segera dilengkapi di sini.</p>" }
+    makePeriodeNode(
+        "EMPAT IMAM MAZHAB",
+        ["EMPAT IMAM", "MAZHAB"],
+        [
+        { name: "IMAM ABU HANIFAH رحمه الله — MAZHAB HANAFI", type: "tokohgold",
+            infoNote: "<p><b>Nama lengkap:</b> Nu'man bin Tsabit at-Taimi al-Kufi &nbsp;|&nbsp; <b>Gelar:</b> Al-Imam al-A'zham &nbsp;|&nbsp; <b>Mazhab:</b> Hanafi &nbsp;|&nbsp; <b>Lahir:</b> ± 80 H / 699 M, Kufah, Irak &nbsp;|&nbsp; <b>Wafat:</b> 150 H / 767 M, Baghdad &nbsp;|&nbsp; <b>Bidang:</b> fikih, ushul fikih, kalam</p><p><b>Profil:</b> Imam Abu Hanifah adalah pendiri mazhab Hanafi, mazhab fikih Sunni tertua di antara empat mazhab besar. Ia tumbuh di Kufah, pusat keilmuan Irak, dan dikenal sebagai ahli fikih yang sangat kuat dalam penalaran hukum (ra'yu) serta penggunaan qiyas dan istihsan, tanpa meninggalkan Al-Qur'an dan hadis sebagai rujukan utama.</p><p><b>Guru dan murid:</b> Guru utamanya di bidang fikih adalah Hammad bin Abi Sulaiman. Murid-murid terkemukanya, terutama Abu Yusuf dan Muhammad bin al-Hasan asy-Syaibani, menghimpun dan menyebarkan pendapat-pendapatnya sehingga mazhab Hanafi berkembang luas.</p><p><b>Keteguhan sikap:</b> Menurut riwayat yang masyhur, ia menolak jabatan hakim yang ditawarkan penguasa Abbasi dan mengalami tekanan karenanya, hingga wafat di Baghdad.</p><p><b>Pengaruh:</b> Mazhab Hanafi banyak dianut di Turki, Asia Tengah, Asia Selatan (India, Pakistan, Bangladesh), Balkan, dan sebagian Timur Tengah.</p>" },
+        { name: "IMAM MALIK BIN ANAS رحمه الله — MAZHAB MALIKI", type: "tokohgold",
+            infoNote: "<p><b>Nama lengkap:</b> Malik bin Anas bin Malik al-Ashbahi al-Madani &nbsp;|&nbsp; <b>Gelar:</b> Imam Dar al-Hijrah (Imam Madinah) &nbsp;|&nbsp; <b>Mazhab:</b> Maliki &nbsp;|&nbsp; <b>Lahir:</b> ± 93 H / 711–712 M, Madinah &nbsp;|&nbsp; <b>Wafat:</b> 179 H / 795 M, Madinah &nbsp;|&nbsp; <b>Karya utama:</b> Al-Muwaththa'</p><p><b>Profil:</b> Imam Malik bin Anas adalah pendiri mazhab Maliki dan ulama besar Madinah. Sepanjang hidupnya ia mengajar hadis dan fikih di Masjid Nabawi serta sangat menjaga adab terhadap hadis Rasulullah ﷺ.</p><p><b>Guru dan murid:</b> Di antara gurunya adalah Nafi' (maula Ibnu Umar), Ibnu Syihab az-Zuhri, dan Rabi'ah bin Abi Abdirrahman. Di antara muridnya adalah Imam asy-Syafi'i, Muhammad bin al-Hasan asy-Syaibani, dan Abdurrahman bin al-Qasim.</p><p><b>Al-Muwaththa':</b> Kitab hadis dan fikih yang disusunnya ini termasuk karya paling awal dan paling berpengaruh dalam literatur Islam. Mazhabnya dikenal dengan penekanan pada amal ahli Madinah sebagai salah satu sumber hukum.</p><p><b>Pengaruh:</b> Mazhab Maliki banyak dianut di Afrika Utara dan Barat (Maroko, Aljazair, Tunisia, Libya, Mauritania, Sudan) serta sebagian Jazirah Arab.</p>" },
+        { name: "IMAM SYAFI‘I رحمه الله — MAZHAB SYAFI‘I", type: "tokohgold",
+            infoNote: "<p><b>Nama lengkap:</b> Muhammad bin Idris asy-Syafi'i al-Qurasyi &nbsp;|&nbsp; <b>Gelar:</b> Nashir as-Sunnah &nbsp;|&nbsp; <b>Mazhab:</b> Syafi'i &nbsp;|&nbsp; <b>Lahir:</b> 150 H / 767 M, Gaza, Palestina &nbsp;|&nbsp; <b>Wafat:</b> 204 H / 820 M, Fustat, Mesir &nbsp;|&nbsp; <b>Karya utama:</b> Ar-Risalah, Al-Umm</p><p><b>Profil:</b> Imam asy-Syafi'i adalah pendiri mazhab Syafi'i. Ia berasal dari suku Quraisy, tumbuh yatim, dan menuntut ilmu di Makkah, Madinah, Yaman, dan Irak sebelum menetap di Mesir.</p><p><b>Guru:</b> Ia belajar kepada Muslim bin Khalid az-Zanji di Makkah, kepada Imam Malik bin Anas di Madinah, dan berdiskusi dengan Muhammad bin al-Hasan asy-Syaibani di Irak, sehingga memadukan pendekatan ahli hadis dan ahli ra'yu.</p><p><b>Karya:</b> Ar-Risalah dianggap sebagai karya pertama yang menyusun ushul fikih secara sistematis, sedangkan Al-Umm memuat pendapat-pendapat fikihnya. Dikenal pula qaul qadim (pendapat lama, di Irak) dan qaul jadid (pendapat baru, di Mesir).</p><p><b>Pengaruh:</b> Mazhab Syafi'i banyak dianut di Asia Tenggara (termasuk Indonesia), Mesir, Yaman, Somalia, dan Kurdistan, serta menjadi mazhab yang dominan di kalangan pesantren Nusantara.</p>" },
+        { name: "IMAM AHMAD BIN HANBAL رحمه الله — MAZHAB HANBALI", type: "tokohgold",
+            infoNote: "<p><b>Nama lengkap:</b> Ahmad bin Muhammad bin Hanbal asy-Syaibani &nbsp;|&nbsp; <b>Mazhab:</b> Hanbali &nbsp;|&nbsp; <b>Lahir:</b> 164 H / 780 M, Baghdad &nbsp;|&nbsp; <b>Wafat:</b> 241 H / 855 M, Baghdad &nbsp;|&nbsp; <b>Karya utama:</b> Al-Musnad &nbsp;|&nbsp; <b>Bidang:</b> hadis, fikih, akidah</p><p><b>Profil:</b> Imam Ahmad bin Hanbal adalah pendiri mazhab Hanbali dan salah satu ulama hadis terbesar. Ia menuntut ilmu di Baghdad, Kufah, Basrah, Makkah, Madinah, Yaman, dan Syam, serta pernah berguru kepada Imam asy-Syafi'i.</p><p><b>Al-Musnad:</b> Karya hadisnya ini memuat puluhan ribu riwayat dan menjadi salah satu kumpulan hadis terbesar. Di antara ulama yang meriwayatkan hadis darinya adalah Imam al-Bukhari, Imam Muslim, dan Imam Abu Dawud.</p><p><b>Ujian (Mihnah):</b> Ia bersabar menghadapi ujian pada masa Khalifah al-Ma'mun dan penerusnya ketika dipaksa mengakui bahwa Al-Qur'an adalah makhluk. Ia tetap teguh pada pendiriannya sehingga dihormati luas sebagai teladan keteguhan dalam berpegang pada akidah Ahlus Sunnah.</p><p><b>Pengaruh:</b> Mazhab Hanbali banyak dianut di Arab Saudi dan Qatar, serta di sebagian kawasan Teluk dan Syam.</p>" }
+        ]
+    )
 ];
 // FIXED BEHAVIOR: jarak antar shape dibuat FIX secara vertikal, dan LEBAR secara horizontal.
 // Saat cabang dibuka ke kanan, shape di atas/bawah TIDAK digeser — hanya jarak kanan-kiri
@@ -7695,6 +7707,21 @@ function collectAllNames() {
         }
         if (typeof tokohIslamChildren !== 'undefined') walkTokohIslam(tokohIslamChildren);
     } catch(e) {}
+    // ===== Nama tokoh di cabang "TOKOH ISLAM DUNIA" (tokohDuniaChildren) — pohon
+    // terpisah lagi; ditandai tokohOnly + dunia supaya selectFoundName membuka
+    // cabang TOKOH ISLAM DUNIA (bukan Nusantara). =====
+    try {
+        function walkTokohDunia(nodes) {
+            (nodes || []).forEach(n => {
+                if (n.name) {
+                    const key = n.name.toUpperCase().trim();
+                    if (!set.has(key)) set.set(key, { name: key, tokohOnly: true, dunia: true });
+                }
+                if (n.children) walkTokohDunia(n.children);
+            });
+        }
+        if (typeof tokohDuniaChildren !== 'undefined') walkTokohDunia(tokohDuniaChildren);
+    } catch(e) {}
     allNamesCache = Array.from(set.values());
     return allNamesCache;
 }
@@ -7789,15 +7816,18 @@ function findDescPath(nodes, targetUpper, path) {
     return null;
 }
 
-function revealName(targetUpper, onlyTokoh) {
+function revealName(targetUpper, onlyTokoh, onlyDunia) {
     let path = null;
+    if (onlyDunia && typeof tokohDuniaChildren !== 'undefined') {
+        path = findDescPath(tokohDuniaChildren, targetUpper, []);
+    }
     // ===== FIX: nama yang berasal dari cabang TOKOH ISLAM (onlyTokoh) harus
     // ditelusuri di pohon TOKOH dulu. Sebelumnya pohon keturunan darah selalu
     // dicek lebih dulu dan pencocokan items/pasangan memakai includes(), sehingga
     // "GUS DUR" ikut cocok dgn item "KH. ABDURRAHMAN WAHID / GUS DUR (1940-2009)"
     // di daftar Abdul Fatah -> path yang dibuka salah & Periode Abad XX tidak
     // pernah terbuka (kotak GUS DUR tidak muncul, layar tidak bergeser). =====
-    if (onlyTokoh && typeof tokohIslamChildren !== 'undefined') {
+    if (!path && onlyTokoh && typeof tokohIslamChildren !== 'undefined') {
         path = findDescPath(tokohIslamChildren, targetUpper, []);
     }
     if (!path && typeof descChildren !== 'undefined') {
@@ -7931,6 +7961,10 @@ function selectFoundName(name) {
         selectFoundNameWali9(targetUpper, target);
         return;
     }
+    if (info && info.dunia) {
+        selectFoundNameTokohDunia(targetUpper, target);
+        return;
+    }
     if (info && info.tokohOnly) {
         selectFoundNameTokoh(targetUpper, target);
         return;
@@ -7980,6 +8014,28 @@ function selectFoundNameTokoh(targetUpper, target) {
     if (!tokohOpen) {
         closeDescTreeIfOpen(true);
         toggleTokohTree(true);
+        setTimeout(revealAndFind, 500);
+    } else {
+        revealAndFind();
+    }
+}
+
+// ===== Nama yang hanya ada di cabang "TOKOH ISLAM DUNIA" (tokohDuniaChildren):
+// buka dulu cabang Dunia (menutup cabang lain agar tidak tumpang tindih), lalu
+// telusuri path & cari shape-nya. =====
+function selectFoundNameTokohDunia(targetUpper, target) {
+    function revealAndFind() {
+        const revealed = revealName(targetUpper, true, true);
+        if (revealed) {
+            setTimeout(() => findAndHighlightShape(targetUpper, target), 350);
+        } else {
+            findAndHighlightShape(targetUpper, target);
+        }
+    }
+    if (!tokohDuniaOpen) {
+        closeDescTreeIfOpen(true);
+        closeTokohTreeIfOpen(true);
+        toggleTokohDuniaTree(true);
         setTimeout(revealAndFind, 500);
     } else {
         revealAndFind();
