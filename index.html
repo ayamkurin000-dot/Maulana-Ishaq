@@ -2307,17 +2307,55 @@ const descChildren = [
 // ----- Helper: bangun 'titleLines' RAPAT (jarak antar baris lebih kecil dari
 // NAME_LINE_HEIGHT standar) utk kotak kategori/periode yang butuh 3-4 baris
 // teks panjang. Ukuran huruf tiap baris otomatis mengecil kalau kepanjangan. -----
+// ===== SHAPE KATEGORI (Jejak Awal, Wali Songo, Periode, dst.): teks LEBIH BESAR &
+// MAKSIMAL 3 BARIS. Kalau data aslinya lebih dari 3 baris, teks digabung lalu
+// dipecah ulang jadi 3 baris yang seimbang (tulisan "ABAD ..." tidak dipisah).
+// Ukuran huruf SERAGAM di semua baris (mengikuti baris terpanjang agar muat).
+// Hanya berlaku utk shape kategori; shape NAMA TOKOH tidak berubah. =====
+const CATEGORY_FONT_SIZE = 16.5;
+const CATEGORY_LINE_HEIGHT = 19;
+const CATEGORY_MAX_LINES = 3;
+function splitWordsBalanced(words, k, fontSize, weight) {
+    const n = words.length;
+    k = Math.min(k, n);
+    if (k <= 1) return [words.join(' ').replace(/\u00a0/g, ' ')];
+    let best = null;
+    const rec = (start, remaining, acc) => {
+        if (remaining === 1) {
+            const cand = acc.concat([words.slice(start).join(' ')]);
+            const maxW = Math.max(...cand.map(t => textWidth(t.replace(/\u00a0/g, ' '), fontSize, weight)));
+            if (!best || maxW < best.maxW - 0.01) best = { lines: cand, maxW };
+            return;
+        }
+        for (let i = start + 1; i <= n - (remaining - 1); i++) {
+            rec(i, remaining - 1, acc.concat([words.slice(start, i).join(' ')]));
+        }
+    };
+    rec(0, k, []);
+    return best.lines.map(t => t.replace(/\u00a0/g, ' '));
+}
+function capCategoryLines(lines, fontSize, weight) {
+    if (lines.length <= CATEGORY_MAX_LINES) return lines;
+    // spasi di dalam baris "ABAD ..." diganti spasi keras supaya tidak terpecah
+    const tokens = [];
+    lines.forEach(l => {
+        if (/^ABAD\b/i.test(l.trim())) tokens.push(l.trim().replace(/ /g, '\u00a0'));
+        else l.trim().split(/\s+/).forEach(w => tokens.push(w));
+    });
+    return splitWordsBalanced(tokens, CATEGORY_MAX_LINES, fontSize, weight);
+}
 function makeTightTitleLines(lines, opts) {
     opts = opts || {};
     const maxW = opts.maxWidth || 236; // = descChildWidth(260) - 24
-    const baseFontSize = opts.fontSize || 12;
+    const baseFontSize = opts.fontSize || CATEGORY_FONT_SIZE;
     const weight = opts.weight || 800;
-    const lineHeight = opts.lineHeight || 13.5;
-    const minFontSize = opts.minFontSize || 8;
-    return lines.map(text => {
-        const f = fitSingleLineFontSize(text, maxW, baseFontSize, weight, minFontSize);
-        return { text: f.text, fontSize: f.fontSize, weight, lineHeight };
-    });
+    const lineHeight = opts.lineHeight || CATEGORY_LINE_HEIGHT;
+    const minFontSize = opts.minFontSize || 9;
+    const capped = capCategoryLines(lines.map(t => t.toUpperCase()), baseFontSize, weight);
+    const fits = capped.map(text => fitSingleLineFontSize(text, maxW, baseFontSize, weight, minFontSize));
+    const fs = Math.min(...fits.map(f => f.fontSize)); // ukuran huruf seragam
+    const lh = fs < baseFontSize ? Math.max(14, lineHeight * fs / baseFontSize) : lineHeight;
+    return fits.map(f => ({ text: f.text, fontSize: fs, weight, lineHeight: lh }));
 }
 function makePeriodeNode(name, lines, children, opts, subLines, subOpts) {
     return {
