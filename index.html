@@ -843,10 +843,13 @@
         background: #fffefb; border: 1px solid #e7d6ab; border-radius: 8px; padding: 10px 12px;
         white-space: pre-line;
     }
+    #dispute-card h4, #dispute-card .dc-name { padding: 0 30px; }
     #dispute-close {
-        position: absolute; top: 12px; right: 12px; background: #fff;
-        border: 1.5px dashed #b45309; border-radius: 8px; width: 26px; height: 26px;
-        cursor: pointer; font-weight: 800; color: #92400e;
+        position: absolute; top: -8px; right: -10px; background: #fff;
+        border: 1.5px dashed #b45309; border-radius: 8px; width: 34px; height: 34px;
+        cursor: pointer; font-weight: 800; color: #92400e; font-size: 0.95rem;
+        line-height: 1; touch-action: manipulation;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.25);
     }
     #dispute-close:hover { background: #fef3c7; }
 
@@ -909,10 +912,17 @@
     #info-card .ic-body .bio-tight .ty { background: #fef9c3; color: #854d0e; }
     #info-card .ic-body .bio-tight .tr { background: #fee2e2; color: #991b1b; }
     #info-card .ic-body .bio-tight .du { text-align: center; font-size: 0.9rem; color: #0c4a6e; margin-top: 6px; }
+    /* ===== Tombol X MENGAMBANG: pembungkus sticky setinggi 0 (tidak menggeser isi),
+       tombolnya absolute di dalamnya, sehingga X tetap tampil di pojok kanan atas
+       jendela walau teks panjang di-scroll. ===== */
+    .close-float { position: sticky; top: 0; height: 0; z-index: 10; }
+    #info-card .ic-name { padding: 0 30px; }
     #info-close {
-        position: absolute; top: 12px; right: 12px; background: #f0f9ff;
-        border: 1.5px solid #0369a1; border-radius: 8px; width: 26px; height: 26px;
-        cursor: pointer; font-weight: 800; color: #0369a1;
+        position: absolute; top: -8px; right: -10px; background: #f0f9ff;
+        border: 1.5px solid #0369a1; border-radius: 8px; width: 34px; height: 34px;
+        cursor: pointer; font-weight: 800; color: #0369a1; font-size: 0.95rem;
+        line-height: 1; touch-action: manipulation;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.25);
     }
     #info-close:hover { background: #e0f2fe; }
 
@@ -1074,7 +1084,7 @@
 
 <div id="dispute-overlay" onclick="if(event.target===this) closeDisputeNote();">
     <div id="dispute-card">
-        <button id="dispute-close" onclick="closeDisputeNote()">✕</button>
+        <div class="close-float"><button id="dispute-close" onclick="closeDisputeNote()" aria-label="Tutup">✕</button></div>
         <span class="dc-icon">📜❓</span>
         <h4>STATUS RIWAYAT: BELUM PASTI</h4>
         <div class="dc-name" id="dispute-name"></div>
@@ -1085,7 +1095,7 @@
 
 <div id="info-overlay" onclick="if(event.target===this) closeInfoNote();">
     <div id="info-card">
-        <button id="info-close" onclick="closeInfoNote()">✕</button>
+        <div class="close-float"><button id="info-close" onclick="closeInfoNote()" aria-label="Tutup">✕</button></div>
         <span class="ic-icon">📖</span>
         <div class="ic-name" id="info-name"></div>
         <div class="ic-body" id="info-body"></div>
