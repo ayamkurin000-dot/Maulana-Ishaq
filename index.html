@@ -296,6 +296,31 @@
         overflow: auto; padding: 20px 22px 28px; flex: 1 1 auto;
         font-size: 0.85rem; line-height: 1.7; color: #14532d; font-weight: 500;
     }
+    /* --- isi panel TENTANG --- */
+    #tentang-body .tt-ar { font-family: 'Amiri','Scheherazade New','Traditional Arabic',serif; line-height: 2; }
+    #tentang-body .tt-bismillah { text-align: center; font-size: 1.35rem; color: #166534; margin: 0 0 2px; font-family: 'Amiri','Scheherazade New','Traditional Arabic',serif; }
+    #tentang-body .tt-title { text-align: center; font-family: 'Georgia','Times New Roman',serif; font-size: 0.98rem; color: #14532d; margin: 0 0 14px; font-weight: 800; letter-spacing: .3px; }
+    #tentang-body .tt-title::after { content: ''; display: block; width: 56px; height: 2px; margin: 8px auto 0; background: linear-gradient(90deg, transparent, #16a34a, transparent); }
+    #tentang-body p { margin: 0 0 12px; text-align: justify; }
+    #tentang-body .tt-lead { font-size: 0.9rem; }
+    #tentang-body .tt-callout { display: flex; gap: 10px; align-items: flex-start; background: rgba(255,255,255,0.7); border: 1px solid #86efac; border-left: 4px solid #16a34a; border-radius: 10px; padding: 11px 13px; margin: 0 0 16px; box-shadow: 0 2px 8px rgba(22,101,52,0.08); }
+    #tentang-body .tt-callout-ico { font-size: 1.3rem; line-height: 1.3; }
+    #tentang-body .tt-sec { display: flex; align-items: center; gap: 10px; font-family: 'Georgia','Times New Roman',serif; font-weight: 800; font-size: 0.88rem; color: #166534; margin: 20px 0 8px; letter-spacing: .3px; }
+    #tentang-body .tt-sec::before, #tentang-body .tt-sec::after { content: ''; height: 1px; flex: 1; background: linear-gradient(90deg, transparent, #4ade80); }
+    #tentang-body .tt-sec::after { background: linear-gradient(90deg, #4ade80, transparent); }
+    #tentang-body .tt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin: 4px 0 14px; }
+    #tentang-body .tt-tile { background: rgba(255,255,255,0.75); border: 1px solid #86efac; border-radius: 12px; padding: 10px 10px 11px; text-align: center; box-shadow: 0 2px 8px rgba(22,101,52,0.08); }
+    #tentang-body .tt-tile span { display: block; font-size: 1.4rem; margin-bottom: 3px; }
+    #tentang-body .tt-tile b { display: block; font-size: 0.78rem; color: #14532d; margin-bottom: 3px; }
+    #tentang-body .tt-tile small { display: block; font-size: 0.68rem; line-height: 1.45; color: #166534; font-weight: 500; }
+    #tentang-body .tt-quote, #tentang-body .tt-doa { text-align: center; background: linear-gradient(135deg, #14532d, #166534); color: #dcfce7; border-radius: 12px; padding: 13px 14px; margin: 4px 0 6px; box-shadow: 0 4px 12px rgba(20,83,45,0.25); }
+    #tentang-body .tt-quote .tt-ar { font-size: 1.35rem; color: #fff; }
+    #tentang-body .tt-doa .tt-ar { font-size: 1.1rem; color: #fff; }
+    #tentang-body .tt-tr { font-size: 0.76rem; line-height: 1.55; margin-top: 4px; font-style: italic; }
+    #tentang-body .tt-tr span { font-style: normal; opacity: .8; font-size: 0.68rem; white-space: nowrap; }
+    #tentang-body .tt-doa { margin-top: 18px; }
+    @media (max-width: 380px) { #tentang-body .tt-grid { grid-template-columns: 1fr; } }
+
     /* ===== Overlay lightbox untuk logo "By : MANNIXS-21" ===== */
     #credit-img-overlay {
         position: fixed; inset: 0; background: rgba(0,0,0,0.82);
@@ -1067,9 +1092,45 @@
             <h4>TENTANG</h4>
             <div class="tt-divider"></div>
         </div>
-        <div id="tentang-body">Silsilah digital ini bersumber dari manuskrip di makam Maulana Ishaq, lalu diperluas menjadi silsilah komprehensif Wali Songo yang berhulu pada Syekh Jumadil Kubro dengan pengecualian Sunan Kalijaga sebagai pribumi. Ia menunjukkan pola akulturasi melalui pernikahan dengan perempuan Nusantara dan menegaskan bahwa Wali Songo adalah estafet dakwah lintas generasi, bukan tokoh sezaman.
-            <br><br>
-            Selain silsilah Wali Songo, di dalamnya juga tercakup silsilah KH. Abdurrahman Wahid (Gus Dur), dan ke depannya akan terus diperbarui dengan silsilah ulama-ulama Nusantara lainnya. Untuk itu, kami sangat berterima kasih kepada para pembaca yang berkenan memberikan kritik, saran, koreksi, maupun masukan kepada kami.
+        <div id="tentang-body">
+            <div class="tt-bismillah" dir="rtl">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+            <h5 class="tt-title">Silsilah Wali Songo &amp; Jejak Ulama Nusantara</h5>
+
+            <p class="tt-lead">Silsilah digital ini berawal dari manuskrip yang tersimpan di makam Maulana Ishaq. Dari naskah itulah penelusuran kami kembangkan menjadi silsilah Wali Songo yang lebih menyeluruh, berhulu pada Syekh Jumadil Kubro, dengan Sunan Kalijaga sebagai pengecualian karena beliau berasal dari kalangan pribumi.</p>
+
+            <div class="tt-callout">
+                <span class="tt-callout-ico">🌿</span>
+                <div>Silsilah ini menampakkan dua hal penting: <b>akulturasi</b> yang terjalin lewat pernikahan dengan perempuan Nusantara, dan bahwa Wali Songo adalah <b>estafet dakwah lintas generasi</b>, bukan tokoh yang hidup sezaman.</div>
+            </div>
+
+            <div class="tt-sec">Lebih dari sekadar silsilah</div>
+            <p class="tt-p">Di balik setiap nama, tersimpan kisah perjuangan dan keteladanan. Karena itu, halaman ini juga memuat:</p>
+            <div class="tt-grid">
+                <div class="tt-tile"><span>🌳</span><b>Silsilah &amp; Nasab</b><small>Garis keturunan dan hubungan antartokoh dari generasi ke generasi.</small></div>
+                <div class="tt-tile"><span>🕌</span><b>Sepak Terjang</b><small>Perjalanan dakwah, strategi, dan jejak peninggalan para ulama dan wali.</small></div>
+                <div class="tt-tile"><span>📖</span><b>Biografi &amp; Manaqib</b><small>Riwayat hidup, akhlak, hingga kisah-kisah keteladanan yang dikenang umat.</small></div>
+                <div class="tt-tile"><span>🔗</span><b>Sanad Keguruan</b><small>Mata rantai guru dan murid yang menyambungkan ilmu hingga kini.</small></div>
+            </div>
+            <p class="tt-p">Cakupannya meliputi silsilah Wali Songo serta KH. Abdurrahman Wahid (Gus Dur), dan akan terus diperbarui dengan silsilah ulama-ulama Nusantara lainnya.</p>
+
+            <div class="tt-sec">Harapan kami</div>
+            <p class="tt-p">Semoga setiap halaman yang dibaca menambah keilmuan, menumbuhkan rasa cinta kepada para ulama dan wali, serta mempererat kerinduan kepada para nabi, hingga Rasulullah ﷺ. Sebab dari mengenal, tumbuhlah cinta, dan dari cinta, lahirlah keinginan untuk meneladani.</p>
+            <div class="tt-quote">
+                <div class="tt-ar" dir="rtl">الْمَرْءُ مَعَ مَنْ أَحَبَّ</div>
+                <div class="tt-tr">&ldquo;Seseorang akan bersama orang yang dicintainya.&rdquo; <span>(HR. al-Bukhari dan Muslim)</span></div>
+            </div>
+
+            <div class="tt-sec">Catatan kehati-hatian</div>
+            <p class="tt-p">Riwayat tokoh-tokoh awal Islam di Nusantara banyak bersumber dari tradisi, babad, dan silsilah keluarga yang memiliki beberapa versi. Kami berusaha membedakan antara data sejarah, tradisi silsilah, dan manaqib, serta menyertakan catatan tingkat kepastian pada setiap biografi.</p>
+
+            <div class="tt-sec">Kritik dan saran</div>
+            <p class="tt-p">Kami sangat berterima kasih kepada para pembaca yang berkenan memberikan kritik, saran, koreksi, maupun masukan. Semua itu menjadi bagian dari ikhtiar kami menjaga dan menyempurnakan karya ini.</p>
+
+            <div class="tt-doa">
+                <div class="tt-ar" dir="rtl">اللهم انفعنا ببركتهم وعلومهم وأخلاقهم، واجعلنا من محبي العلماء والصالحين. آمين.</div>
+                <div class="tt-tr">Ya Allah, berilah kami manfaat dengan berkah, ilmu, dan akhlak mereka, dan jadikanlah kami termasuk para pencinta ulama dan orang-orang saleh. Amin.</div>
+            </div>
+
             <div id="tentang-credit" style="text-align:right; margin-top:24px;">
                 Mannixs-21<br>
                 Tanbihul Ghofilin<br>
