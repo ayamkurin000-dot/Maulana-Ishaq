@@ -990,6 +990,15 @@
        tombolnya absolute di dalamnya, sehingga X tetap tampil di pojok kanan atas
        jendela walau teks panjang di-scroll. ===== */
     .close-float { position: sticky; top: 0; height: 0; z-index: 10; }
+    /* ===== FIX: tombol X ikut tergeser ke samping pada beberapa kartu.
+       Penyebab: ada judul/teks panjang tanpa spasi (mis. "A+B+C", "X↓Y→Z") yang melebihi
+       lebar kartu sehingga kartu bisa digeser horizontal & tombol X ikut terbawa.
+       Solusi: paksa teks panjang turun baris + kunci scroll horizontal; scroll hanya vertikal. ===== */
+    #info-card, #dispute-card { overflow-x: hidden; overscroll-behavior: contain; }
+    #info-card .ic-body, #dispute-card .dc-note { overflow-wrap: anywhere; word-break: break-word; }
+    #info-card .ic-body h5, #info-card .ic-body p, #info-card .ic-body li,
+    #info-card .ic-body div { overflow-wrap: anywhere; word-break: break-word; max-width: 100%; }
+    #info-card .ic-body img, #info-card .ic-body table { max-width: 100%; }
     #info-card .ic-name { padding: 0 30px 14px; }
     #info-close {
         position: absolute; top: -8px; right: -10px; background: #f0f9ff;
