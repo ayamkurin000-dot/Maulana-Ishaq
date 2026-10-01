@@ -6,7 +6,7 @@
 <title>Silsilah Interaktif - MAULANA ISHAQ & WALI 9</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Lateef:wght@400;700&family=Scheherazade+New:wght@400;700&family=Cormorant+Garamond:wght@600;700&family=Dancing+Script:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Parisienne&family=Playfair+Display:wght@600;700&family=Abril+Fatface&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Lateef:wght@400;700&family=Scheherazade+New:wght@400;700&family=Cormorant+Garamond:wght@600;700&family=Dancing+Script:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Parisienne&family=Playfair+Display:wght@600;700&family=Abril+Fatface&family=Shadows+Into+Light&display=swap" rel="stylesheet">
 <meta property="og:title" content="Silsilah Interaktif - Maulana Ishaq & Wali 9" />
 <meta property="og:description" content="Silsilah Gus Dur sd Maulana Ishaq sd Nabi Muhammmad" />
 <style>
@@ -931,17 +931,28 @@
     #info-card .ic-icon { font-size: 1.5rem; display: block; text-align: center; margin-bottom: 4px; }
     #info-card .ic-name {
         text-align: center; font-weight: 400; color: #0c4a6e;
-        font-size: 36px; /* ukuran awal; diperkecil otomatis oleh fitInfoName() agar maksimal 2 baris */
-        letter-spacing: 0.01em; margin-bottom: 18px; line-height: 1.2; padding-bottom: 12px; position: relative;
-        font-family: 'Abril Fatface','Playfair Display','Georgia','Times New Roman',serif;
-        font-synthesis: none; text-shadow: 0 1px 0 #fff, 0 2px 3px rgba(12,74,110,0.20);
+        font-size: 40px; /* ukuran awal; diperkecil otomatis oleh fitInfoName() agar maksimal 2 baris */
+        letter-spacing: 0.02em; margin-bottom: 20px; line-height: 1.2; padding-bottom: 14px; position: relative;
+        font-family: 'Shadows Into Light','Abril Fatface','Georgia',cursive;
+        font-synthesis: none; -webkit-text-stroke: 0.5px #0c4a6e;
+        text-shadow: 0 1px 0 #fff, 0 7px 8px rgba(12,74,110,0.28);
         text-wrap: balance; overflow-wrap: normal; word-break: normal;
+        animation: icFloat 3.6s ease-in-out infinite; will-change: transform;
     }
-    /* garis hias emas di bawah nama */
+    /* garis hias emas = "bayangan" di bawah nama; mengecil & memudar saat nama naik */
     #info-card .ic-name::after {
         content: ""; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
-        width: 120px; height: 2px;
+        width: 120px; height: 2px; border-radius: 2px;
         background: linear-gradient(90deg, transparent, #b45309 25%, #f59e0b 50%, #b45309 75%, transparent);
+        animation: icShadow 3.6s ease-in-out infinite;
+    }
+    @keyframes icFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+    @keyframes icShadow {
+        0%,100% { transform: translateX(-50%) translateY(0) scaleX(1); opacity: 0.95; }
+        50% { transform: translateX(-50%) translateY(7px) scaleX(0.6); opacity: 0.45; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        #info-card .ic-name, #info-card .ic-name::after { animation: none; }
     }
     #info-card .ic-body { font-size: 0.8rem; line-height: 1.6; color: #0f172a; }
     #info-card .ic-body h5 {
@@ -979,7 +990,7 @@
        tombolnya absolute di dalamnya, sehingga X tetap tampil di pojok kanan atas
        jendela walau teks panjang di-scroll. ===== */
     .close-float { position: sticky; top: 0; height: 0; z-index: 10; }
-    #info-card .ic-name { padding: 0 30px; }
+    #info-card .ic-name { padding: 0 30px 14px; }
     #info-close {
         position: absolute; top: -8px; right: -10px; background: #f0f9ff;
         border: 1.5px solid #0369a1; border-radius: 8px; width: 34px; height: 34px;
@@ -7689,7 +7700,7 @@ function fitInfoName() {
     const ov = document.getElementById('info-overlay');
     const el = document.getElementById('info-name');
     if (!el || !ov || !ov.classList.contains('open')) return;
-    const MAX = 36, MIN = 14;
+    const MAX = 40, MIN = 14;
     const pad = parseFloat(getComputedStyle(el).paddingBottom) || 0;
     let fs = MAX;
     el.style.fontSize = fs + 'px';
@@ -7708,7 +7719,7 @@ function openInfoNote(name, infoHtml) {
     fitInfoName();
     // ukur ulang setelah font web selesai dimuat (lebar huruf bisa berubah)
     if (document.fonts && document.fonts.load) {
-        document.fonts.load("36px 'Abril Fatface'", "Aa").then(fitInfoName).catch(function(){});
+        document.fonts.load("40px 'Shadows Into Light'", "Aa").then(fitInfoName).catch(function(){});
     }
 }
 function closeInfoNote(){ document.getElementById('info-overlay').classList.remove('open'); }
