@@ -7652,8 +7652,15 @@ function closeDisputeNote(){ document.getElementById('dispute-overlay').classLis
 // mirip dgn kotak dispute-note di atas, tapi memakai overlay & tema warna terpisah
 // karena isinya info tambahan/silsilah, bukan status riwayat yang diperdebatkan.
 // infoHtml BERISI markup HTML yang sudah disiapkan di data (bukan input pengguna). =====
+// Judul jendela keterangan: cukup 1 nama (tanpa alias & tahun). Nama di kartu TIDAK diubah;
+// alias lengkap sudah ada di bagian "Identitas" pada isi keterangan.
+function shortInfoName(name) {
+    let n = String(name || '').split(' / ')[0];
+    n = n.replace(/\s*\([^)]*\)/g, '');
+    return n.trim() || String(name || '');
+}
 function openInfoNote(name, infoHtml) {
-    document.getElementById('info-name').textContent = name;
+    document.getElementById('info-name').textContent = shortInfoName(name);
     document.getElementById('info-body').innerHTML = infoHtml || '';
     document.getElementById('info-overlay').classList.add('open');
 }
