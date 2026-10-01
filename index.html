@@ -7731,6 +7731,78 @@ window.addEventListener('resize', fitInfoName);
 // ===== Samakan gaya keterangan SEMUA tokoh dengan gaya Sunan Kalijaga (kelas bio-tight:
 // label emas, penekanan merah, kotak catatan/sumber, heading bernomor). Keterangan yang sudah
 // memakai gaya itu (punya class hl/gd/gr) dibiarkan apa adanya. Isi teks TIDAK diubah. =====
+// ----- Pengayaan warna utk keterangan tokoh yang tadinya polos (meniru kekayaan warna Sunan Kalijaga) -----
+function _fieldClass(label) {
+    if (/^(Tempat|Makam|Nama)/i.test(label)) return 'hl';                       // nama & tempat -> merah
+    if (/^(Tahun|Lahir|Wafat|Masa|Periode)/i.test(label)) return 'gr';          // waktu -> hijau
+    if (/^(Gelar|Sebutan|Julukan|Kedudukan|Peran|Pusat|Wilayah|Guru|Murid|Bidang|Profil)/i.test(label)) return 'gd'; // emas
+    return '';
+}
+function _firstItems(v, n) {
+    return String(v || '').split(/\s*(?:,|;|\batau\b)\s*/).filter(Boolean).slice(0, n).join(', ');
+}
+const _ENR_RX = new RegExp([
+    '(\u201C[^\u201D]{3,120}\u201D|"[^"]{3,120}")',                                        // 1: kutipan -> garis bawah
+    '((?:[Mm]enurut|[Dd]alam) (?:tradisi|riwayat|versi|sumber|babad|naskah)(?: [a-zA-Z]+)?|tidak (?:dapat|bisa) dipastikan|[Ww]allahu a[\'\u2019]lam|diperselisihkan|berbeda-beda)', // 2: frasa kunci -> garis bawah
+    '(\\b\\d{3,4}(?:\\s?[\u2013-]\\s?\\d{3,4})?\\s?(?:M|H|SM)\\b(?:\\s?\\/\\s?\\d{3,4}\\s?(?:M|H)\\b)?|\\b[Aa]bad\\s+(?:ke-)?[IVX]+(?:\\s?[\u2013-]\\s?[IVX]+)?|\\b[Tt]ahun\\s+\\d{3,4}\\b)' // 3: tahun/abad -> hijau
+].join('|'), 'g');
+function _esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function enrichPlainInfo(root, doc) {
+    // 1) blok data identitas (satu baris per data): warnai nilai tiap label + buat sub-judul
+    const first = root.querySelector('p');
+    if (first && first.querySelectorAll('br').length >= 3 && !root.querySelector('.du')) {
+        let label = '', cls = '';
+        const vals = {};
+        Array.from(first.childNodes).forEach(function (n) {
+            if (n.nodeName === 'BR') { label = ''; cls = ''; return; }
+            if (n.nodeType === 1 && n.classList.contains('gd') && /[:\uFF1A]$/.test(n.textContent.trim())) {
+                label = n.textContent.trim().replace(/[:\uFF1A]$/, ''); cls = _fieldClass(label); return;
+            }
+            if (label && n.nodeType === 3 && n.textContent.trim()) {
+                vals[label] = (vals[label] || '') + n.textContent.trim();
+                if (cls) {
+                    const b = doc.createElement('b'); b.className = cls;
+                    b.textContent = n.textContent.replace(/^\s+/, '');
+                    first.insertBefore(doc.createTextNode(' '), n);
+                    first.replaceChild(b, n);
+                }
+            }
+        });
+        const pick = function (rx) { const k = Object.keys(vals).find(function (x) { return rx.test(x); }); return k ? vals[k] : ''; };
+        const a = _firstItems(pick(/^(Gelar|Sebutan|Julukan|Nama lain|Nama populer)/i), 2);
+        const b2 = _firstItems(pick(/^(Wilayah|Pusat)/i), 2);
+        const tag = [a, b2].filter(Boolean).join(' \u2014 ');
+        if (tag) {
+            const du = doc.createElement('p'); du.className = 'du';
+            const it = doc.createElement('i'); it.textContent = tag; du.appendChild(it);
+            root.insertBefore(du, root.firstChild);
+        }
+    }
+    // 2) teks biasa: tahun/abad hijau, kutipan & frasa kunci bergaris bawah
+    const walker = doc.createTreeWalker(root, 4 /* SHOW_TEXT */);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(function (n) {
+        if (n.parentNode.closest && n.parentNode.closest('h5, b, u, .du')) return;
+        const txt = n.textContent;
+        _ENR_RX.lastIndex = 0;
+        if (!_ENR_RX.test(txt)) return;
+        _ENR_RX.lastIndex = 0;
+        let out = '', last = 0, m;
+        while ((m = _ENR_RX.exec(txt))) {
+            out += _esc(txt.slice(last, m.index));
+            if (m[1] || m[2]) out += '<u>' + _esc(m[0]) + '</u>';
+            else out += '<b class="gr">' + _esc(m[0]) + '</b>';
+            last = m.index + m[0].length;
+            if (m[0].length === 0) _ENR_RX.lastIndex++;
+        }
+        out += _esc(txt.slice(last));
+        const span = doc.createElement('span'); span.innerHTML = out;
+        const frag = doc.createDocumentFragment();
+        while (span.firstChild) frag.appendChild(span.firstChild);
+        n.parentNode.replaceChild(frag, n);
+    });
+}
 function styleInfoHtml(html) {
     if (!html) return '';
     if (/class=["']?(hl|gd|gr)\b/.test(html)) return html;           // sudah bergaya Kalijaga
@@ -7748,6 +7820,7 @@ function styleInfoHtml(html) {
         if (/^Catatan\b/i.test(t)) p.classList.add('warn');           // kotak merah muda
         else if (/^Sumber/i.test(t)) p.classList.add('q');            // kotak kuning
     });
+    enrichPlainInfo(root, doc);
     return root.querySelector('.bio-tight') ? root.innerHTML
         : '<div class="bio-tight">' + root.innerHTML + '</div>';
 }
