@@ -7689,11 +7689,27 @@ function toTitleCaseName(str) {
         return lower.split('-').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join('-');
     }).join('');
 }
+const _AR = '[\\u0600-\\u06FF\\u0750-\\u077F\\uFB50-\\uFDFF\\uFE70-\\uFEFF\\u200e\\u200f]';
+const _AR_RUN = new RegExp(_AR + '+(?:[\\s\\u00a0]+' + _AR + '+)*', 'g');
 function shortInfoName(name) {
     let n = String(name || '').split(' / ')[0];
     n = n.replace(/\s*\([^)]*\)/g, '');
+    n = n.replace(_AR_RUN, '').replace(/\s{2,}/g, ' ');            // buang teks Arab yang menyertai nama
+    n = n.replace(/^[\s\-\u2013\u2014]+|[\s\-\u2013\u2014]+$/g, '');
     n = n.trim() || String(name || '');
     return toTitleCaseName(n);
+}
+// Blok judul paling atas di dalam keterangan (<p class="du">): buang teks Arab pada nama tokoh.
+function stripTopArabic(html) {
+    if (!html) return '';
+    const i = html.indexOf('<p class="du">');
+    if (i < 0 || i > 300) return html;
+    return html.replace(/<p class="du">[\s\S]*?<\/p>/, function (p) {
+        p = p.replace(_AR_RUN, '');
+        p = p.replace(/<b[^>]*>\s*<\/b>(<br\s*\/?>)?/g, '');       // bungkus kosong sisa pembersihan
+        p = p.replace(/\s+<\/b>/g, '</b>');
+        return p;
+    });
 }
 // Auto-fit judul keterangan: mulai dari ukuran terbesar, perkecil sampai MAKSIMAL 2 baris & tidak melebar.
 function fitInfoName() {
@@ -7737,7 +7753,7 @@ function styleInfoHtml(html) {
 }
 function openInfoNote(name, infoHtml) {
     document.getElementById('info-name').textContent = shortInfoName(name);
-    document.getElementById('info-body').innerHTML = styleInfoHtml(infoHtml);
+    document.getElementById('info-body').innerHTML = styleInfoHtml(stripTopArabic(infoHtml));
     document.getElementById('info-overlay').classList.add('open');
     fitInfoName();
     // ukur ulang setelah font web selesai dimuat (lebar huruf bisa berubah)
