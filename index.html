@@ -7712,9 +7712,32 @@ function fitInfoName() {
     }
 }
 window.addEventListener('resize', fitInfoName);
+// ===== Samakan gaya keterangan SEMUA tokoh dengan gaya Sunan Kalijaga (kelas bio-tight:
+// label emas, penekanan merah, kotak catatan/sumber, heading bernomor). Keterangan yang sudah
+// memakai gaya itu (punya class hl/gd/gr) dibiarkan apa adanya. Isi teks TIDAK diubah. =====
+function styleInfoHtml(html) {
+    if (!html) return '';
+    if (/class=["']?(hl|gd|gr)\b/.test(html)) return html;           // sudah bergaya Kalijaga
+    html = html.replace(/\s*&nbsp;\|&nbsp;\s*/g, '<br>');             // "A | B | C" -> satu baris per data
+    const doc = new DOMParser().parseFromString('<div id="r">' + html + '</div>', 'text/html');
+    const root = doc.getElementById('r');
+    root.querySelectorAll('b').forEach(function (b) {
+        if (b.className) return;
+        const t = b.textContent.trim();
+        if (/[:：]$/.test(t)) b.className = 'gd';                      // label -> emas
+        else if (t.length <= 80) b.className = 'hl';                  // penekanan -> merah
+    });
+    root.querySelectorAll('p').forEach(function (p) {
+        const t = p.textContent.trim();
+        if (/^Catatan\b/i.test(t)) p.classList.add('warn');           // kotak merah muda
+        else if (/^Sumber/i.test(t)) p.classList.add('q');            // kotak kuning
+    });
+    return root.querySelector('.bio-tight') ? root.innerHTML
+        : '<div class="bio-tight">' + root.innerHTML + '</div>';
+}
 function openInfoNote(name, infoHtml) {
     document.getElementById('info-name').textContent = shortInfoName(name);
-    document.getElementById('info-body').innerHTML = infoHtml || '';
+    document.getElementById('info-body').innerHTML = styleInfoHtml(infoHtml);
     document.getElementById('info-overlay').classList.add('open');
     fitInfoName();
     // ukur ulang setelah font web selesai dimuat (lebar huruf bisa berubah)
