@@ -1794,10 +1794,10 @@ function drawWali9Badge(g, w, h) {
     const by = -h/2 + bR * 0.5;
     const badgeG = el('g', { class:'wali9-badge', 'pointer-events':'none' });
     badgeG.appendChild(el('circle', { cx:bx, cy:by, r:bR+2, fill:'#ffffff' }));
-    badgeG.appendChild(el('circle', { cx:bx, cy:by, r:bR, fill:'url(#grad-coin9)', stroke:'#7c2d12', 'stroke-width':1.2 }));
+    badgeG.appendChild(el('circle', { cx:bx, cy:by, r:bR, fill:'#ffffff', stroke:'#dc2626', 'stroke-width':1.6 }));
     const t = el('text', {
         x:bx, y:by+0.5, 'text-anchor':'middle', 'dominant-baseline':'middle',
-        fill:'#7c2d12', 'font-size':13, 'font-weight':900,
+        fill:'#dc2626', 'font-size':13, 'font-weight':900,
         'font-family':"'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
     });
     t.textContent = '9';
