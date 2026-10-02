@@ -2931,7 +2931,7 @@ const tokohDuniaChildren = [
             { name: "CINTA YANG TAK PERNAH PUDAR", type: "tokohgold",
             infoNote: "@bio:cinta-yang-tak-pernah-pudar" }
             ] },
-        makePeriodeNode(
+        Object.assign(makePeriodeNode(
             "AL-'ASYARAH AL-MUBASYARUN BIL-JANNAH",
             ["AL-'ASYARAH", "AL-MUBASYARUN", "BIL-JANNAH"],
             [
@@ -2963,7 +2963,7 @@ const tokohDuniaChildren = [
             { fontSize: 20, lineHeight: 23, minFontSize: 11 },
             ["KHULAFA'UR RASYIDIN"],
             { fontSize: 11, lineHeight: 13, weight: 700, minFontSize: 8 }
-        )
+        ), { infoNote: "@bio:al-asyarah-al-mubasyarun-bil-jannah" })
         ],
         { fontSize: 22, lineHeight: 25, minFontSize: 12 }
     ),
