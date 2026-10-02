@@ -2931,30 +2931,39 @@ const tokohDuniaChildren = [
             { name: "CINTA YANG TAK PERNAH PUDAR", type: "tokohgold",
             infoNote: "@bio:cinta-yang-tak-pernah-pudar" }
             ] },
-        { name: "SAYYIDINA ABU BAKAR ASH-SHIDDIQ رضي الله عنه — KHALIFAH PERTAMA", type: "tokohgold",
-            infoNote: "@bio:sayyidina-abu-bakar-ash-shiddiq-khalifah-pertama",
-            children: [
-            { name: "DI GUA TSUR: JANGAN BERSEDIH, ALLAH BERSAMA KITA", type: "tokohgold",
-            infoNote: "@bio:di-gua-tsur-jangan-bersedih-allah-bersama-kita" }
-            ] },
-        { name: "SAYYIDINA UMAR BIN AL-KHATTHAB \u0631\u0636\u064a \u0627\u0644\u0644\u0647 \u0639\u0646\u0647 \u2014 KHALIFAH KEDUA", type: "tokohgold",
-            infoNote: "@bio:sayyidina-umar-bin-khattab-khalifah-kedua",
-            children: [
-            { name: "UMAR DI HUDAIBIYAH: PERTANYAAN YANG DITEBUS DENGAN AMAL", type: "tokohgold",
-            infoNote: "@bio:umar-di-hudaibiyah-pertanyaan-yang-ditebus-dengan-amal" }
-            ] },
-        { name: "SAYYIDINA UTSMAN BIN AFFAN \u0631\u0636\u064a \u0627\u0644\u0644\u0647 \u0639\u0646\u0647 \u2014 KHALIFAH KETIGA", type: "tokohgold",
-            infoNote: "@bio:sayyidina-utsman-bin-affan-khalifah-ketiga",
-            children: [
-            { name: "BAIAT RIDHWAN: INI TANGAN UTSMAN", type: "tokohgold",
-            infoNote: "@bio:baiat-ridhwan-ini-tangan-utsman" }
-            ] },
-        { name: "SAYYIDINA ALI BIN ABI THALIB \u0631\u0636\u064a \u0627\u0644\u0644\u0647 \u0639\u0646\u0647 \u2014 KHALIFAH KEEMPAT", type: "tokohgold",
-            infoNote: "@bio:sayyidina-ali-bin-abi-thalib-khalifah-keempat",
-            children: [
-            { name: "PANJI KHAIBAR: DIBERIKAN KEPADA ALI", type: "tokohgold",
-            infoNote: "@bio:panji-khaibar-diberikan-kepada-ali" }
-            ] }
+        makePeriodeNode(
+            "AL-'ASYARAH AL-MUBASYARUN BIL-JANNAH",
+            ["AL-'ASYARAH", "AL-MUBASYARUN", "BIL-JANNAH"],
+            [
+            { name: "SAYYIDINA ABU BAKAR ASH-SHIDDIQ رضي الله عنه — KHALIFAH PERTAMA", type: "tokohgold",
+                infoNote: "@bio:sayyidina-abu-bakar-ash-shiddiq-khalifah-pertama",
+                children: [
+                { name: "DI GUA TSUR: JANGAN BERSEDIH, ALLAH BERSAMA KITA", type: "tokohgold",
+                infoNote: "@bio:di-gua-tsur-jangan-bersedih-allah-bersama-kita" }
+                ] },
+            { name: "SAYYIDINA UMAR BIN AL-KHATTHAB \u0631\u0636\u064a \u0627\u0644\u0644\u0647 \u0639\u0646\u0647 \u2014 KHALIFAH KEDUA", type: "tokohgold",
+                infoNote: "@bio:sayyidina-umar-bin-khattab-khalifah-kedua",
+                children: [
+                { name: "UMAR DI HUDAIBIYAH: PERTANYAAN YANG DITEBUS DENGAN AMAL", type: "tokohgold",
+                infoNote: "@bio:umar-di-hudaibiyah-pertanyaan-yang-ditebus-dengan-amal" }
+                ] },
+            { name: "SAYYIDINA UTSMAN BIN AFFAN \u0631\u0636\u064a \u0627\u0644\u0644\u0647 \u0639\u0646\u0647 \u2014 KHALIFAH KETIGA", type: "tokohgold",
+                infoNote: "@bio:sayyidina-utsman-bin-affan-khalifah-ketiga",
+                children: [
+                { name: "BAIAT RIDHWAN: INI TANGAN UTSMAN", type: "tokohgold",
+                infoNote: "@bio:baiat-ridhwan-ini-tangan-utsman" }
+                ] },
+            { name: "SAYYIDINA ALI BIN ABI THALIB \u0631\u0636\u064a \u0627\u0644\u0644\u0647 \u0639\u0646\u0647 \u2014 KHALIFAH KEEMPAT", type: "tokohgold",
+                infoNote: "@bio:sayyidina-ali-bin-abi-thalib-khalifah-keempat",
+                children: [
+                { name: "PANJI KHAIBAR: DIBERIKAN KEPADA ALI", type: "tokohgold",
+                infoNote: "@bio:panji-khaibar-diberikan-kepada-ali" }
+                ] }
+            ],
+            { fontSize: 20, lineHeight: 23, minFontSize: 11 },
+            ["KHULAFA'UR RASYIDIN"],
+            { fontSize: 11, lineHeight: 13, weight: 700, minFontSize: 8 }
+        )
         ],
         { fontSize: 22, lineHeight: 25, minFontSize: 12 }
     ),
