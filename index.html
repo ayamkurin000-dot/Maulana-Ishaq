@@ -6,7 +6,8 @@
 <title>Silsilah Interaktif - MAULANA ISHAQ & WALI 9</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Lateef:wght@400;700&family=Scheherazade+New:wght@400;700&family=Cormorant+Garamond:wght@600;700&family=Dancing+Script:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Parisienne&family=Playfair+Display:wght@600;700&family=Abril+Fatface&family=Shadows+Into+Light&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@600;700&family=Dancing+Script:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Shadows+Into+Light&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@600;700&family=Dancing+Script:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Shadows+Into+Light&display=swap" rel="stylesheet"></noscript>
 <meta property="og:title" content="Silsilah Interaktif - Maulana Ishaq & Wali 9" />
 <meta property="og:description" content="Silsilah Gus Dur sd Maulana Ishaq sd Nabi Muhammmad" />
 <style>
@@ -4641,6 +4642,13 @@ function promoteInfoPredicate(html, name) {
     }
     return root.innerHTML;
 }
+// Font web dimuat tidak menghalangi tampilan awal; bila baru selesai saat keterangan sedang terbuka, ukur ulang judulnya.
+if (document.fonts && document.fonts.addEventListener) {
+    document.fonts.addEventListener('loadingdone', function () {
+        const ov = document.getElementById('info-overlay');
+        if (ov && ov.classList.contains('open')) { fitInfoName(); fitPredicate(); }
+    });
+}
 // ===== BIOGRAFI DIMUAT SAAT DIKLIK (lazy load) =====
 // Isi biografi disimpan sebagai file terpisah: data/bio/<id>.html
 // Di data pohon, infoNote cukup berisi token "@bio:<id>".
@@ -5779,6 +5787,7 @@ function toggleSaranPanel() {
     if (!panel) return;
     saranOpen = !saranOpen;
     if (saranOpen) {
+        initFirebase();   // aman dipanggil berulang (hanya jalan sekali)
         panel.classList.add('active');
         if (tabChat) tabChat.classList.add('active');
         setTimeout(renderMessages, 50);
@@ -6586,8 +6595,18 @@ function clearChatLocal() {
     localStorage.removeItem('ishaq_saran_messages');
     renderMessages();
 }
+// Firebase (fitur SARAN) ditunda sampai pohon silsilah selesai tampil, agar tidak berebut sinyal
+// saat halaman pertama dibuka. Tetap jalan otomatis (badge notifikasi saran tetap muncul), dan
+// langsung dimulai bila tombol SARAN diketuk lebih dulu (lihat toggleSaranPanel).
+function scheduleFirebaseInit() {
+    const go = function () { initFirebase(); };
+    const later = function () {
+        if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 4000 });
+        else setTimeout(go, 2500);
+    };
+    setTimeout(later, 1500);
+}
 document.addEventListener('DOMContentLoaded', ()=>{
-    initFirebase();
     loadUserSession();
     const ta = document.getElementById('chat-input');
     if (ta) {
@@ -6599,7 +6618,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
         });
     }
 });
-initFirebase();
+if (document.readyState === 'complete') scheduleFirebaseInit();
+else window.addEventListener('load', scheduleFirebaseInit);
 loadUserSession();
 </script>
 </body>
