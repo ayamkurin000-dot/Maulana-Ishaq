@@ -918,7 +918,7 @@
         width: 44px; height: 44px; font-size: 1.44rem;
     }
     .info-flag:hover { transform: scale(1.1); }
-    /* ===== Tanda LOVE untuk kartu WALI 9 (menggantikan ℹ️): 54px agar mudah diketuk di HP.
+    /* ===== Tanda LOVE untuk semua kartu yang punya info (menggantikan ℹ️): 54px agar mudah diketuk di HP.
        Ukuran dipakai juga di JS (LOVE_FLAG_HALF = 27) untuk menggeser separuhnya keluar dari pojok kartu. ===== */
     .love-flag {
         background: linear-gradient(145deg, #ffffff, #ffe0e9);
@@ -2009,15 +2009,15 @@ function renderChain() {
         if (info.data.infoNote) {
             const svgTopInBlockForFlag = (i > 0 ? gapBetween : 0);
             const flag = document.createElement('div');
-            flag.className = 'dispute-flag info-flag';
-            flag.innerHTML = 'ℹ️';
+            flag.className = 'dispute-flag info-flag love-flag';
+            flag.innerHTML = '❤️';
             flag.title = `Klik untuk info (${info.data.name})`;
             flag.style.position = 'absolute';
             // ===== pojok KIRI-ATAS shape, badge 2x lebih besar & sengaja
             // digeser separuh (22px, setengah dari 44px) keluar dari tepi
             // shape (kiri & atas) supaya lebih gampang diketuk di HP. =====
-            flag.style.left = (SHAPE_LEFT_PAD - 22) + 'px';
-            flag.style.top = (svgTopInBlockForFlag - 22) + 'px';
+            flag.style.left = (SHAPE_LEFT_PAD - 27) + 'px';   // 27 = setengah dari 54px (.love-flag)
+            flag.style.top = (svgTopInBlockForFlag - (i === 0 ? 14 : 27)) + 'px';   // kartu paling atas: lebih ke bawah agar tidak terpotong header
             flag.addEventListener('click', (e) => { e.stopPropagation(); openInfoNote(info.data.infoName || info.data.name, info.data.infoNote); });
             block.appendChild(flag);
         }
@@ -3460,15 +3460,10 @@ function renderSiblingGroup(nodes, hostDiv, onResize, parentController) {
             // KLIK badge ini membuka kotak info di LUAR shape, terpisah dari toggle
             // buka/tutup keturunan pada shape itu sendiri. =====
             const flag = document.createElement('div');
-            flag.className = 'dispute-flag info-flag';
-            flag.innerHTML = 'ℹ️';
-            flag.title = `Klik untuk info keluarga lengkap (${d.infoName || d.name})`;
-            // kartu WALI 9: tanda ❤️ (lebih besar) menggantikan ℹ️
-            if (d.wali9) {
-                flag.classList.add('love-flag');
-                flag.innerHTML = '❤️';
-                flag.title = `Klik untuk keterangan (${d.infoName || d.name})`;
-            }
+            // tanda ❤️ (lebih besar, 54px) menggantikan ℹ️ untuk SEMUA kartu yang punya info
+            flag.className = 'dispute-flag info-flag love-flag';
+            flag.innerHTML = '❤️';
+            flag.title = `Klik untuk info (${d.infoName || d.name})`;
             flag.addEventListener('click', (e) => {
                 e.stopPropagation();
                 openInfoNote(d.infoName || d.name, d.infoNote);
