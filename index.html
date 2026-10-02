@@ -1594,8 +1594,17 @@ function bestTwoLineSplit(words, fontSize, weight) {
     }
     return best;
 }
+// Buang teks Arab (mis. radhiyallahu 'anhu / rahimahullah) dari LABEL KARTU nama tokoh.
+// Data asli (treeData / pencarian / keterangan) tidak diubah; hanya tampilan kartu.
+function stripArabicName(s) {
+    return String(s == null ? '' : s)
+        .replace(/[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF\u200e\u200f]+/g, '')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+}
 function fitNameToBox(name, maxWidth, baseFontSize, weight) {
     const minFontSize = 9;
+    name = stripArabicName(name);
     const upperName = name.toUpperCase();
     const words = upperName.trim().split(/\s+/);
 
@@ -1678,7 +1687,7 @@ const nodesInfo = chain.map((n, idx) => {
     // "NABI MUHAMMAD SAW" WAJIB 1 baris, ukuran tetap (tidak ikut auto-shrink/wrap
     // seperti nama lain yang bisa jadi 2 baris).
     const fit = isRoot
-        ? { lines: [n.name.toUpperCase()], fontSize: baseFontSize }
+        ? { lines: [stripArabicName(n.name).toUpperCase()], fontSize: baseFontSize }
         : fitNameToBox(n.name, w - 24, baseFontSize, weight);
     // baris TAHUN (khusus Nabi): kecil, seukuran nama pasangan.
     let yearLines = null, yearFontSize = null;
