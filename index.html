@@ -1114,6 +1114,25 @@
     #info-card.aged .ic-body .bio-tight .q[style*="container-type"] > div:nth-child(2) i { color: #5b4228; }
     #info-card.aged #info-close { background: rgba(255,244,214,.85); border-color: #8a6a3c; color: #4a2a0c; }
     #info-card.aged #info-close:hover { background: #f3e0b0; }
+
+    /* ===== Lembaran usang: bingkai CEKUNG (kertas terkesan masuk ke dalam) + pita bunga di atas ===== */
+    #info-card.aged {
+        border: 5px solid #6f4e26;
+        padding-top: 46px;
+        box-shadow:
+            inset 0 9px 16px -2px rgba(60,34,8,.55),
+            inset 0 -9px 16px -2px rgba(60,34,8,.45),
+            inset 9px 0 16px -2px rgba(60,34,8,.45),
+            inset -9px 0 16px -2px rgba(60,34,8,.45),
+            inset 0 0 3px 1px rgba(40,22,6,.6),
+            0 0 0 1px rgba(255,236,190,.45),
+            0 14px 34px rgba(0,0,0,.5);
+    }
+    #info-card.aged::before {
+        content: ""; position: absolute; top: 7px; left: 0; right: 0; height: 30px;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='30' viewBox='0 0 56 30'%3E%3Cpath d='M0 12 Q14 3 28 12 T56 12' fill='none' stroke='%238a6a3c' stroke-width='1.2' stroke-linecap='round'/%3E%3Cellipse cx='14' cy='6.2' rx='3.6' ry='1.6' fill='%236b7f3a' transform='rotate(-25 14 6.2)'/%3E%3Cellipse cx='42' cy='17.8' rx='3.6' ry='1.6' fill='%236b7f3a' transform='rotate(-25 42 17.8)'/%3E%3Ccircle cx='14' cy='10.5' r='1.4' fill='%23c9962f'/%3E%3Ccircle cx='42' cy='13.5' r='1.4' fill='%23c9962f'/%3E%3Cg fill='%23a8442f' stroke='%236b3f10' stroke-width='.5'%3E%3Ccircle cx='32.4' cy='12' r='3'/%3E%3Ccircle cx='29.36' cy='16.18' r='3'/%3E%3Ccircle cx='24.44' cy='14.59' r='3'/%3E%3Ccircle cx='24.44' cy='9.41' r='3'/%3E%3Ccircle cx='29.36' cy='7.82' r='3'/%3E%3C/g%3E%3Ccircle cx='28' cy='12' r='2.2' fill='%23d9a441' stroke='%236b3f10' stroke-width='.5'/%3E%3Cline x1='0' y1='25' x2='56' y2='25' stroke='%238a6a3c' stroke-width='1'/%3E%3Cline x1='0' y1='28' x2='56' y2='28' stroke='%238a6a3c' stroke-width='.5'/%3E%3C/svg%3E") repeat-x center top / auto 30px;
+        pointer-events: none; z-index: 1;
+    }
     /* ===== Tombol X MENGAMBANG: pembungkus sticky setinggi 0 (tidak menggeser isi),
        tombolnya absolute di dalamnya, sehingga X tetap tampil di pojok kanan atas
        jendela walau teks panjang di-scroll. ===== */
@@ -1337,7 +1356,6 @@
 <div id="info-overlay" onclick="if(event.target===this) closeInfoNote();">
     <div id="info-card">
         <div class="close-float"><button id="info-close" onclick="closeInfoNote()" aria-label="Tutup">✕</button></div>
-        <span class="ic-icon">📖</span>
         <div class="ic-name" id="info-name"></div>
         <div class="ic-body" id="info-body"></div>
     </div>
