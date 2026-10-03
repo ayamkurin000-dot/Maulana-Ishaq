@@ -1047,6 +1047,59 @@
     #info-card .ic-body .bio-tight .q[style*="container-type"] > div:nth-child(2) i { color: #4b5a6b; }
     @keyframes doaMengambang { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
     @media (prefers-reduced-motion: reduce) { #info-card .ic-body .bio-tight .q[style*="container-type"] { animation: none; } #info-card .ic-body .bio-tight .q[style*="container-type"]::before, #info-card .ic-body .bio-tight .q[style*="container-type"]::after { display: none !important; } }
+    /* ===== JENDELA KISAH TOKOH DUNIA: tampilan LEMBARAN USANG (kertas tua) yang tetap JELAS DIBACA.
+       Aktif hanya bila kartu dibuka dari kartu kisah bernomor (class .aged pada #info-card). ===== */
+    #info-card.aged {
+        border: 2px solid #8a6a3c; border-radius: 6px 14px 8px 12px;
+        color: #2a1b0b;
+        background-color: #ecd9a8;
+        background-image:
+            url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' seed='7'/><feColorMatrix values='0 0 0 0 0.35  0 0 0 0 0.22  0 0 0 0 0.08  0 0 0 0.22 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
+            radial-gradient(ellipse 120px 90px at 14% 22%, rgba(150,100,40,.16), transparent 70%),
+            radial-gradient(ellipse 150px 110px at 86% 64%, rgba(140,90,35,.14), transparent 70%),
+            radial-gradient(ellipse 100px 70px at 30% 88%, rgba(130,85,30,.12), transparent 70%),
+            linear-gradient(170deg, #f3e4b9 0%, #ead5a1 55%, #e2c88e 100%);
+        background-attachment: local;
+        box-shadow:
+            inset 0 0 38px 6px rgba(120,78,28,.38),
+            inset 0 0 3px 1px rgba(90,58,20,.45),
+            0 20px 60px rgba(0,0,0,0.45);
+    }
+    #info-card.aged .ic-icon { filter: sepia(.55) saturate(.9); }
+    #info-card.aged .ic-name {
+        color: #4a2a0c; -webkit-text-stroke: 0.5px #4a2a0c;
+        text-shadow: 0 1px 0 rgba(255,244,214,.9), 0 6px 8px rgba(90,52,14,.28);
+    }
+    #info-card.aged .ic-body { color: #2a1b0b; }
+    #info-card.aged .ic-body h5 { color: #6b3f10; border-bottom: 1px solid rgba(107,63,16,.45); }
+    #info-card.aged .ic-body li > b,
+    #info-card.aged .ic-body .bio-tight b { color: #4a2a0c; }
+    #info-card.aged .ic-body .bio-tight i { color: #5b4228; }
+    #info-card.aged .ic-body .bio-tight .hl { color: #8b1a1a; }
+    #info-card.aged .ic-body .bio-tight .gd { color: #7a4a06; }
+    #info-card.aged .ic-body .bio-tight .gr { color: #2f5d2a; }
+    #info-card.aged .ic-body .bio-tight u { text-decoration-color: #8a6a3c; }
+    #info-card.aged .ic-body .bio-tight .du { color: #4a2a0c; }
+    #info-card.aged .ic-body .bio-tight .du.pred { color: #6a3d8a; }
+    #info-card.aged .ic-body .bio-tight .tg { background: rgba(86,125,60,.22); color: #24471a; border: 1px solid rgba(86,125,60,.45); }
+    #info-card.aged .ic-body .bio-tight .ty { background: rgba(190,140,30,.24); color: #6a4204; border: 1px solid rgba(190,140,30,.5); }
+    #info-card.aged .ic-body .bio-tight .tr { background: rgba(170,50,40,.18); color: #7a1c14; border: 1px solid rgba(170,50,40,.45); }
+    #info-card.aged .ic-body .bio-tight .warn { background: rgba(170,50,40,.12); border-left-color: #9a2a1e; color: #5a1710; }
+    #info-card.aged .ic-body .bio-tight .sanad { background: rgba(120,90,40,.12); border-color: rgba(120,90,40,.4); }
+    #info-card.aged .ic-body .bio-tight .q { background: rgba(160,110,40,.14); border-left-color: #9a6a1c; }
+    /* bingkai doa penutup: tinta & bingkai cokelat, tanpa gradien warna-warni dan cahaya berputar */
+    #info-card.aged .ic-body .bio-tight .q[style*="container-type"] {
+        background: rgba(255,246,220,.45); border: 1.5px solid rgba(138,106,60,.65); border-radius: 12px;
+        box-shadow: inset 0 0 14px rgba(120,78,28,.18); animation: none;
+    }
+    #info-card.aged .ic-body .bio-tight .q[style*="container-type"]::before,
+    #info-card.aged .ic-body .bio-tight .q[style*="container-type"]::after { display: none !important; }
+    #info-card.aged .ic-body .bio-tight .q[style*="container-type"] > div[dir="rtl"] { color: #2a1b0b; }
+    #info-card.aged .ic-body .bio-tight .q[style*="container-type"] > div:nth-child(2) { color: #4a3520; border-top-color: rgba(138,106,60,.5); }
+    #info-card.aged .ic-body .bio-tight .q[style*="container-type"] > div:nth-child(2) b { color: #5a2d0c; }
+    #info-card.aged .ic-body .bio-tight .q[style*="container-type"] > div:nth-child(2) i { color: #5b4228; }
+    #info-card.aged #info-close { background: rgba(255,244,214,.85); border-color: #8a6a3c; color: #4a2a0c; }
+    #info-card.aged #info-close:hover { background: #f3e0b0; }
     /* ===== Tombol X MENGAMBANG: pembungkus sticky setinggi 0 (tidak menggeser isi),
        tombolnya absolute di dalamnya, sehingga X tetap tampil di pojok kanan atas
        jendela walau teks panjang di-scroll. ===== */
@@ -3798,7 +3851,7 @@ function renderSiblingGroup(nodes, hostDiv, onResize, parentController) {
             flag.title = `Klik untuk info (${d.infoName || d.name})`;
             flag.addEventListener('click', (e) => {
                 e.stopPropagation();
-                openInfoNote(d.infoName || d.name, d.infoNote);
+                openInfoNote(d.infoName || d.name, d.infoNote, !!d.kisahNo);
             });
             hostDiv.appendChild(flag);
             disputeFlagEls.push(flag);
@@ -3849,7 +3902,7 @@ function renderSiblingGroup(nodes, hostDiv, onResize, parentController) {
             if (tokohInfoOnClick) childG.style.cursor = 'pointer';
             childG.addEventListener('click', () => {
                 if (tokohInfoOnClick) {
-                    openInfoNote(d.infoName || d.name, d.infoNote);
+                    openInfoNote(d.infoName || d.name, d.infoNote, !!d.kisahNo);
                 } else if (d.disputed) {
                     openDisputeNote(d.name, d.disputedNote);
                 } else if (d.chainList) {
@@ -5025,8 +5078,9 @@ function resolveInfoHtml(v) {
     }
     return Promise.resolve(v);
 }
-function openInfoNote(name, infoHtml) {
+function openInfoNote(name, infoHtml, aged) {
     const token = ++bioReqToken;
+    document.getElementById('info-card').classList.toggle('aged', !!aged); // lembaran usang khusus kisah Tokoh Dunia
     const body = document.getElementById('info-body');
     document.getElementById('info-name').textContent = shortInfoName(name);
     document.getElementById('info-overlay').classList.add('open');
@@ -5049,7 +5103,7 @@ function openInfoNote(name, infoHtml) {
         body.innerHTML = '<p style="text-align:center;padding:24px 0;">Keterangan gagal dimuat. Periksa koneksi internet, lalu ' +
             '<a href="#" id="bio-retry">coba lagi</a>.</p>';
         const rt = document.getElementById('bio-retry');
-        if (rt) rt.addEventListener('click', function (e) { e.preventDefault(); openInfoNote(name, infoHtml); });
+        if (rt) rt.addEventListener('click', function (e) { e.preventDefault(); openInfoNote(name, infoHtml, aged); });
     });
 }
 // Predikat di bawah judul (p.du.pred): maksimal 3 baris rapat; ukuran huruf diperkecil otomatis.
