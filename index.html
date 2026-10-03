@@ -1147,6 +1147,9 @@
     #info-card .ic-body div { overflow-wrap: anywhere; word-break: break-word; max-width: 100%; }
     #info-card .ic-body img, #info-card .ic-body table { max-width: 100%; }
     #info-card .ic-name { padding: 0 30px 14px; }
+    /* teks kisah rata kiri-kanan (justify) di semua kartu; elemen yang memang di tengah (judul, sanad, ayat) tetap di tengah */
+    #info-card .ic-body, #dispute-card .dc-note { text-align: justify; text-justify: inter-word; }
+    #info-card .ic-body h5 { text-align: left; }
     #info-close {
         position: absolute; top: -8px; right: -10px; background: #f0f9ff;
         border: 1.5px solid #0369a1; border-radius: 8px; width: 34px; height: 34px;
