@@ -1398,26 +1398,26 @@
 .node-shape.search-highlight .body-stroke { stroke: #f59e0b !important; stroke-width: 4.5px !important; }
 .node-shape text { fill: #ffffff !important; filter: drop-shadow(0 1.5px 0 rgba(0,0,0,.85)); }
 .node-shape .wali9-badge text { fill: #dc2626 !important; filter: none; }
-.node-shape rect[fill="#ffffff"][rx="10"] { fill: url(#btn-well) !important; stroke: #2a0f04 !important; }
+.node-shape rect[fill="#ffffff"][rx="10"] { fill: url(#btn-well-g) !important; stroke: #0c2a0a !important; }
 #tokoh-root-box, #tokoh-dunia-root-box {
     position: relative; isolation: isolate; color: #fff;
-    background: linear-gradient(#ffc267, #e38a2a 40%, #a4540f 80%, #7a3a0a) !important;
+    background: linear-gradient(#c9ee7a, #7cc443 40%, #3f8f2a 80%, #25601a) !important;
 }
 #tokoh-root-box::before, #tokoh-dunia-root-box::before {
     content: ""; position: absolute; inset: 5px; border-radius: 16px; z-index: -1; pointer-events: none;
-    background: linear-gradient(rgba(255,255,255,.34), rgba(255,255,255,.04)) top / 100% 46% no-repeat, linear-gradient(#a82326, #6a0e11 55%, #3f0709);
-    box-shadow: 0 0 0 1.5px rgba(30,5,3,.9);
+    background: linear-gradient(rgba(255,255,255,.34), rgba(255,255,255,.04)) top / 100% 46% no-repeat, linear-gradient(#3aa84a, #1b7a2c 55%, #0c4a18);
+    box-shadow: 0 0 0 1.5px rgba(6,28,8,.9);
 }
 #tokoh-root-box .tokoh-root-text, #tokoh-dunia-root-box .tokoh-root-text { color: #fff; text-shadow: 0 1.5px 0 rgba(0,0,0,.85); }
 /* tombol header */
 .btn:not([style*="f1f5f9"]), #wali9-btn, .controls #wali9-btn, #panel-switcher button, #tab-versi-nasab, #credit-tag {
     border: 2px solid transparent !important; border-radius: 8px !important;
     background: linear-gradient(rgba(255,255,255,.3), rgba(255,255,255,0) 52%) padding-box,
-        linear-gradient(#a82326, #6a0e11 55%, #3f0709) padding-box,
-        linear-gradient(#ffc267, #e38a2a 40%, #a4540f 80%, #7a3a0a) border-box !important;
+        linear-gradient(#3aa84a, #1b7a2c 55%, #0c4a18) padding-box,
+        linear-gradient(#c9ee7a, #7cc443 40%, #3f8f2a 80%, #25601a) border-box !important;
     background-origin: padding-box, padding-box, border-box !important;
     background-clip: padding-box, padding-box, border-box !important;
-    box-shadow: 0 0 0 1px #2a0f04, 0 2px 5px rgba(0,0,0,.4), inset 0 0 0 1px rgba(30,5,3,.85) !important;
+    box-shadow: 0 0 0 1px #0c1f0a, 0 2px 5px rgba(0,0,0,.4), inset 0 0 0 1px rgba(6,24,8,.85) !important;
     color: #fff !important; font-weight: 800 !important; text-shadow: 0 1.5px 0 rgba(0,0,0,.85) !important;
 }
 .btn:not([style*="f1f5f9"]):hover, #wali9-btn:hover, #panel-switcher button:hover, #tab-versi-nasab:hover { filter: brightness(1.15); }
@@ -1431,7 +1431,7 @@
     .btn:not([style*="f1f5f9"]), #wali9-btn, .controls #wali9-btn, #panel-switcher button, #tab-versi-nasab, #credit-tag {
         border-width: 1.5px !important; border-radius: 6px !important;
         font-size: 0.5rem !important; padding: 3px 5px !important; line-height: 1.2 !important; letter-spacing: 0 !important;
-        box-shadow: 0 0 0 1px #2a0f04, 0 2px 3px rgba(0,0,0,.4), inset 0 0 0 1px rgba(30,5,3,.85) !important;
+        box-shadow: 0 0 0 1px #0c1f0a, 0 2px 3px rgba(0,0,0,.4), inset 0 0 0 1px rgba(6,24,8,.85) !important;
         white-space: nowrap;
     }
     .controls .btn { font-size: 0.5rem !important; padding: 3px 5px !important; }
@@ -1442,6 +1442,15 @@
     #panel-switcher button { padding: 3px 4px !important; }
     #credit-tag { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; padding: 3px 5px !important; font-size: 0.46rem !important; }
     .chat-notif-badge { top: -6px !important; right: -3px !important; transform: scale(.85); }
+}
+
+/* tombol WALI-9 = merah (anggota Wali 9); semua tombol lain hijau */
+#wali9-btn, .controls #wali9-btn {
+    background: linear-gradient(rgba(255,255,255,.3), rgba(255,255,255,0) 52%) padding-box,
+        linear-gradient(#a82326, #6a0e11 55%, #3f0709) padding-box,
+        linear-gradient(#ffc267, #e38a2a 40%, #a4540f 80%, #7a3a0a) border-box !important;
+    background-origin: padding-box, padding-box, border-box !important;
+    background-clip: padding-box, padding-box, border-box !important;
 }
 </style>
 </head>
@@ -2173,22 +2182,25 @@ function makeRainbowFill(g, w, h) {
         '<defs>' +
         '<linearGradient id="btn-rim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc267"/><stop offset=".4" stop-color="#e38a2a"/><stop offset=".8" stop-color="#a4540f"/><stop offset="1" stop-color="#7a3a0a"/></linearGradient>' +
         '<linearGradient id="btn-well" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a82326"/><stop offset=".55" stop-color="#6a0e11"/><stop offset="1" stop-color="#3f0709"/></linearGradient>' +
+        '<linearGradient id="btn-rim-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9ee7a"/><stop offset=".4" stop-color="#7cc443"/><stop offset=".8" stop-color="#3f8f2a"/><stop offset="1" stop-color="#25601a"/></linearGradient>' +
+        '<linearGradient id="btn-well-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3aa84a"/><stop offset=".55" stop-color="#1b7a2c"/><stop offset="1" stop-color="#0c4a18"/></linearGradient>' +
         '<linearGradient id="btn-gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".42"/><stop offset="1" stop-color="#ffffff" stop-opacity=".04"/></linearGradient>' +
         '</defs>';
     document.body.appendChild(svg);
 })();
 // ===== GAYA TOMBOL 3D (rujukan foto): bingkai tembaga/oranye bertepi gelap + sumur merah marun
 // mengilap di dalamnya; tulisan putih tebal. Dipakai di semua kotak shape. =====
-function addButtonStyle(g, w, h, rR, rL) {
-    const m = 5;
+function addButtonStyle(g, w, h, rR, rL, red) {
+    // hijau = semua kotak; merah = khusus anggota Wali 9
+    const m = 5, rimF = red ? 'url(#btn-rim)' : 'url(#btn-rim-g)', wellF = red ? 'url(#btn-well)' : 'url(#btn-well-g)', ink = red ? '#2a0f04' : '#0c2a0a', wink = red ? 'rgba(30,5,3,.9)' : 'rgba(6,28,8,.9)';
     const rimD = shapeBodyPath(w, h, rR, rL);
-    g.appendChild(el('path', { d: rimD, fill: 'url(#btn-rim)', stroke: '#2a0f04', 'stroke-width': 2.5, 'pointer-events': 'none', class: 'aged-ov' }));
+    g.appendChild(el('path', { d: rimD, fill: rimF, stroke: ink, 'stroke-width': 2.5, 'pointer-events': 'none', class: 'aged-ov' }));
     const wr = Math.max(2, rR - m), wl = Math.max(2, rL - m);
     const wellD = shapeBodyPath(w - 2*m, h - 2*m, wr, wl);
-    g.appendChild(el('path', { d: wellD, transform: 'translate(' + m + ',0)', fill: 'url(#btn-well)', stroke: 'rgba(30,5,3,.9)', 'stroke-width': 1.6, 'pointer-events': 'none', class: 'aged-ov' }));
+    g.appendChild(el('path', { d: wellD, transform: 'translate(' + m + ',0)', fill: wellF, stroke: wink, 'stroke-width': 1.6, 'pointer-events': 'none', class: 'aged-ov' }));
     g.appendChild(el('rect', { x: m + 3, y: -h/2 + m + 1.5, width: Math.max(4, w - 2*m - 6), height: (h - 2*m) * 0.46, rx: Math.max(2, Math.min(wr, wl) - 2), fill: 'url(#btn-gloss)', 'pointer-events': 'none', class: 'aged-ov' }));
     // garis tepi luar di atas semuanya (juga target sorotan hasil pencarian)
-    g.appendChild(el('path', { class: 'body-stroke', d: rimD, fill: 'none', stroke: '#2a0f04', 'stroke-width': 3, 'pointer-events': 'none' }));
+    g.appendChild(el('path', { class: 'body-stroke', d: rimD, fill: 'none', stroke: ink, 'stroke-width': 3, 'pointer-events': 'none' }));
 }
 
 function drawBatteryShape(g, w, h, type, overrideColorKey, rainbow) {
@@ -2211,7 +2223,7 @@ function drawBatteryShape(g, w, h, type, overrideColorKey, rainbow) {
         'stroke-width': plain ? 4 : 0.9,
         'stroke-opacity': plain ? 1 : 0.18
     }));
-    addButtonStyle(g, w, h, r, rLeft);
+    addButtonStyle(g, w, h, r, rLeft, colorKey === 'wali9');
     if (false && !plain && !MATTE_TYPES.has(colorKey)) { // gloss dimatikan: gaya matte/usang
         g.appendChild(el('rect', {
             x: r*0.6, y: -h/2+2.5, width: w-r*1.2, height: h*0.36, rx: r*0.5,
@@ -3730,7 +3742,7 @@ function drawCombinedShape(g, dims) {
     const r = 20;
     g.appendChild(el('path', { transform: 'translate(1.5,2)', d: shapeBodyPath(w, h, r, r/3), fill:'#000', opacity:0.1 }));
     g.appendChild(el('path', { class:'real-body', d: shapeBodyPath(w, h, r, r/3), fill:`url(#grad-${colorKey})`, stroke:'#1e293b', 'stroke-width':1, 'stroke-opacity':0.22 }));
-    addButtonStyle(g, w, h, r, r/3);
+    addButtonStyle(g, w, h, r, r/3, !!dims.wali9);
 
     // --- nub baterai (sama seperti drawBatteryShape, supaya shape gabungan
     //     Maulana Ishaq & Dewi Sekardadu juga punya nub seperti shape lainnya) ---
@@ -3795,7 +3807,7 @@ function drawChainShape(g, dims) {
 
     g.appendChild(el('path', { transform: 'translate(1.5,2)', d: shapeBodyPath(w, h, r, r/3), fill:'#000', opacity:0.1 }));
     g.appendChild(el('path', { class:'real-body', d: shapeBodyPath(w, h, r, r/3), fill:`url(#grad-${type})`, stroke:'#1e293b', 'stroke-width':1, 'stroke-opacity':0.22 }));
-    addButtonStyle(g, w, h, r, r/3);
+    addButtonStyle(g, w, h, r, r/3, false);
 
     // --- highlight khusus utk salah satu item (mis. item terakhir diberi latar kuning),
     //     diclip supaya tetap ikut sudut membulat body ---
