@@ -868,6 +868,16 @@
     }
     .dispute-flag:hover { transform: scale(1.15); }
 
+    /* ===== Nomor urut kisah (angka dalam lingkaran) di pojok kiri-atas kartu kisah, kelompok TOKOH DUNIA ===== */
+    .kisah-no {
+        position: absolute; width: 24px; height: 24px; border-radius: 50%;
+        background: #ffffff; color: #14532d; border: 1.5px solid #14532d;
+        font-weight: 800; font-size: 0.74rem; line-height: 1;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.3); z-index: 5; pointer-events: none;
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
     #dispute-overlay {
         position: fixed; inset: 0; background: rgba(15,23,42,0.55);
         z-index: 26000; display: none; align-items: center; justify-content: center; padding: 16px;
@@ -3476,7 +3486,7 @@ function renderSiblingGroup(nodes, hostDiv, onResize, parentController) {
     hostDiv.appendChild(svg);
 
     const childX = descStemX + descStubLen; // titik kiri tempat shape anak mulai digambar
-    const linkEls = [], childGs = [], badgeEls = [], anchorEls = [], disputeFlagEls = [];
+    const linkEls = [], childGs = [], badgeEls = [], anchorEls = [], disputeFlagEls = [], kisahNoEls = [];
 
     // FIX: tinggi efektif FIX = tinggi shape itu sendiri, TIDAK ikut cabang yang terbuka.
     // Jadi shape di atas/bawah TIDAK digeser. Ruang diberi dari kanan-kiri (descStemX/descStubLen).
@@ -3518,6 +3528,11 @@ function renderSiblingGroup(nodes, hostDiv, onResize, parentController) {
                 badgeEls[i].style.top = (nubCenterYinSvg - 13) + 'px';
                 anchorEls[i].style.left = (nubCenterXinSvg + 2) + 'px';
                 anchorEls[i].style.top = nubCenterYinSvg + 'px';
+            }
+            if (kisahNoEls[i]) {
+                // nomor kisah: pusat lingkaran tepat di pojok kiri-atas kartu
+                kisahNoEls[i].style.left = (childX - 12) + 'px';
+                kisahNoEls[i].style.top = ((cy - d.h/2) + 6 - 12) + 'px';
             }
             if (disputeFlagEls[i]) {
                 const isInfoBadge = disputeFlagEls[i].classList.contains('info-flag');
@@ -3595,6 +3610,17 @@ function renderSiblingGroup(nodes, hostDiv, onResize, parentController) {
             disputeFlagEls.push(flag);
         } else {
             disputeFlagEls.push(null);
+        }
+
+        if (d.kisahNo) {
+            const no = document.createElement('div');
+            no.className = 'kisah-no';
+            no.textContent = String(d.kisahNo);
+            no.title = 'Kisah ke-' + d.kisahNo;
+            hostDiv.appendChild(no);
+            kisahNoEls.push(no);
+        } else {
+            kisahNoEls.push(null);
         }
 
         // ===== jika chainList ini punya kotak pasangan (spouseOfLast) DAN rantai
@@ -4036,10 +4062,26 @@ function userToggleTokoh() {
 let tokohDuniaBuilt = false;
 let tokohDuniaChildrenState = null;
 let tokohDuniaOpen = false;
+// Beri nomor urut (1, 2, dst. dari atas) pada KARTU KISAH di kelompok TOKOH DUNIA.
+// Aturan: anak dari sebuah kartu tokoh (punya infoNote dan punya cabang, BUKAN kartu
+// kategori/periode yang berjudul kustom/titleLines) adalah kisah.
+// Kisah baru yang ditambahkan ke daftar children otomatis ikut bernomor.
+function numberKisahCards(nodes) {
+    (nodes || []).forEach(function (n) {
+        if (!n || !n.children || !n.children.length) return;
+        if (n.infoNote && !n.titleLines) {
+            n.children.forEach(function (k, i) {
+                if (!(k.children && k.children.length)) k.kisahNo = i + 1;
+            });
+        }
+        numberKisahCards(n.children);
+    });
+}
 function buildTokohDuniaTree() {
     const anchor = document.getElementById('tokoh-dunia-anchor');
     if (!anchor || tokohDuniaBuilt) return;
     tokohDuniaBuilt = true;
+    numberKisahCards(tokohDuniaChildren);
     tokohDuniaChildrenState = renderSiblingGroup(tokohDuniaChildren, anchor).state;
 }
 function toggleTokohDuniaTree(silent) {
