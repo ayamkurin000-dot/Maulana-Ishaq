@@ -3128,8 +3128,8 @@ const KH_SIROJ_PAYAMAN_INFO_HTML = "@bio:kh-siroj-payaman";
 const MBAH_MESIR_TRENGGALEK_INFO_HTML = "@bio:mbah-mesir-trenggalek";
 
 const TOKOH_PERIODE_8 = makePeriodeNode(
-    "ULAMA PESANTREN DAN TOKOH ISLAM MODERN — ABAD XX",
-    ["ULAMA PESANTREN", "DAN TOKOH ISLAM", "MODERN", "ABAD XX"],
+    "ULAMA' PESANTREN ABAD XX",
+    ["ULAMA' PESANTREN", "ABAD XX"],
     [
         { name: "MBAH MESIR TRENGGALEK", type: "tokohgold",
             infoNote: MBAH_MESIR_TRENGGALEK_INFO_HTML },
@@ -3277,6 +3277,32 @@ const TOKOH_ISLAM_NUSANTARA = {
 // kategori besar lain sbg SAUDARA (mis. "TOKOH ISLAM INTERNASIONAL"), tambahkan
 // sbg elemen baru di array ini, sejajar dengan isi TOKOH_ISLAM_NUSANTARA.children. =====
 const tokohIslamChildren = TOKOH_ISLAM_NUSANTARA.children;
+
+// ===== Keterangan (badge ❤️) untuk SETIAP kotak klasifikasi Tokoh Islam Nusantara:
+// kotak kelompok induk (Jejak Awal, Perkembangan Dakwah, Jaringan Intelektual) dan kotak
+// periode/kelompok di bawahnya. Isi dimuat dari data/bio/<id>.html (token @bio:). =====
+(function () {
+    function setKategoriInfo(node, id, title) {
+        if (!node) return;
+        node.infoNote = "@bio:" + id;
+        node.infoName = title;
+    }
+    var byName = {};
+    tokohIslamChildren.forEach(function (n) { byName[n.name] = n; });
+    setKategoriInfo(byName["JEJAK AWAL & KERAJAAN ISLAM"], "jejak-awal-dan-kerajaan-islam", "Jejak Awal & Kerajaan Islam");
+    setKategoriInfo(TOKOH_PERIODE_1, "bukti-awal-kehadiran-islam-abad-xi-xiii", "Bukti Awal Kehadiran Islam");
+    setKategoriInfo(TOKOH_PERIODE_2, "munculnya-kerajaan-islam-abad-xiii-xiv", "Munculnya Kerajaan Islam");
+    setKategoriInfo(TOKOH_WALI_SONGO_JAWA, "wali-songo-dan-dakwah-islam-di-jawa", "Wali Songo & Dakwah Islam di Jawa");
+    setKategoriInfo(byName["TOKOH LEGENDARIS & MURID PARA WALI"], "tokoh-legendaris-dan-murid-para-wali", "Tokoh Legendaris & Murid Para Wali");
+    setKategoriInfo(byName["PERKEMBANGAN DAKWAH ISLAM DI NUSANTARA"], "perkembangan-dakwah-islam-di-nusantara", "Perkembangan Dakwah Islam di Nusantara");
+    setKategoriInfo(TOKOH_PERIODE_3, "ekspansi-islam-di-jawa-dan-nusantara-abad-xiv-xv", "Ekspansi Islam di Jawa dan Nusantara");
+    setKategoriInfo(TOKOH_PERIODE_4, "konsolidasi-kesultanan-dan-jaringan-ulama-abad-xvi", "Konsolidasi Kesultanan dan Jaringan Ulama");
+    setKategoriInfo(byName["JARINGAN INTELEKTUAL & ULAMA"], "jaringan-intelektual-dan-ulama", "Jaringan Intelektual & Ulama");
+    setKategoriInfo(TOKOH_PERIODE_5, "masa-keemasan-jaringan-intelektual-islam-abad-xvii", "Masa Keemasan Jaringan Intelektual Islam");
+    setKategoriInfo(TOKOH_PERIODE_6, "penguatan-tradisi-keilmuan-lokal-dan-haramain-abad-xviii", "Penguatan Tradisi Keilmuan Lokal dan Haramain");
+    setKategoriInfo(TOKOH_PERIODE_7, "jaringan-ulama-nusantara-haramain-dan-pesantren-abad-xix-awal-xx", "Jaringan Ulama Nusantara–Haramain dan Pesantren");
+    setKategoriInfo(TOKOH_PERIODE_8, "ulama-pesantren-abad-xx", "Ulama' Pesantren Abad XX");
+})();
 
 // =====================================================================
 // TOKOH ISLAM DUNIA — kotak SAUDARA dari "TOKOH ISLAM NUSANTARA", tampil
@@ -4086,7 +4112,8 @@ function renderSiblingGroup(nodes, hostDiv, onResize, parentController) {
             }
             if (kisahNoEls[i]) {
                 // nomor kisah: pusat lingkaran tepat di pojok kiri-atas kartu
-                kisahNoEls[i].style.left = (childX - 12) + 'px';
+                const heartAtCorner = !!(disputeFlagEls[i] && disputeFlagEls[i].classList.contains('info-flag'));
+                kisahNoEls[i].style.left = (childX - 12 + (heartAtCorner ? 32 : 0)) + 'px';
                 kisahNoEls[i].style.top = ((cy - d.h/2) + 6 - 12) + 'px';
             }
             if (disputeFlagEls[i]) {
@@ -4167,11 +4194,11 @@ function renderSiblingGroup(nodes, hostDiv, onResize, parentController) {
             disputeFlagEls.push(null);
         }
 
-        if (d.kisahNo) {
+        if (d.kisahNo || d.urutNo) {
             const no = document.createElement('div');
             no.className = 'kisah-no';
-            no.textContent = String(d.kisahNo);
-            no.title = 'Kisah ke-' + d.kisahNo;
+            no.textContent = String(d.kisahNo || d.urutNo);
+            no.title = d.kisahNo ? ('Kisah ke-' + d.kisahNo) : ('Nomor urut ' + d.urutNo);
             hostDiv.appendChild(no);
             kisahNoEls.push(no);
         } else {
@@ -4568,10 +4595,30 @@ function closeDescTreeIfOpen(silent) {
 let tokohBuilt = false;
 let tokohChildrenState = null;
 let tokohOpen = false;
+// Beri nomor urut (1, 2, dst. dari atas) pada ANGGOTA di tiap klasifikasi/kelompok
+// TOKOH ISLAM NUSANTARA (Jejak Awal, Wali Songo, Legendaris & Murid Para Wali, Periode
+// dst., Ulama Pesantren & Tokoh Islam Modern). Aturan: anak dari sebuah kotak kategori
+// (punya titleLines) yang BUKAN kotak kategori lagi adalah anggota. Kotak penutup berawalan
+// "DAN ..." (mis. "DAN TOKOH LAINNYA") bukan anggota, jadi tidak diberi nomor. Anggota baru
+// yang ditambahkan ke daftar children otomatis ikut bernomor. Memakai tampilan lingkaran
+// angka yang sama dengan nomor kisah di Tokoh Islam Dunia (class .kisah-no).
+function numberAnggotaNusantara(nodes) {
+    (nodes || []).forEach(function (n) {
+        if (!n || !n.titleLines || !n.children || !n.children.length) return;
+        let no = 0;
+        n.children.forEach(function (c) {
+            if (!c || c.titleLines) return;
+            if (/^DAN\s/i.test(c.name || '')) return;
+            c.urutNo = ++no;
+        });
+        numberAnggotaNusantara(n.children);
+    });
+}
 function buildTokohTree() {
     const anchor = document.getElementById('tokoh-anchor');
     if (!anchor || tokohBuilt) return;
     tokohBuilt = true;
+    numberAnggotaNusantara(tokohIslamChildren);
     tokohChildrenState = renderSiblingGroup(tokohIslamChildren, anchor).state;
 }
 function toggleTokohTree(silent) {
