@@ -1410,19 +1410,39 @@
 }
 #tokoh-root-box .tokoh-root-text, #tokoh-dunia-root-box .tokoh-root-text { color: #fff; text-shadow: 0 1.5px 0 rgba(0,0,0,.85); }
 /* tombol header */
-.btn:not([style*="f1f5f9"]), #wali9-btn, .controls #wali9-btn, #panel-switcher button, #tab-versi-nasab {
-    border: 3px solid transparent !important; border-radius: 10px !important;
+.btn:not([style*="f1f5f9"]), #wali9-btn, .controls #wali9-btn, #panel-switcher button, #tab-versi-nasab, #credit-tag {
+    border: 2px solid transparent !important; border-radius: 8px !important;
     background: linear-gradient(rgba(255,255,255,.3), rgba(255,255,255,0) 52%) padding-box,
         linear-gradient(#a82326, #6a0e11 55%, #3f0709) padding-box,
         linear-gradient(#ffc267, #e38a2a 40%, #a4540f 80%, #7a3a0a) border-box !important;
     background-origin: padding-box, padding-box, border-box !important;
     background-clip: padding-box, padding-box, border-box !important;
-    box-shadow: 0 0 0 1.5px #2a0f04, 0 3px 6px rgba(0,0,0,.45), inset 0 0 0 1.5px rgba(30,5,3,.85) !important;
+    box-shadow: 0 0 0 1px #2a0f04, 0 2px 5px rgba(0,0,0,.4), inset 0 0 0 1px rgba(30,5,3,.85) !important;
     color: #fff !important; font-weight: 800 !important; text-shadow: 0 1.5px 0 rgba(0,0,0,.85) !important;
 }
 .btn:not([style*="f1f5f9"]):hover, #wali9-btn:hover, #panel-switcher button:hover, #tab-versi-nasab:hover { filter: brightness(1.15); }
 #panel-switcher { gap: 6px; border: none !important; box-shadow: none !important; background: transparent !important; }
 #panel-switcher button.active { filter: brightness(1.2); }
+
+/* ===== tampilan HP: semua tombol & kotak "By" diperkecil, border tipis, agar muat satu layar ===== */
+#credit-tag { font-size: 0.6rem; padding: 5px 9px; }
+.chat-notif-badge { top: -7px !important; right: -4px !important; }
+@media (max-width: 640px) {
+    .btn:not([style*="f1f5f9"]), #wali9-btn, .controls #wali9-btn, #panel-switcher button, #tab-versi-nasab, #credit-tag {
+        border-width: 1.5px !important; border-radius: 6px !important;
+        font-size: 0.5rem !important; padding: 3px 5px !important; line-height: 1.2 !important; letter-spacing: 0 !important;
+        box-shadow: 0 0 0 1px #2a0f04, 0 2px 3px rgba(0,0,0,.4), inset 0 0 0 1px rgba(30,5,3,.85) !important;
+        white-space: nowrap;
+    }
+    .controls .btn { font-size: 0.5rem !important; padding: 3px 5px !important; }
+    .controls .btn:not(#wali9-btn) { flex: 0 0 auto; }
+    .controls-buttons { gap: 4px !important; }
+    #bottom-bar { left: 6px !important; right: 6px !important; gap: 3px !important; flex-wrap: nowrap; }
+    #panel-switcher { gap: 3px !important; flex: 0 1 auto; min-width: 0; }
+    #panel-switcher button { padding: 3px 4px !important; }
+    #credit-tag { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; padding: 3px 5px !important; font-size: 0.46rem !important; }
+    .chat-notif-badge { top: -6px !important; right: -3px !important; transform: scale(.85); }
+}
 </style>
 </head>
 <body>
@@ -1575,7 +1595,7 @@
     <div id="panel-switcher">
         <button id="tab-generasi" class="active" onclick="openRincian()">RUJUKAN</button>
         <button id="tab-chat" onclick="toggleSaranPanel()">💬 SARAN<span id="chat-notif-badge" class="chat-notif-badge" style="display:none;">0</span></button>
-        <button id="tab-versi-nasab" onclick="openVersiNasab()">🌳 VERSI NASAB</button>
+        <button id="tab-versi-nasab" onclick="openVersiNasab()">VERSI NASAB</button>
         <button id="tab-tentang" onclick="openTentang()">TENTANG</button>
     </div>
     <div id="credit-tag" onclick="openCreditImg()">By : MANNIXS-21</div>
