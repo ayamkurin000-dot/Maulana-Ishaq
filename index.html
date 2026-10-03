@@ -37,8 +37,8 @@
     }
     #header h1 { font-size: 1.15rem; color: #0f172a; font-weight: 700; }
     #header p { font-size: 0.78rem; color: #64748b; }
-    .controls { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-    .controls-buttons { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .controls { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex: 1 1 460px; min-width: 0; }
+    .controls-buttons { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; width: 100%; }
     .btn {
         background: linear-gradient(135deg, #0ea5e9, #2563eb);
         color: white; border: none; padding: 6px 14px; border-radius: 6px;
@@ -49,22 +49,25 @@
     /* tombol WALI-9: sama ukuran dengan tombol lain (.btn), tapi hijau solid,
        border hitam agak tebal, dan diberi bayangan berlapis supaya terkesan
        "mengambang" (elevated) di atas tombol-tombol lainnya. */
-    #wali9-btn {
+    #wali9-btn, .controls #wali9-btn {
         background: #22c55e; border: none;
-        box-shadow: inset 0 0 0 2.5px #0f172a, 0 6px 14px rgba(0,0,0,0.35), 0 2px 0 rgba(0,0,0,0.5);
-        transform: translateY(-2px);
+        font-size: 0.56rem; padding: 3px 6px; border-radius: 5px;
+        order: 99; margin-left: 0; flex: 0 0 auto; white-space: nowrap;
+        box-shadow: inset 0 0 0 1.5px #0f172a, 0 3px 7px rgba(0,0,0,0.3), 0 1px 0 rgba(0,0,0,0.5);
+        transform: translateY(-1px);
     }
-    #wali9-btn:hover {
-        background: #16a34a; transform: translateY(-4px);
-        box-shadow: inset 0 0 0 2.5px #0f172a, 0 10px 20px rgba(0,0,0,0.4), 0 2px 0 rgba(0,0,0,0.5);
+    #wali9-btn:hover, .controls #wali9-btn:hover {
+        background: #16a34a; transform: translateY(-2px);
+        box-shadow: inset 0 0 0 1.5px #0f172a, 0 5px 10px rgba(0,0,0,0.35), 0 1px 0 rgba(0,0,0,0.5);
     }
     @media (max-width: 640px) {
         #header { padding: 10px 12px; }
         #header h1 { font-size: 0.95rem; }
         #header p { font-size: 0.6rem; }
         .controls .btn { font-size: 0.62rem; padding: 5px 9px; }
-        #search-wrap { flex-basis: 90px; min-width: 70px; max-width: none; padding: 4px 8px; }
-        #search-wrap input { font-size: 11px; }
+        #search-wrap { flex: 1 1 120px; min-width: 0; max-width: none; padding: 4px 8px; }
+        #search-wrap input { font-size: 9.5px; letter-spacing: -0.2px; }
+        .controls #wali9-btn { font-size: 0.5rem; padding: 3px 5px; }
     }
 
     /* ===== Bungkus baris tombol (RUJUKAN/SARAN/VERSI NASAB) dan kotak "By:"
@@ -697,14 +700,15 @@
         padding: 4px 12px;
         box-shadow: 0 1px 4px rgba(0,0,0,0.08);
         position: relative;
-        flex: 1 1 120px;   /* ikut sejajar tombol lain, menyusut duluan kalau ruang sempit */
-        min-width: 90px;
-        max-width: 220px;
+        flex: 1 1 260px;   /* memanjang memenuhi sisa ruang baris */
+        min-width: 0;
+        max-width: none;
     }
     #search-wrap input {
         border: none;
         outline: none;
-        font-size: 13px;
+        font-size: 11px;   /* lebih kecil agar lebih banyak huruf terlihat */
+        letter-spacing: -0.2px;
         font-weight: 600;
         flex: 1 1 auto;    /* menyusut mengikuti #search-wrap, tidak lagi lebar tetap */
         min-width: 0;
