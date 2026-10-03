@@ -762,6 +762,7 @@
         background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;
     }
     .search-suggest-item .ss-tag.tokoh { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+    .search-suggest-item .ss-tag.dunia { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
     .search-suggest-item .ss-tag.wali9 { background: #ede9fe; color: #5b21b6; border-color: #ddd6fe; }
     .search-suggest-item:hover { background: #f8fafc; color: #0ea5e9; }
     /* ===== Reaksi "ditemukan & dipilih" - PERSIS model Bani Isbadar:
@@ -1091,10 +1092,18 @@
     /* bingkai doa penutup: tinta & bingkai cokelat, tanpa gradien warna-warni dan cahaya berputar */
     #info-card.aged .ic-body .bio-tight .q[style*="container-type"] {
         background: rgba(255,246,220,.45); border: 1.5px solid rgba(138,106,60,.65); border-radius: 12px;
-        box-shadow: inset 0 0 14px rgba(120,78,28,.18); animation: none;
+        box-shadow: inset 0 0 14px rgba(120,78,28,.18), 0 6px 12px -4px rgba(120,78,28,.28);
+        animation: doaMengambang 7s ease-in-out infinite; /* melayang pelan, sama seperti kartu lain */
     }
-    #info-card.aged .ic-body .bio-tight .q[style*="container-type"]::before,
-    #info-card.aged .ic-body .bio-tight .q[style*="container-type"]::after { display: none !important; }
+    /* lampu yang mengelilingi garis bingkai (tetap berputar) — warna emas hangat agar serasi dengan kertas */
+    #info-card.aged .ic-body .bio-tight .q[style*="container-type"]::before {
+        background: radial-gradient(circle, #fffbe6 0 32%, #fcd34d 66%, #f59e0b 100%);
+        box-shadow: 0 0 5px 1px rgba(255,251,230,.95), 0 0 10px 3px rgba(245,158,11,.55), 0 0 18px 6px rgba(217,119,6,.35);
+    }
+    #info-card.aged .ic-body .bio-tight .q[style*="container-type"]::after {
+        background: radial-gradient(circle, #fffbe6 0 30%, #fde68a 70%, #f59e0b 100%);
+        box-shadow: 0 0 8px 3px rgba(245,158,11,.45);
+    }
     #info-card.aged .ic-body .bio-tight .q[style*="container-type"] > div[dir="rtl"] { color: #2a1b0b; }
     #info-card.aged .ic-body .bio-tight .q[style*="container-type"] > div:nth-child(2) { color: #4a3520; border-top-color: rgba(138,106,60,.5); }
     #info-card.aged .ic-body .bio-tight .q[style*="container-type"] > div:nth-child(2) b { color: #5a2d0c; }
@@ -3852,7 +3861,7 @@ function renderSiblingGroup(nodes, hostDiv, onResize, parentController) {
             flag.title = `Klik untuk info (${d.infoName || d.name})`;
             flag.addEventListener('click', (e) => {
                 e.stopPropagation();
-                openInfoNote(d.infoName || d.name, d.infoNote, !!d.kisahNo);
+                openInfoNote(d.infoName || d.name, d.infoNote, !!(d.kisahNo || d.isDunia));
             });
             hostDiv.appendChild(flag);
             disputeFlagEls.push(flag);
@@ -3903,7 +3912,7 @@ function renderSiblingGroup(nodes, hostDiv, onResize, parentController) {
             if (tokohInfoOnClick) childG.style.cursor = 'pointer';
             childG.addEventListener('click', () => {
                 if (tokohInfoOnClick) {
-                    openInfoNote(d.infoName || d.name, d.infoNote, !!d.kisahNo);
+                    openInfoNote(d.infoName || d.name, d.infoNote, !!(d.kisahNo || d.isDunia));
                 } else if (d.disputed) {
                     openDisputeNote(d.name, d.disputedNote);
                 } else if (d.chainList) {
@@ -4325,10 +4334,19 @@ function numberKisahCards(nodes) {
         numberKisahCards(n.children);
     });
 }
+// tandai SEMUA kartu di cabang Tokoh Islam Dunia (sahabat, imam, tokoh, kisah) -> jendela keterangannya bergaya lembaran usang
+function markDuniaCards(nodes) {
+    (nodes || []).forEach(function (n) {
+        if (!n) return;
+        n.isDunia = true;
+        markDuniaCards(n.children);
+    });
+}
 function buildTokohDuniaTree() {
     const anchor = document.getElementById('tokoh-dunia-anchor');
     if (!anchor || tokohDuniaBuilt) return;
     tokohDuniaBuilt = true;
+    markDuniaCards(tokohDuniaChildren);
     numberKisahCards(tokohDuniaChildren);
     tokohDuniaChildrenState = renderSiblingGroup(tokohDuniaChildren, anchor).state;
 }
@@ -5635,9 +5653,9 @@ function updateDropdown(query, filtered) {
     // ===== penanda asal saran: hanya ditampilkan bila daftar saran berasal dari
     // lebih dari satu cabang (mis. "GUS DUR" ada di cabang Tokoh Islam DAN di
     // daftar keturunan), supaya pengguna tahu mana yang mana. =====
-    const srcOf = it => it.tokohOnly ? 'tokoh' : (it.wali9Only ? 'wali9' : 'utama');
+    const srcOf = it => it.dunia ? 'dunia' : (it.tokohOnly ? 'tokoh' : (it.wali9Only ? 'wali9' : 'utama'));
     const multiSource = new Set(limited.map(srcOf)).size > 1;
-    const TAG = { utama: 'Silsilah', tokoh: 'Tokoh Islam', wali9: 'Wali-9' };
+    const TAG = { utama: 'Silsilah', tokoh: 'Tokoh Islam', dunia: 'Tokoh Dunia', wali9: 'Wali-9' };
     dd.innerHTML = limited.map(item => {
         const src = srcOf(item);
         const safe = item.name.replace(/'/g, "\\'");
@@ -5800,16 +5818,54 @@ function highlightFoundElements(elements) {
 function findAndHighlightShape(targetUpper, target, attemptsLeft) {
     if (attemptsLeft === undefined) attemptsLeft = 10;
     const matches = [];
+    // kartu menampilkan teks TANPA tulisan Arab/penghormatan (mis. ﷺ, رضي الله عنه), sedangkan
+    // daftar pencarian menyimpan nama lengkapnya -> samakan dulu kedua sisi sebelum dibandingkan.
+    const normName = v => String(v || '').replace(/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/g, '').replace(/[\u2013\u2014-]/g, ' ').replace(/\s+/g, ' ').trim().toUpperCase();
+    const targetN = normName(targetUpper);
     document.querySelectorAll('.node-shape').forEach(shape => {
         const tspans = shape.querySelectorAll('tspan');
-        const text = Array.from(tspans).map(t => t.textContent).join(' ').toUpperCase();
-        if (text.includes(targetUpper)) matches.push({ shape, exact: text.trim() === targetUpper });
+        // kotak kategori/periode memakai <text> tanpa <tspan> -> baca <text> bila tspan kosong
+        const parts = tspans.length ? Array.from(tspans) : Array.from(shape.querySelectorAll('text'));
+        const text = normName(parts.map(t => t.textContent).join(' '));
+        if (targetN && text.includes(targetN)) matches.push({ shape, exact: text === targetN });
     });
     if (matches.length === 0) {
+        // nama di kotak "LELUHUR DEWI SEKARDADU" digambar sebagai HTML biasa (bukan .node-shape)
+        const anc = document.getElementById('ancestor-chain');
+        if (anc && anc.style.display !== 'none') {
+            const el = Array.from(anc.children).find(d => normName(d.textContent) === targetN);
+            if (el) {
+                centerOnElement(anc, 700);
+                const bg = el.style.background, ol = el.style.outline;
+                el.style.background = '#fde68a'; el.style.outline = '2px solid #b45309';
+                setTimeout(() => { el.style.background = bg; el.style.outline = ol; }, 2700);
+                showToast(`DITEMUKAN: ${target.toUpperCase()}`);
+                return;
+            }
+        }
         if (attemptsLeft > 0) {
             // kotaknya mungkin masih dalam proses dibangun/dianimasikan -> coba lagi
             setTimeout(() => findAndHighlightShape(targetUpper, target, attemptsLeft - 1), 150);
             return;
+        }
+        // cadangan terakhir: kartu sering menampilkan SEBAGIAN nama/alias saja (mis. Sunan Giri).
+        // Pecah nama per alias (" / ") lalu pilih kartu yang memuat alias terbanyak.
+        const segs = targetUpper.replace(/\([^)]*\)/g, ' ').split('/').map(normName).filter(x => x.length >= 5);
+        if (segs.length > 1) {
+            let best = null, bestScore = 0;
+            document.querySelectorAll('.node-shape').forEach(shape => {
+                const tsp = shape.querySelectorAll('tspan');
+                const parts = tsp.length ? Array.from(tsp) : Array.from(shape.querySelectorAll('text'));
+                const txt = normName(parts.map(t => t.textContent).join(' '));
+                const sc = segs.filter(sg => txt.includes(sg)).length;
+                if (sc > bestScore) { bestScore = sc; best = shape; }
+            });
+            if (best) {
+                centerOnElement(best, 700);
+                setTimeout(() => highlightFoundElements([best]), 60);
+                showToast(`DITEMUKAN: ${target.toUpperCase()}`);
+                return;
+            }
         }
         showToast(`TIDAK DITEMUKAN "${target}"`);
         return;
@@ -5864,6 +5920,8 @@ function selectFoundName(name) {
     // ter-render (findAndHighlightShape sendiri sudah punya mekanisme
     // coba-ulang di atas sebagai jaring pengaman tambahan). =====
     if (!descOpen) {
+        if (typeof closeTokohTreeIfOpen === 'function') closeTokohTreeIfOpen(true);
+        if (typeof closeTokohDuniaTreeIfOpen === 'function') closeTokohDuniaTreeIfOpen(true);
         toggleDescTree();
         setTimeout(revealAndFind, 500);
     } else {
@@ -5889,6 +5947,7 @@ function selectFoundNameTokoh(targetUpper, target) {
     }
     if (!tokohOpen) {
         closeDescTreeIfOpen(true);
+        if (typeof closeTokohDuniaTreeIfOpen === 'function') closeTokohDuniaTreeIfOpen(true);
         toggleTokohTree(true);
         setTimeout(revealAndFind, 500);
     } else {
