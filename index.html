@@ -6639,16 +6639,19 @@ function collectAllNames() {
     // terpisah lagi; ditandai tokohOnly + dunia supaya selectFoundName membuka
     // cabang TOKOH ISLAM DUNIA (bukan Nusantara). =====
     try {
-        function walkTokohDunia(nodes) {
+        function walkTokohDunia(nodes, parent) {
             (nodes || []).forEach(n => {
                 if (n.name) {
                     const key = n.name.toUpperCase().trim();
-                    if (!set.has(key)) set.set(key, { name: key, tokohOnly: true, dunia: true });
+                    // kisah = kartu daun di bawah sebuah tokoh (bukan kotak kategori); dipakai
+                    // untuk mengurutkan saran: tokoh lebih dulu daripada kisahnya.
+                    const isKisah = !!(parent && !parent.titleLines && !(n.children && n.children.length));
+                    if (!set.has(key)) set.set(key, { name: key, tokohOnly: true, dunia: true, kisah: isKisah });
                 }
-                if (n.children) walkTokohDunia(n.children);
+                if (n.children) walkTokohDunia(n.children, n);
             });
         }
-        if (typeof tokohDuniaChildren !== 'undefined') walkTokohDunia(tokohDuniaChildren);
+        if (typeof tokohDuniaChildren !== 'undefined') walkTokohDunia(tokohDuniaChildren, null);
     } catch(e) {}
     allNamesCache = Array.from(set.values());
     return allNamesCache;
@@ -6683,7 +6686,7 @@ function updateDropdown(query, filtered) {
         dd.innerHTML = '';
         return;
     }
-    const limited = filtered.slice(0, 10);
+    const limited = filtered.slice(0, 40);
     // ===== penanda asal saran: hanya ditampilkan bila daftar saran berasal dari
     // lebih dari satu cabang (mis. "GUS DUR" ada di cabang Tokoh Islam DAN di
     // daftar keturunan), supaya pengguna tahu mana yang mana. =====
@@ -6720,10 +6723,51 @@ function searchNames(q, fromSuggestion=false) {
         if (dd) { dd.classList.remove('show'); dd.innerHTML = ''; }
         return;
     }
-    const queryUpper = query.toUpperCase();
     const allNames = collectAllNames();
-    const filtered = allNames.filter(item => item.name.includes(queryUpper));
-    updateDropdown(query, filtered);
+    updateDropdown(query, rankSuggestions(query, allNames));
+}
+
+// ===== Pencocokan saran yang toleran + diurutkan menurut kecocokan (bukan urutan data):
+//  - abaikan tanda baca: apostrof (ASY'ARI = ASYARI), tanda hubung (ASH-SHIDDIQ = ASH SHIDDIQ), titik, koma, kurung
+//  - beberapa kata boleh diketik tidak berurutan ("wahid hasyim" = "HASYIM ... WAHID")
+//  - urutan: nama persis > diawali kata ketikan > diawali pada batas kata > frasa di tengah > kata terpisah.
+//    Sebelumnya hanya 10 hasil PERTAMA menurut urutan data yang tampil, sehingga banyak tokoh
+//    (terutama Tokoh Islam Dunia) tidak pernah muncul bila kata kuncinya umum (mis. "umar"). =====
+function normSearchText(s) {
+    return String(s || '').toUpperCase()
+        .replace(/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/g, ' ')
+        .replace(/[\u2018\u2019\u02BB\u02BC\u02BF'`\u00B4]/g, '')
+        .replace(/[^A-Z0-9 ]+/g, ' ')
+        .replace(/\s+/g, ' ').trim();
+}
+function rankSuggestions(query, allNames) {
+    const nq = normSearchText(query);
+    if (!nq) return [];
+    const tokens = nq.split(' ');
+    const scored = [];
+    allNames.forEach(function (item, idx) {
+        if (!item._n) item._n = normSearchText(item.name);
+        const nn = item._n;
+        let tier, pos = 0;
+        const at = nn.indexOf(nq);
+        if (at >= 0) {
+            pos = at;
+            if (nn === nq) tier = 0;
+            else if (at === 0) tier = 1;
+            else if (nn.charAt(at - 1) === ' ') tier = 2;
+            else tier = 3;
+        } else if (tokens.length > 1 && tokens.every(function (t) { return nn.indexOf(t) >= 0; })) {
+            tier = 4;
+        } else {
+            return;
+        }
+        if (item.kisah && tier > 0) tier += 2;      // kartu kisah di bawah tokoh: tampil sesudah tokohnya
+        scored.push({ item: item, tier: tier, pos: pos, len: nn.length, idx: idx });
+    });
+    scored.sort(function (a, b) {
+        return a.tier - b.tier || a.pos - b.pos || a.len - b.len || a.idx - b.idx;
+    });
+    return scored.map(function (s) { return s.item; });
 }
 
 // ===== Cari path (rantai leluhur) menuju sebuah nama di dalam data ASLI
@@ -6797,6 +6841,40 @@ function centerOnElement(el, duration) {
     contEl.style.transition = `transform ${duration}ms ease`;
     applyTransform();
     setTimeout(() => { contEl.style.transition = ''; }, duration + 30);
+}
+
+// ===== FIX "layar kadang melenceng / kotak ketemu tapi tidak tampil di layar":
+// cabang yang baru dibuka (terutama yang bersusun dalam, mis. Periode di Tokoh Islam
+// Nusantara atau kartu kisah di bawah tokoh Dunia) masih menata ulang posisinya
+// beberapa ratus milidetik sesudah kamera digeser, sehingga kotak yang dicari bergeser
+// lagi ke luar layar. Maka setelah menggeser, posisi kotak dipantau sebentar dan kamera
+// dikoreksi sampai kotak benar-benar diam di tengah. Dihentikan otomatis begitu pengguna
+// menyentuh/menggeser chart sendiri. =====
+let settleToken = 0;
+if (!window.__settleGuardAdded) {
+    window.__settleGuardAdded = true;
+    ['pointerdown', 'wheel', 'touchstart'].forEach(function (ev) {
+        wrapEl.addEventListener(ev, function () { settleToken++; }, { capture: true, passive: true });
+    });
+}
+function settleCenterOn(el, token, tries, okStreak) {
+    if (token === undefined) token = ++settleToken;
+    if (tries === undefined) tries = 14;
+    okStreak = okStreak || 0;
+    setTimeout(function () {
+        if (token !== settleToken || !el || !el.isConnected) return;
+        const wr = wrapEl.getBoundingClientRect();
+        const r = el.getBoundingClientRect();
+        if (r.width === 0 && r.height === 0) { if (tries > 0) settleCenterOn(el, token, tries - 1, 0); return; }
+        const dx = (wr.left + wr.width / 2) - (r.left + r.width / 2);
+        const dy = (wr.top + 70 + (wr.height - 70) / 2) - (r.top + r.height / 2);
+        if (Math.abs(dx) > 28 || Math.abs(dy) > 28) {
+            centerOnElement(el, 320);
+            if (tries > 0) settleCenterOn(el, token, tries - 1, 0);
+        } else if (okStreak < 2 && tries > 0) {
+            settleCenterOn(el, token, tries - 1, okStreak + 1);   // pastikan benar-benar diam
+        }
+    }, 380);
 }
 
 function clearFoundHighlight() {
@@ -6897,6 +6975,7 @@ function findAndHighlightShape(targetUpper, target, attemptsLeft) {
             if (best) {
                 centerOnElement(best, 700);
                 setTimeout(() => highlightFoundElements([best]), 60);
+                settleCenterOn(best);
                 showToast(`DITEMUKAN: ${target.toUpperCase()}`);
                 return;
             }
@@ -6912,6 +6991,7 @@ function findAndHighlightShape(targetUpper, target, attemptsLeft) {
         || matches[0]).shape;
     centerOnElement(primary, 700);
     setTimeout(() => highlightFoundElements([primary]), 60);
+    settleCenterOn(primary);
     showToast(`DITEMUKAN: ${target.toUpperCase()}`);
 }
 
