@@ -831,6 +831,25 @@
         display: none;
     }
     #search-dropdown.show { display: block; }
+    /* ===== Baris pencarian: WALI-9 kecil mepet tepi kiri + kotak pencarian memanjang; huruf lebih kecil. ===== */
+    .controls .search-row { display: flex; align-items: center; gap: 6px; width: 100%; flex-wrap: nowrap; }
+    .controls .search-row #wali9-btn {
+        flex: 0 0 auto; font-size: 0.56rem; padding: 3px 6px; border-radius: 5px; line-height: 1.2; white-space: nowrap;
+        margin-left: -6px; transform: none;
+        box-shadow: inset 0 0 0 2px #0f172a, 0 3px 7px rgba(0,0,0,0.3);
+    }
+    .controls .search-row #wali9-btn:hover { transform: translateY(-1px); }
+    .controls .search-row #search-wrap { flex: 1 1 0; min-width: 0; max-width: none; padding: 3px 10px; }
+    #header #search-wrap input { font-size: 11px; letter-spacing: 0; }
+    #header #search-wrap input::placeholder { font-size: 10.5px; }
+    #header #search-dropdown .search-suggest-item { font-size: 10.5px; padding: 7px 10px; }
+    #header #search-dropdown .search-suggest-item .ss-tag { font-size: 8px; }
+    @media (max-width: 640px) {
+        .controls .search-row #wali9-btn { margin-left: -8px; font-size: 0.5rem; padding: 3px 5px; }
+        .controls .search-row #search-wrap { flex-basis: 0; min-width: 0; padding: 3px 8px; }
+        #header #search-wrap input { font-size: 10.5px; }
+        #header #search-dropdown .search-suggest-item { font-size: 10px; padding: 6px 8px; }
+    }
     .search-suggest-item {
         padding: 9px 12px;
         font-size: 12px;
@@ -1606,12 +1625,14 @@
             <button class="btn" onclick="expandAllBranches()">BUKA SEMUA</button>
             <button class="btn" onclick="collapseAllBranches()">TUTUP SEMUA</button>
             <button class="btn" id="lock-btn" onclick="toggleLock()" style="background:#64748b;">🔓 KUNCI: OFF</button>
-            <button class="btn" id="wali9-btn" onclick="openWali9Panel()">⭐ WALI-9</button>
-            <div id="search-wrap">
-                <span style="font-size:13px;">🔍</span>
-                <input id="search-input" type="text" placeholder="Cari nama (min. 3 huruf)..." oninput="searchNames(this.value)" autocomplete="off" />
-                <button onclick="clearSearch()" title="Hapus">✕</button>
-                <div id="search-dropdown"></div>
+            <div class="search-row">
+                <button class="btn" id="wali9-btn" onclick="openWali9Panel()">⭐ WALI-9</button>
+                <div id="search-wrap">
+                    <span style="font-size:13px;">🔍</span>
+                    <input id="search-input" type="text" placeholder="Cari nama (min. 3 huruf)..." oninput="searchNames(this.value)" autocomplete="off" />
+                    <button onclick="clearSearch()" title="Hapus">✕</button>
+                    <div id="search-dropdown"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -3994,6 +4015,8 @@ const tokohDuniaChildren = [
             infoNote: "@bio:aisyah-menyisir-rambut-rasulullah-saat-itikaf" },
             { name: "HARI TERBERAT RASULULLAH ﷺ: PERTANYAAN AISYAH", type: "tokohgold",
             infoNote: "@bio:aisyah-bertanya-hari-terberat-rasulullah-thaif" },
+            { name: "HAJI WADA': AISYAH HAID DI SARIF DAN UMRAH DARI TAN'IM", type: "tokohgold",
+            infoNote: "@bio:aisyah-haid-di-sarif-dan-umrah-dari-tanim" },
             { name: "RASULULLAH ﷺ WAFAT DI PANGKUAN AISYAH", type: "tokohgold",
             infoNote: "@bio:rasulullah-wafat-di-pangkuan-aisyah" },
             { name: "AISYAH MERELAKAN TEMPAT DI SAMPING RASULULLAH ﷺ UNTUK UMAR", type: "tokohgold",
