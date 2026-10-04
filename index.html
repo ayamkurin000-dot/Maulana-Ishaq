@@ -3906,7 +3906,17 @@ const tokohDuniaChildren = [
         { name: "MUHAMMAD AL-BAQIR رحمه الله — PUTRA ALI ZAINAL ABIDIN", type: "tokohgold",
             infoNote: "@bio:muhammad-al-baqir-bin-ali-zainal-abidin-ahlul-bait" },
         { name: "MUJAHID BIN JABR رحمه الله — IMAM TAFSIR MURID IBNU ABBAS", type: "tokohgold",
-            infoNote: "@bio:mujahid-bin-jabr-imam-tafsir-murid-ibnu-abbas" }
+            infoNote: "@bio:mujahid-bin-jabr-imam-tafsir-murid-ibnu-abbas" },
+        { name: "ALQAMAH BIN QAIS رحمه الله — MURID UTAMA IBNU MAS'UD", type: "tokohgold",
+            infoNote: "@bio:alqamah-bin-qais-murid-utama-ibnu-masud-dari-kufah" },
+        { name: "IBRAHIM AN-NAKHA'I رحمه الله — FAQIH KUFAH", type: "tokohgold",
+            infoNote: "@bio:ibrahim-an-nakhai-faqih-kufah-guru-hammad-bin-abi-sulaiman" },
+        { name: "THAWUS BIN KAISAN رحمه الله — FAQIH DAN AHLI IBADAH DARI YAMAN", type: "tokohgold",
+            infoNote: "@bio:thawus-bin-kaisan-faqih-dan-ahli-ibadah-dari-yaman" },
+        { name: "MUHAMMAD BIN SIRIN رحمه الله — ULAMA WARA' DARI BASHRAH", type: "tokohgold",
+            infoNote: "@bio:muhammad-bin-sirin-ulama-wara-dari-bashrah" },
+        { name: "UMAR BIN ABDUL AZIZ رحمه الله — KHALIFAH YANG ADIL DAN ZUHUD", type: "tokohgold",
+            infoNote: "@bio:umar-bin-abdul-aziz-khalifah-yang-adil-dan-zuhud" }
         ],
         { fontSize: 22, lineHeight: 25, minFontSize: 12 }
     ),
@@ -3969,6 +3979,7 @@ const tokohDuniaChildren = [
     tokohDuniaChildren.forEach(function (n) { byNameDunia[n.name] = n; });
     setKategoriInfoDunia(byNameDunia["SAHABAT NABI"], "sahabat-nabi", "Sahabat Nabi");
     setKategoriInfoDunia(byNameDunia["TABI'IN"], "tabiin", "Tabi'in");
+    byNameDunia["TABI'IN"].nomorAnggota = true; // anggota Tabi'in bernomor urut 1, 2, dst.
     setKategoriInfoDunia(byNameDunia["TABI'UT TABI'IN"], "tabiut-tabiin", "Tabi'ut Tabi'in");
     setKategoriInfoDunia(byNameDunia["4 IMAM MAZHAB"], "empat-imam-mazhab", "4 Imam Mazhab");
     setKategoriInfoDunia(byNameDunia["IMAM-IMAM HADIS BESAR"], "imam-imam-hadis-besar", "Imam-Imam Hadis Besar");
@@ -4968,6 +4979,17 @@ let tokohDuniaOpen = false;
 function numberKisahCards(nodes) {
     (nodes || []).forEach(function (n) {
         if (!n || !n.children || !n.children.length) return;
+        // Kelompok bertanda nomorAnggota (mis. TABI'IN): anggota berupa kartu tokoh diberi
+        // nomor urut 1, 2, dst. dari atas, tampil sebagai lingkaran angka seperti nomor kisah.
+        // Kotak kategori (titleLines) dan kotak berawalan "DAN ..." tidak diberi nomor.
+        if (n.nomorAnggota) {
+            let no = 0;
+            n.children.forEach(function (c) {
+                if (!c || c.titleLines) return;
+                if (/^DAN\s/i.test(c.name || '')) return;
+                c.urutNo = ++no;
+            });
+        }
         if (n.infoNote && !n.titleLines) {
             n.children.forEach(function (k, i) {
                 if (!(k.children && k.children.length)) k.kisahNo = i + 1;
