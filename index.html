@@ -2086,6 +2086,8 @@ const _refTopH = _refNameFit.lines.length * NAME_LINE_HEIGHT + 4;
 const _refBottomH = _refSpouseFit.lines.length * NAME_LINE_HEIGHT + 4;
 // tinggi shape Nabi Muhammad SAW TETAP seperti semula (dikecualikan dari penyeragaman)
 const ROOT_H = 2 * lineHeight + padY;
+// kartu Nabi Muhammad SAW berbentuk LINGKARAN (hanya tulisan Arab + tahun); diameter dalam px
+const ROOT_CIRCLE_D = 108;
 // tinggi seragam utk semua shape lain (chain gen1-gen6 & keturunan gen7), disamakan dgn shape Maulana Ishaq
 const STANDARD_H = _refTopH + _refBottomH;
 
@@ -2118,7 +2120,7 @@ const DOA_GAP = 3;
 // hitung info tiap shape: tinggi SERAGAM (cukup utk 2 baris), teks di-auto-fit max 2 baris
 const nodesInfo = chain.map((n, idx) => {
     const isRoot = idx === 0;
-    const w = isRoot ? founderWidth : cardWidth;
+    const w = isRoot ? ROOT_CIRCLE_D : cardWidth;
     // nama UTAMA (Nabi Muhammad SAW s/d Syekh Jumadil Qubro) dibuat lebih besar & tebal;
     // nama PASANGAN (spouseName di bawahnya) tetap memakai ukuran/berat semula (lihat di bawah).
     const baseFontSize = isRoot ? 18 : 15.5;
@@ -2142,9 +2144,9 @@ const nodesInfo = chain.map((n, idx) => {
         doaLines = n.doaLines;
         doaFontSize = DOA_FONT_SIZE;
     }
-    let h = isRoot ? ROOT_H : STANDARD_H;
+    let h = isRoot ? ROOT_CIRCLE_D : STANDARD_H;
     let spouseLines = null, spouseFontSize = null, topH = null, bottomH = null;
-    if (n.spouseName) {
+    if (n.spouseName && !isRoot) {
         const spouseFit = fitNameToBox(n.spouseName, w - 24, 12.5, 700);
         // GAP dipakai seragam utk 4 jarak: atas-box↔nama, nama↔garis, garis↔isteri, isteri↔bawah-box
         // supaya semua teks "rata atas bawah" & jarak ke garis pembatas SAMA persis di kedua sisi.
@@ -2347,6 +2349,52 @@ function drawBatteryShape(g, w, h, type, overrideColorKey, rainbow) {
     }
 }
 
+// ===== Kartu NABI MUHAMMAD SAW berbentuk LINGKARAN, gaya sama dengan kotak lain:
+// badan kertas usang + bingkai tembaga hijau + sumur hijau mengilap + garis tepi hitam tebal. =====
+function drawCircleShape(g, d) {
+    const R = d / 2, cx = R, m = 5;
+    const ink = '#0c2a0a', wink = 'rgba(6,28,8,.9)';
+    g.appendChild(el('circle', {
+        class: 'real-body', cx: cx, cy: 0, r: R,
+        fill: makeRainbowFill(g, d, d), stroke: '#000000', 'stroke-width': 4
+    }));
+    g.appendChild(el('circle', { cx: cx, cy: 0, r: R, fill: 'url(#btn-rim-g)', stroke: ink, 'stroke-width': 2.5, 'pointer-events': 'none', class: 'aged-ov' }));
+    g.appendChild(el('circle', { cx: cx, cy: 0, r: R - m, fill: 'url(#btn-well-g)', stroke: wink, 'stroke-width': 1.6, 'pointer-events': 'none', class: 'aged-ov' }));
+    const clipId = 'nabi-gloss-clip';
+    const clip = el('clipPath', { id: clipId });
+    clip.appendChild(el('circle', { cx: cx, cy: 0, r: R - m }));
+    g.appendChild(clip);
+    const ry = (R - m) * 0.46;
+    g.appendChild(el('ellipse', {
+        cx: cx, cy: -(R - m) + ry + 1.5, rx: R - m - 4, ry: ry,
+        fill: 'url(#btn-gloss)', 'clip-path': 'url(#' + clipId + ')', 'pointer-events': 'none'
+    }));
+    g.appendChild(el('circle', { class: 'body-stroke', cx: cx, cy: 0, r: R, fill: 'none', stroke: ink, 'stroke-width': 3, 'pointer-events': 'none' }));
+}
+// teks Arab "محمد" + tahun di bawahnya. Nama latin TIDAK ditampilkan (disimpan tersembunyi
+// agar pencarian nama "Nabi Muhammad SAW" tetap menemukan kartu ini).
+function drawNabiCircleText(g, info) {
+    const cx = info.w / 2;
+    const hid = el('text', { display: 'none', class: 'nabi-search-name' });
+    hid.textContent = info.data.name;
+    g.appendChild(hid);
+    const ar = el('text', {
+        class: 'nabi-ar', x: cx, y: -9, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
+        direction: 'rtl', 'font-family': "'Amiri','Scheherazade New','Traditional Arabic',serif",
+        'font-size': 40, 'font-weight': 700, fill: '#0f172a'
+    });
+    ar.textContent = '\u0645\u062D\u0645\u062F';
+    g.appendChild(ar);
+    if (info.data.yearLabel) {
+        const yr = el('text', {
+            class: 'nabi-year', x: cx, y: 28, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
+            'font-weight': 700, 'font-size': 12.5, fill: '#0f172a'
+        });
+        yr.textContent = info.data.yearLabel;
+        g.appendChild(yr);
+    }
+}
+
 // ===== Samakan kotak "TOKOH ISLAM NUSANTARA" / "TOKOH ISLAM DUNIA" dengan shape
 // SYEKH JUMADIL QUBRO: lebar & tinggi sama, sudut membulat sama, border HITAM TEBAL 4px
 // (sama dgn stroke shape gaya "plain"), dan center-nya disejajarkan dgn badan shape
@@ -2397,7 +2445,13 @@ function renderChain() {
         buildDefs(svg);
         const g = el('g', { class:'node-shape', transform:`translate(0, ${info.h/2+1})` });
         const type = info.isRoot ? 'root' : (info.data.type in GEN_COLORS ? info.data.type : 'gen1');
-        drawBatteryShape(g, info.w, info.h, type, null, true);
+        if (info.isRoot) drawCircleShape(g, info.w);
+        else drawBatteryShape(g, info.w, info.h, type, null, true);
+        if (info.isRoot) {
+            g.setAttribute('data-circle', '1');
+            g.setAttribute('aria-label', info.data.name);
+            drawNabiCircleText(g, info);
+        }
 
         const textEl = el('text', {
             x: info.w/2, y: 0, 'text-anchor':'middle', 'dominant-baseline':'middle',
@@ -2475,7 +2529,7 @@ function renderChain() {
                 spouseText.appendChild(tspan);
             });
             g.appendChild(spouseText);
-        } else {
+        } else if (!info.isRoot) {
             const startY = -((info.lines.length - 1) * NAME_LINE_HEIGHT) / 2;
             info.lines.forEach((ln, li) => {
                 const tspan = el('tspan', { x: info.w/2, y: startY + li*NAME_LINE_HEIGHT });
@@ -2501,17 +2555,26 @@ function renderChain() {
             // ===== pojok KIRI-ATAS shape, badge 2x lebih besar & sengaja
             // digeser separuh (22px, setengah dari 44px) keluar dari tepi
             // shape (kiri & atas) supaya lebih gampang diketuk di HP. =====
-            flag.style.left = (SHAPE_LEFT_PAD - 27) + 'px';   // 27 = setengah dari 54px (.love-flag)
-            flag.style.top = (svgTopInBlockForFlag - (i === 0 ? 14 : 27)) + 'px';   // kartu paling atas: lebih ke bawah agar tidak terpotong header
+            let flagLeftPx = SHAPE_LEFT_PAD - 27;   // 27 = setengah dari 54px (.love-flag)
+            let flagTopPx = svgTopInBlockForFlag - (i === 0 ? 14 : 27);   // kartu paling atas: lebih ke bawah agar tidak terpotong header
+            if (i === 0 && info.isRoot) {
+                // kartu Nabi berbentuk lingkaran: badge dipasang di tepi lingkaran pada sudut kiri-atas (225 derajat)
+                const Rn = info.w / 2;
+                flagLeftPx = (SHAPE_LEFT_PAD + Rn - Rn * Math.SQRT1_2) - 27;
+                flagTopPx = svgTopInBlockForFlag + (info.h / 2 + 1 - Rn * Math.SQRT1_2) - 27;
+            }
+            flag.style.left = flagLeftPx + 'px';
+            flag.style.top = flagTopPx + 'px';
             let loveHint = null;
-            if (i === 0) {
-                // Balon "Ketuk untuk keterangan" di bawah-kiri badge love Nabi Muhammad SAW
-                // (hilang setelah badge itu diketuk sekali).
+            if (i === nodesInfo.length - 1) {
+                // Balon "Ketuk untuk keterangan" di bawah-kiri badge love SYEKH JUMADIL QUBRO
+                // (hilang setelah badge itu diketuk sekali). Animasi denyut/bersinar pada badge
+                // tetap HANYA di badge Nabi Muhammad SAW (kelas love-flag-nabi).
                 loveHint = document.createElement('div');
                 loveHint.className = 'love-tap-hint';
                 loveHint.innerHTML = '<span class="lt-hand">👆</span>Ketuk untuk keterangan';
-                loveHint.style.left = (SHAPE_LEFT_PAD - 6 - 80) + 'px';
-                loveHint.style.top = (svgTopInBlockForFlag - 14 + 54 + 6) + 'px';
+                loveHint.style.left = (flagLeftPx - 59) + 'px';
+                loveHint.style.top = (flagTopPx + 54 + 6) + 'px';
             }
             const openFlagInfo = (e) => {
                 e.stopPropagation();
@@ -6247,7 +6310,7 @@ function highlightFoundElements(elements) {
         try {
             const bbox = elm.getBBox();
             const pad = 6;
-            const r = Math.min(22, Math.round(bbox.height * 0.42)) + 3;
+            const r = elm.getAttribute('data-circle') ? (bbox.width / 2 + pad) : Math.min(22, Math.round(bbox.height * 0.42)) + 3;
             const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
             rect.setAttribute('class', 'search-highlight-overlay');
             rect.setAttribute('x', bbox.x - pad);
