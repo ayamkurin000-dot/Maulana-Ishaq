@@ -374,6 +374,32 @@
         background: #fff8e1; border: 1px solid #e3cf86; border-right: 4px solid #b8912f; border-radius: 10px;
         padding: 11px 14px 2px; margin: 0 0 12px; box-shadow: 0 2px 8px rgba(184,145,47,0.12);
     }
+    /* ===== Kotak mencolok "Catatan untuk Pembaca" (sumber & anjuran merujuk kitab asli) ===== */
+    #tentang-body .tt-amanah {
+        position: relative; margin: 30px 0 14px; padding: 26px 16px 14px; text-align: center;
+        background: linear-gradient(165deg, #fffdf2 0%, #fdf1c9 100%);
+        border: 2px solid #b8912f; border-radius: 16px;
+        box-shadow: 0 0 0 4px #fffdf2, 0 0 0 5px rgba(184,145,47,0.65), 0 8px 22px rgba(184,145,47,0.38);
+        animation: ttAmanahGlow 3.2s ease-in-out infinite;
+    }
+    #tentang-body .tt-amanah-tag {
+        position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+        display: flex; align-items: center; gap: 7px; white-space: nowrap;
+        background: linear-gradient(180deg, #14532d, #0b3d24); color: #f5e6b0;
+        border: 1.5px solid #d4af37; border-radius: 999px; padding: 6px 16px;
+        font-family: 'Cormorant Garamond','Georgia',serif; font-weight: 700; font-size: 0.98rem; letter-spacing: 1.6px; text-transform: uppercase;
+        box-shadow: 0 3px 8px rgba(11,61,36,0.4);
+    }
+    #tentang-body .tt-amanah p { text-align: center; hyphens: none; margin: 0 0 8px; color: #3a2f0b; font-size: 0.86rem; line-height: 1.75; font-weight: 500; }
+    #tentang-body .tt-amanah p b { color: #7a1f1f; font-weight: 800; }
+    #tentang-body .tt-amanah-end { margin-top: 6px; padding-top: 9px; border-top: 1px dashed rgba(184,145,47,0.7); }
+    #tentang-body .tt-amanah-end .tt-ar { font-size: 1.5rem; color: #14532d; line-height: 2; }
+    #tentang-body .tt-amanah-end i { display: block; font-size: 0.78rem; color: #6b5314; font-style: italic; }
+    @keyframes ttAmanahGlow {
+        0%, 100% { box-shadow: 0 0 0 4px #fffdf2, 0 0 0 5px rgba(184,145,47,0.65), 0 8px 22px rgba(184,145,47,0.30); }
+        50%      { box-shadow: 0 0 0 4px #fffdf2, 0 0 0 5px rgba(212,175,55,0.95), 0 8px 28px rgba(212,175,55,0.62); }
+    }
+    @media (prefers-reduced-motion: reduce) { #tentang-body .tt-amanah { animation: none; } }
     #tentang-credit { text-align: right; margin-top: 26px; padding-top: 12px; border-top: 1px solid rgba(184,145,47,0.5); line-height: 1.55; color: #1f3d2c; font-size: 0.82rem; }
     /* ===== Tanda tangan "Mannixs-21": ditulis perlahan saat panel dibuka, lalu berkilau emas, melayang, dan ada kerlip bintang ===== */
     #tentang-credit .tt-sign-wrap { position: relative; display: block; width: fit-content; margin-left: auto; padding: 2px 10px 12px 6px; }
@@ -1668,6 +1694,15 @@
             <div class="tt-quote">
                 <div class="tt-ar" dir="rtl">الْمَرْءُ مَعَ مَنْ أَحَبَّ</div>
                 <div class="tt-tr">&ldquo;Seseorang akan bersama orang yang dicintainya.&rdquo; <span>(HR. al-Bukhari dan Muslim)</span></div>
+            </div>
+
+            <div class="tt-amanah">
+                <div class="tt-amanah-tag"><span>📚</span>Catatan untuk Pembaca</div>
+                <p>Tulisan ini mayoritas bersumber dari web-web terpercaya yang telah diverifikasi keakuratannya (seperti NU dan semisalnya). Bila ada kekeliruan, kami mohon maaf. Kami tetap menyarankan pembaca merujuk ke <b>kitab aslinya</b>.</p>
+                <div class="tt-amanah-end">
+                    <div class="tt-ar" dir="rtl">وَاللَّهُ أَعْلَمُ بِالصَّوَابِ</div>
+                    <i>Wallāhu a'lam bish-shawāb.</i>
+                </div>
             </div>
 
             <div class="tt-sec">Catatan Kehati-hatian</div>
