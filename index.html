@@ -882,7 +882,7 @@
        nama Syekh Jumadil Qubro, tombol +/- SENDIRI (terpisah dari cabang
        keturunan darah). Tema keemasan & garis putus-putus supaya jelas
        secara visual bahwa isinya BUKAN garis keturunan darah. ===== */
-    #tokoh-root-wrap { position: relative; margin-top: 54px; }
+    #tokoh-root-wrap { position: relative; margin-top: 28px; }
     /* ===== Kotak "TOKOH-TOKOH ISLAM": disamakan UKURANNYA (lebar & tinggi)
        dengan kotak shape "TOKOH ISLAM NUSANTARA" di bawahnya — lebar 260px,
        tinggi 56px (= STANDARD_H, tinggi standar seluruh kotak shape lain).
@@ -907,7 +907,7 @@
        NUSANTARA" di atasnya, tampil TEPAT DI BAWAHNYA dengan UKURAN SAMA
        PERSIS (lebar 260px, tinggi 56px = STANDARD_H) dan gaya yang sama,
        tombol +/- sendiri, terpisah dari cabang Nusantara. ===== */
-    #tokoh-dunia-root-wrap { position: relative; margin-top: 18px; }
+    #tokoh-dunia-root-wrap { position: relative; margin-top: 24px; }
     #tokoh-dunia-root-box {
         display: flex; align-items: center; justify-content: center; gap: 6px;
         width: 260px; height: 56px; box-sizing: border-box; margin: 0 auto;
@@ -1506,12 +1506,12 @@
 .node-shape rect[fill="#ffffff"][rx="10"] { fill: url(#btn-well-g) !important; stroke: #0c2a0a !important; }
 #tokoh-root-box, #tokoh-dunia-root-box {
     position: relative; isolation: isolate; color: #fff;
-    background: linear-gradient(#c9ee7a, #7cc443 40%, #3f8f2a 80%, #25601a) !important;
+    background: linear-gradient(#ff9a8f, #e53935 40%, #b71c1c 80%, #7f1212) !important;
 }
 #tokoh-root-box::before, #tokoh-dunia-root-box::before {
     content: ""; position: absolute; inset: 5px; border-radius: 16px; z-index: -1; pointer-events: none;
-    background: linear-gradient(rgba(255,255,255,.34), rgba(255,255,255,.04)) top / 100% 46% no-repeat, linear-gradient(#3aa84a, #1b7a2c 55%, #0c4a18);
-    box-shadow: 0 0 0 1.5px rgba(6,28,8,.9);
+    background: linear-gradient(rgba(255,255,255,.28), rgba(255,255,255,.03)) top / 100% 46% no-repeat, linear-gradient(#e53935, #c62828 55%, #8e1111);
+    box-shadow: 0 0 0 1.5px rgba(60,6,6,.9);
 }
 #tokoh-root-box .tokoh-root-text, #tokoh-dunia-root-box .tokoh-root-text { color: #fff; text-shadow: 0 1.5px 0 rgba(0,0,0,.85); }
 /* tombol header */
@@ -2353,7 +2353,8 @@ function drawBatteryShape(g, w, h, type, overrideColorKey, rainbow) {
 // (bukan dgn kotak svg yg lebih lebar krn ruang nub) lewat geser -CONNECTOR_CENTER_SHIFT. =====
 function matchTokohRootToShape(wrapEl, boxEl, info, lines) {
     const BORDER = 4;
-    const w = info.w + BORDER, h = info.h + BORDER; // stroke svg 4px: 2px menonjol di tiap sisi
+    const EXTRA_H = 16; // tambahan tinggi (atas+bawah) supaya kartu tidak terlihat padat
+    const w = info.w + BORDER, h = info.h + BORDER + EXTRA_H; // stroke svg 4px: 2px menonjol di tiap sisi
     const r = symCornerR(info.h) + BORDER / 2;
     boxEl.style.width = w + 'px';
     boxEl.style.height = h + 'px';
