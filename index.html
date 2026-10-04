@@ -3934,6 +3934,24 @@ const tokohDuniaChildren = [
         { fontSize: 22, lineHeight: 25, minFontSize: 12 }
     )
 ];
+
+// ===== Keterangan (badge ❤️) untuk kotak klasifikasi Tokoh Islam Dunia:
+// Sahabat Nabi, Tabi'in, Tabi'ut Tabi'in, 4 Imam Mazhab, dan Imam-Imam Hadis Besar.
+// Isi dimuat dari data/bio/<id>.html (token @bio:), sama seperti kotak klasifikasi Nusantara. =====
+(function () {
+    function setKategoriInfoDunia(node, id, title) {
+        if (!node) return;
+        node.infoNote = "@bio:" + id;
+        node.infoName = title;
+    }
+    var byNameDunia = {};
+    tokohDuniaChildren.forEach(function (n) { byNameDunia[n.name] = n; });
+    setKategoriInfoDunia(byNameDunia["SAHABAT NABI"], "sahabat-nabi", "Sahabat Nabi");
+    setKategoriInfoDunia(byNameDunia["TABI'IN"], "tabiin", "Tabi'in");
+    setKategoriInfoDunia(byNameDunia["TABI'UT TABI'IN"], "tabiut-tabiin", "Tabi'ut Tabi'in");
+    setKategoriInfoDunia(byNameDunia["4 IMAM MAZHAB"], "empat-imam-mazhab", "4 Imam Mazhab");
+    setKategoriInfoDunia(byNameDunia["IMAM-IMAM HADIS BESAR"], "imam-imam-hadis-besar", "Imam-Imam Hadis Besar");
+})();
 // FIXED BEHAVIOR: jarak antar shape dibuat FIX secara vertikal, dan LEBAR secara horizontal.
 // Saat cabang dibuka ke kanan, shape di atas/bawah TIDAK digeser — hanya jarak kanan-kiri
 // (stem + stub) yang diperlebar supaya anak punya ruang sendiri.
