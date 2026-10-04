@@ -6,8 +6,8 @@
 <title>Silsilah Interaktif - MAULANA ISHAQ & WALI 9</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@600;700&family=Dancing+Script:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Shadows+Into+Light&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@600;700&family=Dancing+Script:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Shadows+Into+Light&display=swap" rel="stylesheet"></noscript>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Aref+Ruqaa:wght@400;700&family=Cormorant+Garamond:wght@600;700&family=Dancing+Script:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Shadows+Into+Light&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Aref+Ruqaa:wght@400;700&family=Cormorant+Garamond:wght@600;700&family=Dancing+Script:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Shadows+Into+Light&display=swap" rel="stylesheet"></noscript>
 <meta property="og:title" content="Silsilah Interaktif - Maulana Ishaq & Wali 9" />
 <meta property="og:description" content="Silsilah Gus Dur sd Maulana Ishaq sd Nabi Muhammmad" />
 <style>
@@ -1102,6 +1102,13 @@
     #info-card .ic-body .bio-tight ul.ic-sub { margin: 2px 0 4px; }
     #info-card .ic-body .bio-tight ul.ic-sub li { margin-bottom: 1px; }
     #info-card .ic-body .bio-tight b { color: #0c4a6e; }
+    /* ===== Nama istri Nabi (Siti Khadijah) di keterangan kartu Nabi: ungu-magenta tebal + latar lembut ===== */
+    #info-card .ic-body .istri-nabi, #info-card .ic-body .bio-tight .istri-nabi {
+        color: #a21caf !important; font-weight: 900 !important;
+        background: rgba(217, 70, 239, .14); border-radius: 4px; padding: 0 3px;
+        box-decoration-break: clone; -webkit-box-decoration-break: clone;
+    }
+    #info-card.aged .ic-body .istri-nabi, #info-card.aged-green .ic-body .istri-nabi { color: #86198f !important; }
     #info-card .ic-body .bio-tight .hl { color: #b91c1c; font-weight: 800; }
     #info-card .ic-body .bio-tight .gd { color: #a16207; font-weight: 800; }
     #info-card .ic-body .bio-tight .gr { color: #047857; font-weight: 800; }
@@ -1875,7 +1882,7 @@ const treeData = {
     "spouseName": "Khadijah binti Khuwailid radhiyallahu 'anha",
     "infoNote": "@bio:nabi-muhammad-saw",
     "children": [
-        { "name": "SITI FATIMAH AZ-ZAHRA'", "type": "gen1", "doaLines": ["Yang Berseri - Yang Bercahaya", "- Yang Bersinar"], "spouseName": "Ali bin Abi Thalib radhiyallahu 'anh", "children": [
+        { "name": "SITI FATIMAH AZ-ZAHRA'", "displayName": "SITI FATIMAH", "arabicName": "\u0641\u064E\u0627\u0637\u0650\u0645\u064E\u0629\u064F \u0627\u0644\u0632\u0651\u064E\u0647\u0652\u0631\u064E\u0627\u0621\u064F", "type": "gen1", "infoNote": "@bio:siti-fatimah-az-zahra", "doaLines": ["Yang Berseri - Yang Bercahaya", "- Yang Bersinar"], "spouseName": "Ali bin Abi Thalib radhiyallahu 'anh", "children": [
             { "name": "SAYYIDINA HUSAIN", "type": "gen2", "spouseName": "Syahrbanu / Syah-e Zanan", "children": [
                 { "name": "ZAINAL ALIM", "type": "gen3", "children": [
                     { "name": "ZAINAL QUBRO", "type": "gen4", "children": [
@@ -2087,7 +2094,9 @@ const _refBottomH = _refSpouseFit.lines.length * NAME_LINE_HEIGHT + 4;
 // tinggi shape Nabi Muhammad SAW TETAP seperti semula (dikecualikan dari penyeragaman)
 const ROOT_H = 2 * lineHeight + padY;
 // kartu Nabi Muhammad SAW berbentuk LINGKARAN (hanya tulisan Arab + tahun); diameter dalam px
-const ROOT_CIRCLE_D = 108;
+const ROOT_CIRCLE_D = 132;
+// tinggi kartu bergaya kaligrafi (Siti Fatimah): nama latin + teks Arab berharakat
+const CALLI_H = 72;
 // tinggi seragam utk semua shape lain (chain gen1-gen6 & keturunan gen7), disamakan dgn shape Maulana Ishaq
 const STANDARD_H = _refTopH + _refBottomH;
 
@@ -2144,9 +2153,9 @@ const nodesInfo = chain.map((n, idx) => {
         doaLines = n.doaLines;
         doaFontSize = DOA_FONT_SIZE;
     }
-    let h = isRoot ? ROOT_CIRCLE_D : STANDARD_H;
+    let h = isRoot ? ROOT_CIRCLE_D : (n.arabicName ? CALLI_H : STANDARD_H);
     let spouseLines = null, spouseFontSize = null, topH = null, bottomH = null;
-    if (n.spouseName && !isRoot) {
+    if (n.spouseName && !isRoot && !n.arabicName) {
         const spouseFit = fitNameToBox(n.spouseName, w - 24, 12.5, 700);
         // GAP dipakai seragam utk 4 jarak: atas-box↔nama, nama↔garis, garis↔isteri, isteri↔bawah-box
         // supaya semua teks "rata atas bawah" & jarak ke garis pembatas SAMA persis di kedua sisi.
@@ -2291,6 +2300,8 @@ function makeRainbowFill(g, w, h) {
         '<linearGradient id="btn-well" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a82326"/><stop offset=".55" stop-color="#6a0e11"/><stop offset="1" stop-color="#3f0709"/></linearGradient>' +
         '<linearGradient id="btn-rim-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9ee7a"/><stop offset=".4" stop-color="#7cc443"/><stop offset=".8" stop-color="#3f8f2a"/><stop offset="1" stop-color="#25601a"/></linearGradient>' +
         '<linearGradient id="btn-well-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3aa84a"/><stop offset=".55" stop-color="#1b7a2c"/><stop offset="1" stop-color="#0c4a18"/></linearGradient>' +
+        '<linearGradient id="btn-rim-r" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a8f"/><stop offset=".4" stop-color="#e53935"/><stop offset=".8" stop-color="#b71c1c"/><stop offset="1" stop-color="#7f1212"/></linearGradient>' +
+        '<linearGradient id="btn-well-r" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e53935"/><stop offset=".55" stop-color="#c62828"/><stop offset="1" stop-color="#8e1111"/></linearGradient>' +
         '<linearGradient id="btn-gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".42"/><stop offset="1" stop-color="#ffffff" stop-opacity=".04"/></linearGradient>' +
         '</defs>';
     document.body.appendChild(svg);
@@ -2351,15 +2362,16 @@ function drawBatteryShape(g, w, h, type, overrideColorKey, rainbow) {
 
 // ===== Kartu NABI MUHAMMAD SAW berbentuk LINGKARAN, gaya sama dengan kotak lain:
 // badan kertas usang + bingkai tembaga hijau + sumur hijau mengilap + garis tepi hitam tebal. =====
+const CALLI_FONT = "'Aref Ruqaa','Amiri','Scheherazade New','Traditional Arabic',serif";
 function drawCircleShape(g, d) {
     const R = d / 2, cx = R, m = 5;
-    const ink = '#0c2a0a', wink = 'rgba(6,28,8,.9)';
+    const ink = '#2a0508', wink = 'rgba(40,4,6,.9)';
     g.appendChild(el('circle', {
         class: 'real-body', cx: cx, cy: 0, r: R,
         fill: makeRainbowFill(g, d, d), stroke: '#000000', 'stroke-width': 4
     }));
-    g.appendChild(el('circle', { cx: cx, cy: 0, r: R, fill: 'url(#btn-rim-g)', stroke: ink, 'stroke-width': 2.5, 'pointer-events': 'none', class: 'aged-ov' }));
-    g.appendChild(el('circle', { cx: cx, cy: 0, r: R - m, fill: 'url(#btn-well-g)', stroke: wink, 'stroke-width': 1.6, 'pointer-events': 'none', class: 'aged-ov' }));
+    g.appendChild(el('circle', { cx: cx, cy: 0, r: R, fill: 'url(#btn-rim-r)', stroke: ink, 'stroke-width': 2.5, 'pointer-events': 'none', class: 'aged-ov' }));
+    g.appendChild(el('circle', { cx: cx, cy: 0, r: R - m, fill: 'url(#btn-well-r)', stroke: wink, 'stroke-width': 1.6, 'pointer-events': 'none', class: 'aged-ov' }));
     const clipId = 'nabi-gloss-clip';
     const clip = el('clipPath', { id: clipId });
     clip.appendChild(el('circle', { cx: cx, cy: 0, r: R - m }));
@@ -2375,24 +2387,49 @@ function drawCircleShape(g, d) {
 // agar pencarian nama "Nabi Muhammad SAW" tetap menemukan kartu ini).
 function drawNabiCircleText(g, info) {
     const cx = info.w / 2;
-    const hid = el('text', { display: 'none', class: 'nabi-search-name' });
-    hid.textContent = info.data.name;
-    g.appendChild(hid);
+    [info.data.name, info.data.spouseName].forEach(function (t) {
+        if (!t) return;
+        const hid = el('text', { display: 'none', class: 'nabi-search-name' });
+        hid.textContent = t;
+        g.appendChild(hid);
+    });
     const ar = el('text', {
-        class: 'nabi-ar', x: cx, y: -9, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
-        direction: 'rtl', 'font-family': "'Amiri','Scheherazade New','Traditional Arabic',serif",
-        'font-size': 40, 'font-weight': 700, fill: '#0f172a'
+        class: 'nabi-ar', x: cx, y: 4, 'text-anchor': 'middle', 'dominant-baseline': 'alphabetic',
+        direction: 'rtl', 'font-family': CALLI_FONT, 'font-size': 62, 'font-weight': 700, fill: '#ffffff'
     });
     ar.textContent = '\u0645\u062D\u0645\u062F';
     g.appendChild(ar);
     if (info.data.yearLabel) {
         const yr = el('text', {
-            class: 'nabi-year', x: cx, y: 28, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
-            'font-weight': 700, 'font-size': 12.5, fill: '#0f172a'
+            class: 'nabi-year', x: cx, y: 38, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
+            'font-weight': 700, 'font-size': 13, fill: '#ffffff'
         });
         yr.textContent = info.data.yearLabel;
         g.appendChild(yr);
     }
+}
+// teks kartu bergaya kaligrafi (mis. SITI FATIMAH): nama latin + teks Arab berharakat lengkap.
+// Nama lengkap & nama pasangan disimpan tersembunyi supaya pencarian tetap menemukan kartu ini.
+function drawCalligraphyCardText(g, info) {
+    const cx = info.w / 2;
+    [info.data.name, info.data.spouseName].forEach(function (t) {
+        if (!t) return;
+        const hid = el('text', { display: 'none', class: 'calli-search-name' });
+        hid.textContent = t;
+        g.appendChild(hid);
+    });
+    const lat = el('text', {
+        class: 'calli-latin', x: cx, y: -19, 'text-anchor': 'middle', 'dominant-baseline': 'middle',
+        'font-weight': 800, 'font-size': 15.5, fill: '#ffffff'
+    });
+    lat.textContent = info.data.displayName || info.data.name;
+    g.appendChild(lat);
+    const ar = el('text', {
+        class: 'calli-ar', x: cx, y: 17, 'text-anchor': 'middle', 'dominant-baseline': 'alphabetic',
+        direction: 'rtl', 'font-family': CALLI_FONT, 'font-size': 26, 'font-weight': 700, fill: '#ffffff'
+    });
+    ar.textContent = info.data.arabicName;
+    g.appendChild(ar);
 }
 
 // ===== Samakan kotak "TOKOH ISLAM NUSANTARA" / "TOKOH ISLAM DUNIA" dengan shape
@@ -2529,6 +2566,8 @@ function renderChain() {
                 spouseText.appendChild(tspan);
             });
             g.appendChild(spouseText);
+        } else if (info.data.arabicName && !info.isRoot) {
+            drawCalligraphyCardText(g, info);
         } else if (!info.isRoot) {
             const startY = -((info.lines.length - 1) * NAME_LINE_HEIGHT) / 2;
             info.lines.forEach((ln, li) => {
@@ -5424,6 +5463,7 @@ function styleInfoHtml(html) {
 const INFO_PRED = {
  "SUNAN AMPEL": "Pendiri Pesantren Ampel Denta — Guru Para Wali Tanah Jawa",
  "SUNAN GRESIK": "Bapak Wali Songo — Peletak Batu Pertama Islam di Jawa — Perintis Dakwah di Gresik",
+ "SITI FATIMAH AZ ZAHRA": "Putri Rasulullah ﷺ — Istri Sayyidina Ali — Ibu Sayyidina Hasan dan Husain — Pemimpin Para Wanita Penghuni Surga",
  "NABI MUHAMMAD SAW": "Nabi dan Rasul Terakhir — Penerima Wahyu Pertama di Gua Hira — Pelopor Hijrah ke Madinah (622 M)",
  "ABDUL FATAH": "Tiga Tokoh Keturunan Syekh Maulana Ishaq (Garis Sunan Giri) yang Dimakamkan Satu Kompleks di Tebuireng, Jombang",
  "SYEKH ALI NURUL ALAM": "Kakek Sunan Gunung Jati — Ayah Syarif Abdullah — Dalam Sebagian Riwayat Disebut Putra Syekh Jumadil Qubro",
@@ -5626,6 +5666,37 @@ function resolveInfoHtml(v) {
     }
     return Promise.resolve(v);
 }
+// ===== Keterangan kartu Nabi Muhammad SAW: nama istri beliau (Siti Khadijah) diberi warna
+// berbeda + tebal + latar lembut supaya menonjol dibanding teks lain. Hanya berlaku utk keterangan Nabi. =====
+function emphasizeNabiWife(html, name) {
+    if (!html || !/NABI\s+MUHAMMAD/i.test(String(name || ''))) return html;
+    const doc = new DOMParser().parseFromString('<div id="r">' + html + '</div>', 'text/html');
+    const root = doc.getElementById('r');
+    const re = /((?:Siti|Sayyidah|Ummul\s+Mukminin)\s+)?(?:Khadijah|Khodijah|Khadidjah|Khodidjah)(?:\s+binti\s+Khuwailid)?(?:\s+(?:radhiyallahu|radiyallahu|rodhiyallahu)\s+['\u2019]?anha)?|\u062E\u062F\u064A\u062C\u0629/gi;
+    const walker = doc.createTreeWalker(root, 4);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(function (tn) {
+        const txt = tn.nodeValue;
+        re.lastIndex = 0;
+        if (!txt || !re.test(txt)) return;
+        re.lastIndex = 0;
+        const frag = doc.createDocumentFragment();
+        let last = 0, m;
+        while ((m = re.exec(txt)) !== null) {
+            if (m[0].length === 0) { re.lastIndex++; continue; }
+            if (m.index > last) frag.appendChild(doc.createTextNode(txt.slice(last, m.index)));
+            const sp = doc.createElement('span');
+            sp.className = 'istri-nabi';
+            sp.textContent = m[0];
+            frag.appendChild(sp);
+            last = m.index + m[0].length;
+        }
+        if (last < txt.length) frag.appendChild(doc.createTextNode(txt.slice(last)));
+        tn.parentNode.replaceChild(frag, tn);
+    });
+    return root.innerHTML;
+}
 function openInfoNote(name, infoHtml, aged) {
     const token = ++bioReqToken;
     document.getElementById('info-card').classList.toggle('aged', !!aged); // lembaran usang khusus kisah Tokoh Dunia
@@ -5640,7 +5711,7 @@ function openInfoNote(name, infoHtml, aged) {
     fitInfoName();
     resolveInfoHtml(infoHtml).then(function (html) {
         if (token !== bioReqToken) return;   // pengguna sudah klik tokoh lain
-        body.innerHTML = styleInfoHtml(promoteInfoPredicate(stripTopArabic(html), name));
+        body.innerHTML = emphasizeNabiWife(styleInfoHtml(promoteInfoPredicate(stripTopArabic(html), name)), name);
         fitInfoName();
         fitPredicate();
         // ukur ulang setelah font web selesai dimuat (lebar huruf bisa berubah)
