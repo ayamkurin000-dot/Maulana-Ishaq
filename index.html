@@ -3406,8 +3406,6 @@ const KH_SIROJ_PAYAMAN_INFO_HTML = "@bio:kh-siroj-payaman";
 
 const MBAH_MESIR_TRENGGALEK_INFO_HTML = "@bio:mbah-mesir-trenggalek";
 
-const KH_HASAN_ASYARI_MANGLI_INFO_HTML = "@bio:kh-hasan-asyari-mbah-mangli-magelang";
-
 const TOKOH_PERIODE_8 = makePeriodeNode(
     "ULAMA' PESANTREN ABAD XX",
     ["ULAMA' PESANTREN", "ABAD XX"],
@@ -3452,8 +3450,6 @@ const TOKOH_PERIODE_8 = makePeriodeNode(
             infoNote: KH_ABDUL_HAMID_PASURUAN_INFO_HTML },
         { name: "MBAH KYAI MAIMOEN ZUBAIR", type: "tokohgold",
             infoNote: KH_MAIMOEN_ZUBAIR_INFO_HTML },
-        { name: "MBAH MANGLI MAGELANG", type: "tokohgold",
-            infoNote: KH_HASAN_ASYARI_MANGLI_INFO_HTML },
         { name: "KH. YASIN YUSUF KADEMANGAN", type: "tokohgold",
             infoNote: KH_YASIN_YUSUF_KADEMANGAN_INFO_HTML },
         { name: "GUS DUR", type: "tokohgold",
@@ -3882,6 +3878,8 @@ const tokohDuniaChildren = [
             infoNote: "@bio:doa-qunut-witir-yang-diajarkan-rasulullah-kepada-hasan" },
             { name: "RASULULLAH ﷺ MEMOHONKAN PERLINDUNGAN BAGI HASAN DAN HUSAIN", type: "tokohgold",
             infoNote: "@bio:rasulullah-memohonkan-perlindungan-bagi-hasan-dan-husain" },
+            { name: "HASAN BERTANYA KEPADA PAMANNYA, HIND BIN ABI HALAH: GAMBARAN SIFAT RASULULLAH ﷺ", type: "tokohgold",
+            infoNote: "@bio:hasan-meminta-hind-bin-abi-halah-menggambarkan-rasulullah" },
             { name: "ABU BAKAR MENGGENDONG HASAN: MIRIP NABI ﷺ, TIDAK MIRIP ALI", type: "tokohgold",
             infoNote: "@bio:abu-bakar-menggendong-hasan-mirip-nabi-tidak-mirip-ali" },
             { name: "HASAN MENJAGA RUMAH UTSMAN SAAT PENGEPUNGAN TAHUN 35 H", type: "tokohgold",
@@ -3900,6 +3898,8 @@ const tokohDuniaChildren = [
         { name: "SAYYIDINA HUSAIN رضي الله عنه — CUCU RASULULLAH ﷺ", type: "tokohgold",
             infoNote: "@bio:sayyidina-husain",
             children: [
+            { name: "MIMPI UMMU AL-FADHL: KABAR GEMBIRA KELAHIRAN HUSAIN", type: "tokohgold",
+            infoNote: "@bio:mimpi-ummu-al-fadhl-kabar-gembira-kelahiran-husain" },
             { name: "PENAMAAN DAN AQIQAH HUSAIN: DARI HARB MENJADI HUSAIN", type: "tokohgold",
             infoNote: "@bio:penamaan-dan-aqiqah-husain-dari-harb-menjadi-husain" },
             { name: "HUSAIN DAN RASULULLAH ﷺ: HUSAIN DARIKU DAN AKU DARI HUSAIN", type: "tokohgold",
@@ -4243,6 +4243,8 @@ const tokohDuniaChildren = [
                 infoNote: "@bio:utusan-ke-yaman-doa-untuk-hati-dan-lisan-seorang-hakim-muda" },
                 { name: "GHADIR KHUM: SIAPA YANG AKU MENJADI MAULANYA", type: "tokohgold",
                 infoNote: "@bio:ghadir-khum-siapa-yang-aku-menjadi-maulanya" },
+                { name: "HADIS TSAQALAIN: KITAB ALLAH DAN AHLUL BAIT — KHUTBAH DI KHUM", type: "tokohgold",
+                infoNote: "@bio:hadis-tsaqalain-kitab-allah-dan-ahlul-bait-khutbah-di-khum" },
                 { name: "MEMANDIKAN JENAZAH RASULULLAH ﷺ OLEH ALI DAN KELUARGA BELIAU", type: "tokohgold",
                 infoNote: "@bio:memandikan-jenazah-rasulullah-oleh-ali-dan-keluarga" },
                 { name: "BAIAT ALI SETELAH WAFATNYA UTSMAN: TIDAK MENGEJAR JABATAN", type: "tokohgold",
@@ -4304,55 +4306,8 @@ const tokohDuniaChildren = [
             "ANSHAR",
             ["ANSHAR"],
             [
-            Object.assign(makePeriodeNode(
-                "PERINTIS AQABAH & TUAN RUMAH HIJRAH",
-                ["PERINTIS AQABAH","& TUAN RUMAH","HIJRAH"],
-                [
-                { name: "SA'D BIN MU'ADZ رضي الله عنه — PEMIMPIN AUS", type: "tokohgold",
-                    infoNote: "@bio:sad-bin-muadz-pemimpin-aus-anshar" },
-                { name: "AS'AD BIN ZURARAH رضي الله عنه — PERINTIS AQABAH DAN TUAN RUMAH MUSH'AB", type: "tokohgold",
-                    infoNote: "@bio:asad-bin-zurarah-perintis-aqabah-dan-tuan-rumah-mushab" },
-                { name: "UBADAH BIN ASH-SHAMIT رضي الله عنه — NAQIB AQABAH DAN GURU AL-QUR'AN DI SYAM", type: "tokohgold",
-                    infoNote: "@bio:ubadah-bin-ash-shamit-naqib-aqabah-dan-guru-al-quran-di-syam" },
-                { name: "ABU AYYUB AL-ANSHARI رضي الله عنه — TUAN RUMAH RASULULLAH ﷺ SAAT HIJRAH", type: "tokohgold",
-                    infoNote: "@bio:abu-ayyub-al-anshari-tuan-rumah-rasulullah-saat-hijrah" }
-                ],
-                { fontSize: 20, lineHeight: 23, minFontSize: 11 },
-                ["PEMBUKA JALAN HIJRAH"],
-                { fontSize: 11, lineHeight: 13, weight: 700, minFontSize: 8 }
-            ), { infoNote: "@bio:kategori-anshar-perintis-aqabah-dan-tuan-rumah-hijrah", infoName: "Perintis Aqabah & Tuan Rumah Hijrah" }),
-            Object.assign(makePeriodeNode(
-                "AHLI AL-QUR'AN & ILMU",
-                ["AHLI AL-QUR'AN","& ILMU"],
-                [
-                { name: "UBAYY BIN KA'B رضي الله عنه — PEMIMPIN PARA QARI", type: "tokohgold",
-                    infoNote: "@bio:ubayy-bin-kab-pemimpin-para-qari-dibacakan-al-quran-oleh-rasulullah" },
-                { name: "ZAID BIN TSABIT رضي الله عنه — PENULIS WAHYU DAN PENGHIMPUN MUSHAF", type: "tokohgold",
-                    infoNote: "@bio:zaid-bin-tsabit-penulis-wahyu-dan-penghimpun-mushaf" },
-                { name: "MU'ADZ BIN JABAL رضي الله عنه — FAQIH ANSHAR, UTUSAN KE YAMAN", type: "tokohgold",
-                    infoNote: "@bio:muadz-bin-jabal-faqih-anshar-utusan-rasulullah-ke-yaman" },
-                { name: "USAID BIN HUDHAIR رضي الله عنه — NAQIB AUS, BACAANNYA DIDENGAR MALAIKAT", type: "tokohgold",
-                    infoNote: "@bio:usaid-bin-hudhair-naqib-aus-bacaannya-didengar-malaikat" }
-                ],
-                { fontSize: 20, lineHeight: 23, minFontSize: 11 },
-                ["PENJAGA WAHYU & FIQIH"],
-                { fontSize: 11, lineHeight: 13, weight: 700, minFontSize: 8 }
-            ), { infoNote: "@bio:kategori-anshar-ahli-al-quran-dan-ilmu", infoName: "Ahli Al-Qur'an & Ilmu" }),
-            Object.assign(makePeriodeNode(
-                "PEMBELA RASULULLAH ﷺ",
-                ["PEMBELA","RASULULLAH ﷺ"],
-                [
-                { name: "ABU THALHAH AL-ANSHARI رضي الله عنه — PELINDUNG RASULULLAH ﷺ DI UHUD", type: "tokohgold",
-                    infoNote: "@bio:abu-thalhah-al-anshari-pelindung-rasulullah-di-uhud-pemilik-bairuha" },
-                { name: "KA'B BIN MALIK رضي الله عنه — SAHABAT TABUK YANG JUJUR", type: "tokohgold",
-                    infoNote: "@bio:kab-bin-malik-sahabat-tabuk-yang-jujur-dan-penyair-anshar" },
-                { name: "HASSAN BIN TSABIT رضي الله عنه — PENYAIR RASULULLAH ﷺ", type: "tokohgold",
-                    infoNote: "@bio:hassan-bin-tsabit-penyair-rasulullah-dari-anshar" }
-                ],
-                { fontSize: 20, lineHeight: 23, minFontSize: 11 },
-                ["PEMBELA DENGAN HARTA & LISAN"],
-                { fontSize: 11, lineHeight: 13, weight: 700, minFontSize: 8 }
-            ), { infoNote: "@bio:kategori-anshar-pembela-rasulullah", infoName: "Pembela Rasulullah ﷺ" })
+            { name: "SA'D BIN MU'ADZ رضي الله عنه — PEMIMPIN AUS", type: "tokohgold",
+                infoNote: "@bio:sad-bin-muadz-pemimpin-aus-anshar" }
             ],
             { fontSize: 20, lineHeight: 23, minFontSize: 11 },
             ["PENOLONG DI MADINAH"],
@@ -4363,19 +4318,7 @@ const tokohDuniaChildren = [
             ["PANGLIMA","& PEJUANG"],
             [
             { name: "KHALID BIN AL-WALID رضي الله عنه — PEDANG ALLAH", type: "tokohgold",
-                infoNote: "@bio:khalid-bin-al-walid-pedang-allah" },
-            { name: "AMR BIN AL-'ASH رضي الله عنه — PENAKLUK MESIR", type: "tokohgold",
-                infoNote: "@bio:amr-bin-al-ash-penakluk-mesir" },
-            { name: "USAMAH BIN ZAID رضي الله عنه — PANGLIMA MUDA KESAYANGAN RASULULLAH ﷺ", type: "tokohgold",
-                infoNote: "@bio:usamah-bin-zaid-panglima-muda-kesayangan-rasulullah" },
-            { name: "ABDULLAH BIN RAWAHAH", type: "tokohgold",
-                infoNote: "@bio:abdullah-bin-rawahah" },
-            { name: "ABU DUJANAH SIMAK BIN KHARASYAH", type: "tokohgold",
-                infoNote: "@bio:abu-dujanah-simak-bin-kharasyah" },
-            { name: "SALAMAH BIN AL-AKWA'", type: "tokohgold",
-                infoNote: "@bio:salamah-bin-al-akwa" },
-            { name: "UTBAH BIN GHAZWAN", type: "tokohgold",
-                infoNote: "@bio:utbah-bin-ghazwan" }
+                infoNote: "@bio:khalid-bin-al-walid-pedang-allah" }
             ],
             { fontSize: 20, lineHeight: 23, minFontSize: 11 },
             ["PEMIMPIN MEDAN PERANG"],
@@ -4386,15 +4329,7 @@ const tokohDuniaChildren = [
             ["AHLI ILMU","& PERAWI HADIS"],
             [
             { name: "ABU HURAIRAH رضي الله عنه — PERAWI HADIS TERBANYAK", type: "tokohgold",
-                infoNote: "@bio:abu-hurairah-perawi-hadis-terbanyak" },
-            { name: "ABDULLAH BIN UMAR رضي الله عنهما — PENGIKUT JEJAK RASULULLAH ﷺ", type: "tokohgold",
-                infoNote: "@bio:abdullah-bin-umar-pengikut-jejak-rasulullah" },
-            { name: "ANAS BIN MALIK رضي الله عنه — PELAYAN RASULULLAH ﷺ", type: "tokohgold",
-                infoNote: "@bio:anas-bin-malik-pelayan-rasulullah" },
-            { name: "JABIR BIN ABDILLAH رضي الله عنهما — PERAWI HADIS HAJI WADA'", type: "tokohgold",
-                infoNote: "@bio:jabir-bin-abdillah-perawi-hadis-haji-wada" },
-            { name: "ABU SA'ID AL-KHUDRI رضي الله عنه — PERAWI HADIS DARI KALANGAN ANSHAR", type: "tokohgold",
-                infoNote: "@bio:abu-said-al-khudri-perawi-hadis-dari-kalangan-anshar" }
+                infoNote: "@bio:abu-hurairah-perawi-hadis-terbanyak" }
             ],
             { fontSize: 20, lineHeight: 23, minFontSize: 11 },
             ["PENJAGA ILMU UMAT"],
@@ -4405,23 +4340,7 @@ const tokohDuniaChildren = [
             ["SAHABIYAT"],
             [
             { name: "ASMA' BINTI ABU BAKAR رضي الله عنها — DZATUN NITHAQAIN", type: "tokohgold",
-                infoNote: "@bio:asma-binti-abu-bakar-dzatun-nithaqain" },
-            { name: "SUMAYYAH BINTI KHAYYATH رضي الله عنها — SYAHIDAH PERTAMA DALAM ISLAM", type: "tokohgold",
-                infoNote: "@bio:sumayyah-binti-khayyath-syahidah-pertama-dalam-islam" },
-            { name: "UMMU AIMAN (BARAKAH) رضي الله عنها — PENGASUH RASULULLAH ﷺ", type: "tokohgold",
-                infoNote: "@bio:ummu-aiman-barakah-pengasuh-rasulullah" },
-            { name: "ASMA' BINTI UMAIS رضي الله عنها — PEMILIK DUA HIJRAH", type: "tokohgold",
-                infoNote: "@bio:asma-binti-umais-pemilik-dua-hijrah" },
-            { name: "UMMU SULAIM BINTI MILHAN رضي الله عنها — IBU ANAS BIN MALIK", type: "tokohgold",
-                infoNote: "@bio:ummu-sulaim-binti-milhan-ibu-anas-bin-malik" },
-            { name: "NUSAIBAH BINTI KA'B (UMMU UMARAH) رضي الله عنها — PEMBELA RASULULLAH ﷺ DI UHUD", type: "tokohgold",
-                infoNote: "@bio:nusaibah-binti-kab-ummu-umarah-pembela-rasulullah-di-uhud" },
-            { name: "UMMU ATHIYYAH AL-ANSHARIYYAH رضي الله عنها — PERAWI HADIS DAN PENDAMPING PASUKAN", type: "tokohgold",
-                infoNote: "@bio:ummu-athiyyah-al-anshariyyah-perawi-hadis-dan-pendamping-pasukan" },
-            { name: "FATHIMAH BINTI QAIS رضي الله عنها — PERAWI HADIS TAMIM AD-DARI", type: "tokohgold",
-                infoNote: "@bio:fathimah-binti-qais-perawi-hadis-tamim-ad-dari" },
-            { name: "AR-RUBAYYI' BINTI MU'AWWIDZ رضي الله عنها — PERAWI HADIS DARI KALANGAN ANSHAR", type: "tokohgold",
-                infoNote: "@bio:ar-rubayyi-binti-muawwidz-perawi-hadis-dari-kalangan-anshar" }
+                infoNote: "@bio:asma-binti-abu-bakar-dzatun-nithaqain" }
             ],
             { fontSize: 20, lineHeight: 23, minFontSize: 11 },
             ["SAHABAT PEREMPUAN"],
@@ -4557,6 +4476,60 @@ const tokohDuniaChildren = [
             infoNote: "@bio:imam-ibn-majah-sunan-ibn-majah" }
         ],
         { fontSize: 22, lineHeight: 25, minFontSize: 12 }
+    ),
+    makePeriodeNode(
+        "ULAMA BESAR ASWAJA",
+        ["ULAMA BESAR","ASWAJA"],
+        [
+        Object.assign(makePeriodeNode(
+            "IMAM AKIDAH ASWAJA",
+            ["IMAM AKIDAH","ASWAJA"],
+            [
+            { name: "ABUL HASAN AL-ASY'ARI رحمه الله — IMAM AKIDAH ASWAJA", type: "tokohgold" },
+            { name: "ABU MANSHUR AL-MATURIDI رحمه الله — IMAM AKIDAH ASWAJA (MATURIDIYAH)", type: "tokohgold" }
+            ],
+            { fontSize: 20, lineHeight: 23, minFontSize: 11 },
+            ["ASY'ARIYAH & MATURIDIYAH"],
+            { fontSize: 11, lineHeight: 13, weight: 700, minFontSize: 8 }
+        ), { infoNote: "@bio:kategori-ulama-aswaja-imam-akidah", infoName: "Imam Akidah Aswaja" }),
+        Object.assign(makePeriodeNode(
+            "ULAMA TASAWUF",
+            ["ULAMA","TASAWUF"],
+            [
+            { name: "AL-JUNAID AL-BAGHDADI رحمه الله — SAYYID ATH-THAIFAH", type: "tokohgold" },
+            { name: "AL-QUSYAIRI رحمه الله — PENYUSUN AR-RISALAH AL-QUSYAIRIYYAH", type: "tokohgold" },
+            { name: "AL-GHAZALI رحمه الله — HUJJATUL ISLAM", type: "tokohgold" }
+            ],
+            { fontSize: 20, lineHeight: 23, minFontSize: 11 },
+            ["TAZKIYATUN NAFS"],
+            { fontSize: 11, lineHeight: 13, weight: 700, minFontSize: 8 }
+        ), { infoNote: "@bio:kategori-ulama-aswaja-ulama-tasawuf", infoName: "Ulama Tasawuf" }),
+        Object.assign(makePeriodeNode(
+            "HADIS & FIKIH SYAFI'I",
+            ["HADIS &","FIKIH SYAFI'I"],
+            [
+            { name: "AN-NAWAWI رحمه الله — ULAMA HADIS DAN FIKIH SYAFI'I", type: "tokohgold" },
+            { name: "IBNU HAJAR AL-ASQALANI رحمه الله — PENYARAH SHAHIH AL-BUKHARI", type: "tokohgold" }
+            ],
+            { fontSize: 20, lineHeight: 23, minFontSize: 11 },
+            ["PENJAGA SUNNAH"],
+            { fontSize: 11, lineHeight: 13, weight: 700, minFontSize: 8 }
+        ), { infoNote: "@bio:kategori-ulama-aswaja-hadis-dan-fikih-syafii", infoName: "Hadis dan Fikih Syafi'i" }),
+        Object.assign(makePeriodeNode(
+            "WALI & MURSYID TAREKAT",
+            ["WALI &","MURSYID TAREKAT"],
+            [
+            { name: "ABDUL QADIR AL-JILANI رحمه الله — TAREKAT QADIRIYAH", type: "tokohgold" },
+            { name: "ABUL HASAN ASY-SYADZILI رحمه الله — TAREKAT SYADZILIYAH", type: "tokohgold" }
+            ],
+            { fontSize: 20, lineHeight: 23, minFontSize: 11 },
+            ["TAREKAT MU'TABARAH"],
+            { fontSize: 11, lineHeight: 13, weight: 700, minFontSize: 8 }
+        ), { infoNote: "@bio:kategori-ulama-aswaja-wali-dan-mursyid-tarekat", infoName: "Wali dan Mursyid Tarekat" })
+        ],
+        { fontSize: 22, lineHeight: 25, minFontSize: 12 },
+        ["ABAD III–IX H"],
+        { fontSize: 11, lineHeight: 13, weight: 700, minFontSize: 8 }
     )
 ];
 
@@ -4578,6 +4551,7 @@ const tokohDuniaChildren = [
     byNameDunia["TABI'UT TABI'IN"].nomorAnggota = true; // anggota Tabi'ut Tabi'in bernomor urut 1, 2, dst.
     setKategoriInfoDunia(byNameDunia["4 IMAM MAZHAB"], "empat-imam-mazhab", "4 Imam Mazhab");
     setKategoriInfoDunia(byNameDunia["IMAM-IMAM HADIS BESAR"], "imam-imam-hadis-besar", "Imam-Imam Hadis Besar");
+    setKategoriInfoDunia(byNameDunia["ULAMA BESAR ASWAJA"], "ulama-besar-aswaja", "Ulama Besar Aswaja");
 })();
 // FIXED BEHAVIOR: jarak antar shape dibuat FIX secara vertikal, dan LEBAR secara horizontal.
 // Saat cabang dibuka ke kanan, shape di atas/bawah TIDAK digeser — hanya jarak kanan-kiri
@@ -6227,7 +6201,6 @@ const INFO_PRED = {
  "GUS DUR": "Ulama dan Cendekiawan — Tokoh NU — Presiden Republik Indonesia ke-4 — Pahlawan Nasional",
  "GUS MIEK": "Kyai Kelana — Ulama Sufi — Pendakwah Jalan Terabas — Pendiri Dzikrul Ghofilin dan Jantiko Mantab",
  "KH MUHAMMAD THOIFUR MAWARDI": "Ulama Purworejo — Pewaris Sanad Haramain — Pendiri Daarut Tauhid Kedungsari — Santri Sayyid Muhammad al-Maliki",
- "MBAH MANGLI MAGELANG": "Mursyid dan Ulama Pesantren — Dakwah Tanpa Pengeras Suara — Ulama Pesantren Abad XX",
  "MBAH NGALIMAN NGANJUK": "Ulama Penyebar Islam — Cikal Bakal Desa Ngliman — Guru Kanuragan — Tokoh Perjuangan Lereng Gunung Wilis"
 };
 function promoteInfoPredicate(html, name) {
