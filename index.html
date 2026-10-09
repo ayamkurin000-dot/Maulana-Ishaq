@@ -4515,12 +4515,25 @@ const tokohDuniaChildren = [
             infoNote: "@bio:ibnu-juraij-penyusun-awal-kitab-hadis-di-makkah" },
         { name: "MA'MAR BIN RASYID رحمه الله — ULAMA HADIS YANG MENETAP DI YAMAN", type: "tokohgold",
             infoNote: "@bio:mamar-bin-rasyid-ulama-hadis-yang-menetap-di-yaman" },
-        { name: "RABI'AH AL-ADAWIYAH رحمها الله — TOKOH ZUHUD PEREMPUAN AWAL DARI BASHRAH", type: "tokohgold",
-            infoNote: "@bio:rabiah-al-adawiyah-tokoh-zuhud-perempuan-awal-dari-bashrah" },
         { name: "SYAQIQ AL-BALKHI رحمه الله — MURID IBRAHIM BIN ADHAM DAN TOKOH ZUHUD", type: "tokohgold",
             infoNote: "@bio:syaqiq-al-balkhi-murid-ibrahim-bin-adham-dan-tokoh-zuhud" },
         { name: "MA'RUF AL-KARKHI رحمه الله — GURU SARI AS-SAQATI DAN MATA RANTAI SILSILAH TAREKAT", type: "tokohgold",
             infoNote: "@bio:maruf-al-karkhi-guru-sari-as-saqati-dan-mata-rantai-silsilah-tarekat" }
+        ],
+        { fontSize: 22, lineHeight: 25, minFontSize: 12 }
+    ),
+    makePeriodeNode(
+        "ZAHIDAH & SUFI PEREMPUAN",
+        ["ZAHIDAH &","SUFI PEREMPUAN"],
+        [
+        { name: "RABI'AH AL-ADAWIYAH رحمها الله — TOKOH ZUHUD PEREMPUAN AWAL DARI BASHRAH", type: "tokohgold",
+            infoNote: "@bio:rabiah-al-adawiyah-tokoh-zuhud-perempuan-awal-dari-bashrah" },
+        { name: "MU'ADZAH AL-ADAWIYAH رحمها الله — TABI'IYAH AHLI IBADAH DAN PERAWI HADIS DARI BASHRAH", type: "tokohgold",
+            infoNote: "@bio:muadzah-al-adawiyah-tabiiyah-ahli-ibadah-dan-perawi-hadis-dari-bashrah" },
+        { name: "SAYYIDAH NAFISAH رحمها الله — AHLI IBADAH DAN GURU DI KAIRO", type: "tokohgold",
+            infoNote: "@bio:sayyidah-nafisah-ahli-ibadah-dan-guru-di-kairo" },
+        { name: "FATHIMAH AN-NAISABURIYYAH رحمها الله — SUFI PEREMPUAN DARI KHURASAN DI MAKKAH", type: "tokohgold",
+            infoNote: "@bio:fathimah-an-naisaburiyyah-sufi-perempuan-dari-khurasan-di-makkah" }
         ],
         { fontSize: 22, lineHeight: 25, minFontSize: 12 }
     ),
@@ -4641,6 +4654,8 @@ const tokohDuniaChildren = [
     byNameDunia["TABI'IN"].nomorAnggota = true; // anggota Tabi'in bernomor urut 1, 2, dst.
     setKategoriInfoDunia(byNameDunia["TABI'UT TABI'IN"], "tabiut-tabiin", "Tabi'ut Tabi'in");
     byNameDunia["TABI'UT TABI'IN"].nomorAnggota = true; // anggota Tabi'ut Tabi'in bernomor urut 1, 2, dst.
+    setKategoriInfoDunia(byNameDunia["ZAHIDAH & SUFI PEREMPUAN"], "zahidah-dan-sufi-perempuan", "Zahidah dan Sufi Perempuan");
+    byNameDunia["ZAHIDAH & SUFI PEREMPUAN"].nomorAnggota = true; // anggota bernomor urut 1, 2, dst.
     setKategoriInfoDunia(byNameDunia["4 IMAM MAZHAB"], "empat-imam-mazhab", "4 Imam Mazhab");
     setKategoriInfoDunia(byNameDunia["IMAM-IMAM HADIS BESAR"], "imam-imam-hadis-besar", "Imam-Imam Hadis Besar");
     setKategoriInfoDunia(byNameDunia["ULAMA BESAR ASWAJA"], "ulama-besar-aswaja", "Ulama Besar Aswaja");
