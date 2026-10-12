@@ -4651,7 +4651,58 @@ const tokohDuniaChildren = [
         { fontSize: 22, lineHeight: 25, minFontSize: 12 },
         ["ABAD III–IX H"],
         { fontSize: 11, lineHeight: 13, weight: 700, minFontSize: 8 }
-    )
+    ),
+    Object.assign(makePeriodeNode(
+        "PENYAIR, SASTRAWAN & TOKOH ADAB",
+        ["PENYAIR,","SASTRAWAN &","TOKOH ADAB"],
+        [
+        Object.assign(makePeriodeNode(
+            "ERA UMAYYAH (41-132 H)",
+            ["ERA UMAYYAH","(41-132 H)"],
+            [],
+            { fontSize: 20, lineHeight: 23, minFontSize: 11 },
+            ["PENYAIR ISTANA UMAYYAH"],
+            { fontSize: 11, lineHeight: 13, weight: 700, minFontSize: 8 }
+        ), { infoNote: "@bio:era-umayyah-penyair-sastrawan", infoName: "Era Umayyah (41-132 H)" }),
+        Object.assign(makePeriodeNode(
+            "ERA ABBASIYAH (132-656 H)",
+            ["ERA ABBASIYAH","(132-656 H)"],
+            [
+            { name: "ABU NAWAS / ABU NUWAS AL-HASAN BIN HANI (145-198 H) — PENYAIR TAUBAT", type: "tokohgold", infoNote: "@bio:abu-nawas-penyair-taubat-era-abbasiyah" }
+            ],
+            { fontSize: 20, lineHeight: 23, minFontSize: 11 },
+            ["PUNCAK SASTRA ABAD KEEMASAN"],
+            { fontSize: 11, lineHeight: 13, weight: 700, minFontSize: 8 }
+        ), { infoNote: "@bio:era-abbasiyah-penyair-sastrawan", infoName: "Era Abbasiyah (132-656 H)" }),
+        Object.assign(makePeriodeNode(
+            "ERA ANDALUSIA (138-897 H)",
+            ["ERA ANDALUSIA","(138-897 H)"],
+            [],
+            { fontSize: 20, lineHeight: 23, minFontSize: 11 },
+            ["SASTRA CINTA & HIKMAH"],
+            { fontSize: 11, lineHeight: 13, weight: 700, minFontSize: 8 }
+        ), { infoNote: "@bio:era-andalusia-penyair-sastrawan", infoName: "Era Andalusia (138-897 H)" }),
+        Object.assign(makePeriodeNode(
+            "ERA MAMLUK & UTSMANIYAH (648-1342 H)",
+            ["ERA MAMLUK &","UTSMANIYAH","(648-1342 H)"],
+            [],
+            { fontSize: 20, lineHeight: 23, minFontSize: 11 },
+            ["PENYAIR SHALAWAT & SUFI"],
+            { fontSize: 11, lineHeight: 13, weight: 700, minFontSize: 8 }
+        ), { infoNote: "@bio:era-mamluk-utsmaniyah-penyair-sastrawan", infoName: "Era Mamluk & Utsmaniyah (648-1342 H)" }),
+        Object.assign(makePeriodeNode(
+            "ERA NUSANTARA",
+            ["ERA","NUSANTARA"],
+            [],
+            { fontSize: 20, lineHeight: 23, minFontSize: 11 },
+            ["PUJANGGA & PENYAIR MELAYU-JAWA"],
+            { fontSize: 11, lineHeight: 13, weight: 700, minFontSize: 8 }
+        ), { infoNote: "@bio:era-nusantara-penyair-sastrawan", infoName: "Era Nusantara" })
+        ],
+        { fontSize: 22, lineHeight: 25, minFontSize: 12 },
+        ["ADAB & SASTRA ISLAM"],
+        { fontSize: 11, lineHeight: 13, weight: 700, minFontSize: 8 }
+    ), { infoNote: "@bio:penyair-sastrawan-dan-tokoh-adab", infoName: "Penyair, Sastrawan & Tokoh Adab" })
 ];
 
 // ===== Keterangan (badge ❤️) untuk kotak klasifikasi Tokoh Islam Dunia:
@@ -4675,6 +4726,12 @@ const tokohDuniaChildren = [
     setKategoriInfoDunia(byNameDunia["4 IMAM MAZHAB"], "empat-imam-mazhab", "4 Imam Mazhab");
     setKategoriInfoDunia(byNameDunia["IMAM-IMAM HADIS BESAR"], "imam-imam-hadis-besar", "Imam-Imam Hadis Besar");
     setKategoriInfoDunia(byNameDunia["ULAMA BESAR ASWAJA"], "ulama-besar-aswaja", "Ulama Besar Aswaja");
+    setKategoriInfoDunia(byNameDunia["PENYAIR, SASTRAWAN & TOKOH ADAB"], "penyair-sastrawan-dan-tokoh-adab", "Penyair, Sastrawan & Tokoh Adab");
+    setKategoriInfoDunia(byNameDunia["ERA UMAYYAH (41-132 H)"], "era-umayyah-penyair-sastrawan", "Era Umayyah (41-132 H)");
+    setKategoriInfoDunia(byNameDunia["ERA ABBASIYAH (132-656 H)"], "era-abbasiyah-penyair-sastrawan", "Era Abbasiyah (132-656 H)");
+    setKategoriInfoDunia(byNameDunia["ERA ANDALUSIA (138-897 H)"], "era-andalusia-penyair-sastrawan", "Era Andalusia (138-897 H)");
+    setKategoriInfoDunia(byNameDunia["ERA MAMLUK & UTSMANIYAH (648-1342 H)"], "era-mamluk-utsmaniyah-penyair-sastrawan", "Era Mamluk & Utsmaniyah (648-1342 H)");
+    setKategoriInfoDunia(byNameDunia["ERA NUSANTARA"], "era-nusantara-penyair-sastrawan", "Era Nusantara");
 })();
 // FIXED BEHAVIOR: jarak antar shape dibuat FIX secara vertikal, dan LEBAR secara horizontal.
 // Saat cabang dibuka ke kanan, shape di atas/bawah TIDAK digeser — hanya jarak kanan-kiri
