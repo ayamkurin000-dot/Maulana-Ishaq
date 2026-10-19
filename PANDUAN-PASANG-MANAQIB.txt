@@ -1,9 +1,0 @@
-PANDUAN PEMASANGAN
-
-1. Salin index.html dan folder data/bio/abdul-qadir-al-jilani-tarekat-qadiriyah/manaqib/ ke repositori lokal dengan mempertahankan struktur folder.
-2. Empat kartu ini sekarang dirujuk dari folder manaqib. Setelah memastikan salinan baru terbuka dengan benar, hapus salinan lama berikut dari folder induk agar tidak menjadi berkas yatim:
-   - data/bio/abdul-qadir-al-jilani-tarekat-qadiriyah/kejujuran-di-hadapan-perampok.html
-   - data/bio/abdul-qadir-al-jilani-tarekat-qadiriyah/sapi-yang-dikisahkan-berbicara.html
-   - data/bio/abdul-qadir-al-jilani-tarekat-qadiriyah/ungkapan-kaki-di-atas-leher-para-wali.html
-   - data/bio/abdul-qadir-al-jilani-tarekat-qadiriyah/karamah-dalam-kitab-manaqib-dan-batas-sejarah.html
-3. ZIP ini hanya berisi berkas yang ditambahkan atau diubah untuk perubahan ini, bukan seluruh repositori.
